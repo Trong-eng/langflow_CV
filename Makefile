@@ -79,6 +79,7 @@ reinstall_backend: ## forces reinstall all dependencies (no caching)
 install_backend: ## install the backend dependencies
 	@echo 'Installing backend dependencies'
 	@uv sync --frozen --extra "postgresql" $(EXTRA_ARGS)
+	@sh ./scripts/setup/setup_env.sh
 
 
 
@@ -297,21 +298,21 @@ backend: setup_env install_backend ## run the backend in development mode
 	@-kill -9 $$(lsof -t -i:7860) || true
 ifdef login
 	@echo "Running backend autologin is $(login)";
-	LANGFLOW_AUTO_LOGIN=$(login) uv run$(if $(strip $(UV_RUN_ARGS)), $(strip $(UV_RUN_ARGS))) uvicorn \
+	PYTHONPATH="src/backend/base:src/lfx/src:src/sdk/src:$$PYTHONPATH" LANGFLOW_AUTO_LOGIN=$(login) uv run$(if $(strip $(UV_RUN_ARGS)), $(strip $(UV_RUN_ARGS))) uvicorn \
 		--factory langflow.main:create_app \
 		--host 0.0.0.0 \
 		--port $(port) \
-		$(if $(filter-out 1,$(workers)),, --reload) \
+		$(if $(filter-out 1,$(workers)),, --reload --reload-dir src/backend/base/langflow --reload-dir src/lfx) \
 		--env-file $(env) \
 		--loop asyncio \
 		$(if $(workers),--workers $(workers),)
 else
 	@echo "Running backend respecting the $(env) file";
-	uv run$(if $(strip $(UV_RUN_ARGS)), $(strip $(UV_RUN_ARGS))) uvicorn \
+	PYTHONPATH="src/backend/base:src/lfx/src:src/sdk/src:$$PYTHONPATH" uv run$(if $(strip $(UV_RUN_ARGS)), $(strip $(UV_RUN_ARGS))) uvicorn \
 		--factory langflow.main:create_app \
 		--host 0.0.0.0 \
 		--port $(port) \
-		$(if $(filter-out 1,$(workers)),, --reload) \
+		$(if $(filter-out 1,$(workers)),, --reload --reload-dir src/backend/base/langflow --reload-dir src/lfx) \
 		--env-file $(env) \
 		--loop asyncio \
 		$(if $(workers),--workers $(workers),)
