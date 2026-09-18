@@ -2,6 +2,7 @@ import ast
 import contextlib
 import copy
 import importlib
+import pickle
 import sys
 import warnings
 from types import FunctionType, ModuleType
@@ -15,6 +16,12 @@ from lfx.custom.annotation_validation import (
     register_compiled_class_method_returns,
     snapshot_trusted_class_method_returns,
     validate_return_annotations,
+)
+from lfx.custom.component_compilation_cache import (
+    COMPONENT_COMPILATION_ARTIFACT_GENERATION,
+    ComponentArtifactLookup,
+    ComponentCompilationArtifact,
+    get_or_build_component_artifact_with_status,
 )
 from lfx.field_typing.constants import CUSTOM_COMPONENT_SUPPORTED_TYPES, DEFAULT_IMPORT_STRING
 from lfx.log.logger import logger
@@ -245,12 +252,134 @@ def _trusted_vector_store_decorator_alias(module: ast.Module, class_name: str) -
     raise UnsafeReturnAnnotationError(msg)
 
 
-def create_class(code, class_name):
+def _normalize_component_code(code: str) -> str:
+    code = code.replace("from langflow import CustomComponent", "from langflow.custom import CustomComponent")
+    code = code.replace(
+        "from langflow.interface.custom.custom_component import CustomComponent",
+        "from langflow.custom import CustomComponent",
+    )
+    return DEFAULT_IMPORT_STRING + "\n" + code
+
+
+def _extract_class_name_from_module(module: ast.Module, code: str) -> str:
+    for node in module.body:
+        if not isinstance(node, ast.ClassDef):
+            continue
+        for base in node.bases:
+            if isinstance(base, ast.Name) and any(pattern in base.id for pattern in ["Component", "LC"]):
+                return node.name
+
+    msg = f"No Component subclass found in the code string. Code snippet: {code[:100]}"
+    raise TypeError(msg)
+
+
+def _prepare_component_compilation_artifact(
+    code: str,
+    class_name: str | None = None,
+) -> tuple[ComponentCompilationArtifact, ast.Module]:
+    """Parse, statically validate, and compile source-only component artifacts."""
+    if not hasattr(ast, "TypeIgnore"):
+        ast.TypeIgnore = create_type_ignore_class()
+
+    module = ast.parse(_normalize_component_code(code))
+    class_name = class_name or _extract_class_name_from_module(module, code)
+    validate_return_annotations(module)
+    if not any(
+        isinstance(node, ast.ImportFrom)
+        and node.module == "__future__"
+        and any(alias.name == "annotations" for alias in node.names)
+        for node in module.body
+    ):
+        module.body.insert(
+            0,
+            ast.ImportFrom(module="__future__", names=[ast.alias(name="annotations")], level=0),
+        )
+        ast.fix_missing_locations(module)
+
+    trusted_vector_store_alias = _trusted_vector_store_decorator_alias(module, class_name)
+    runtime_module = copy.deepcopy(module) if trusted_vector_store_alias is not None else module
+    if trusted_vector_store_alias is not None:
+        extract_class_code(runtime_module, class_name).decorator_list = []
+    future_imports = [n for n in runtime_module.body if isinstance(n, ast.ImportFrom) and n.module == "__future__"]
+    compiled_class = compile_class_code(extract_class_code(runtime_module, class_name), future_imports)
+    return (
+        ComponentCompilationArtifact(
+            source=code,
+            generation=COMPONENT_COMPILATION_ARTIFACT_GENERATION,
+            module_template=pickle.dumps(module, protocol=5),
+            class_name=class_name,
+            compiled_class=compiled_class,
+            trusted_vector_store_alias=trusted_vector_store_alias,
+        ),
+        module,
+    )
+
+
+def prepare_component_compilation_artifact(
+    code: str,
+    class_name: str | None = None,
+) -> ComponentCompilationArtifact:
+    """Return a reusable source artifact without exposing its runtime AST."""
+    artifact, _module = _prepare_component_compilation_artifact(code, class_name)
+    return artifact
+
+
+def _load_component_module_template(module_template: bytes) -> ast.Module:
+    """Create a request-local AST from a trusted in-process artifact."""
+    return pickle.loads(module_template)  # noqa: S301
+
+
+def _get_component_compilation_artifact(
+    code: str,
+    class_name: str | None = None,
+) -> tuple[ComponentArtifactLookup[ComponentCompilationArtifact], ast.Module | None]:
+    variant = class_name or "<auto>"
+    prepared_module: ast.Module | None = None
+
+    def build() -> ComponentCompilationArtifact:
+        nonlocal prepared_module
+        artifact, prepared_module = _prepare_component_compilation_artifact(code, class_name)
+        return artifact
+
+    lookup = get_or_build_component_artifact_with_status(
+        code,
+        build,
+        variant=variant,
+    )
+    return lookup, prepared_module
+
+
+def create_class_from_code(code: str):
+    """Create the first Component subclass while reusing source-only artifacts."""
+    try:
+        lookup, prepared_module = _get_component_compilation_artifact(code)
+    except SyntaxError as e:
+        msg = f"Invalid Python code: {e!s}"
+        raise ValueError(msg) from e
+    except UnsafeReturnAnnotationError as e:
+        raise ValueError(str(e)) from e
+    return create_class(
+        code,
+        lookup.artifact.class_name,
+        artifact=lookup.artifact,
+        prepared_module=prepared_module,
+    )
+
+
+def create_class(
+    code,
+    class_name,
+    *,
+    artifact: ComponentCompilationArtifact | None = None,
+    prepared_module: ast.Module | None = None,
+):
     """Dynamically create a class from a string of code and a specified class name.
 
     Args:
         code: String containing the Python code defining the class
         class_name: Name of the class to be created
+        artifact: Optional precompiled source-only artifact for ``code``
+        prepared_module: Fresh AST returned while preparing an uncached artifact
 
     Returns:
          A function that, when called, returns an instance of the created class
@@ -288,34 +417,25 @@ def create_class(code, class_name):
         component_class.as_vector_store = as_vector_store
         return component_class
 
-    if not hasattr(ast, "TypeIgnore"):
-        ast.TypeIgnore = create_type_ignore_class()
-
-    code = code.replace("from langflow import CustomComponent", "from langflow.custom import CustomComponent")
-    code = code.replace(
-        "from langflow.interface.custom.custom_component import CustomComponent",
-        "from langflow.custom import CustomComponent",
-    )
-
-    code = DEFAULT_IMPORT_STRING + "\n" + code
     try:
-        module = ast.parse(code)
-        # Return annotations are evaluated by Python during class creation and
-        # later by typing.get_type_hints. Reject active syntax before imports,
-        # compilation, or component construction can execute it.
-        validate_return_annotations(module)
-        if not any(
-            isinstance(node, ast.ImportFrom)
-            and node.module == "__future__"
-            and any(alias.name == "annotations" for alias in node.names)
-            for node in module.body
-        ):
-            module.body.insert(
-                0,
-                ast.ImportFrom(module="__future__", names=[ast.alias(name="annotations")], level=0),
-            )
-            ast.fix_missing_locations(module)
-        trusted_vector_store_alias = _trusted_vector_store_decorator_alias(module, class_name)
+        if artifact is None:
+            lookup, prepared_module = _get_component_compilation_artifact(code, class_name)
+            artifact = lookup.artifact
+        if artifact.source != code:
+            msg = "Compilation artifact source does not match the requested component source"
+            raise ValueError(msg)
+        if artifact.generation != COMPONENT_COMPILATION_ARTIFACT_GENERATION:
+            msg = "Compilation artifact generation is no longer valid"
+            raise ValueError(msg)
+        if artifact.class_name != class_name:
+            msg = f"Compilation artifact targets {artifact.class_name!r}, not {class_name!r}"
+            raise ValueError(msg)
+        module = (
+            prepared_module
+            if prepared_module is not None
+            else _load_component_module_template(artifact.module_template)
+        )
+        trusted_vector_store_alias = artifact.trusted_vector_store_alias
         runtime_module = copy.deepcopy(module) if trusted_vector_store_alias is not None else module
         if trusted_vector_store_alias is not None:
             runtime_class_code = extract_class_code(runtime_module, class_name)
@@ -328,12 +448,9 @@ def create_class(code, class_name):
             source_class_bindings=source_class_bindings,
         )
 
-        future_imports = [n for n in runtime_module.body if isinstance(n, ast.ImportFrom) and n.module == "__future__"]
         class_code = extract_class_code(module, class_name)
-        runtime_class_code = extract_class_code(runtime_module, class_name)
-        compiled_class = compile_class_code(runtime_class_code, future_imports)
         preexisting_class_ids = frozenset(id(value) for value in exec_globals.values() if issubclass(type(value), type))
-        component_class = build_class_constructor(compiled_class, exec_globals, class_name)
+        component_class = build_class_constructor(artifact.compiled_class, exec_globals, class_name)
         if trusted_vector_store_alias is not None:
             component_class = apply_vector_store_connection(component_class)
             exec_globals[class_name] = component_class
@@ -746,18 +863,7 @@ def extract_class_name(code: str) -> str:
     """
     try:
         module = ast.parse(code)
-        for node in module.body:
-            if not isinstance(node, ast.ClassDef):
-                continue
-
-            # Check bases for Component inheritance
-            # TODO: Build a more robust check for Component inheritance
-            for base in node.bases:
-                if isinstance(base, ast.Name) and any(pattern in base.id for pattern in ["Component", "LC"]):
-                    return node.name
-
-        msg = f"No Component subclass found in the code string. Code snippet: {code[:100]}"
-        raise TypeError(msg)
+        return _extract_class_name_from_module(module, code)
     except SyntaxError as e:
         msg = f"Invalid Python code: {e!s}"
         raise ValueError(msg) from e

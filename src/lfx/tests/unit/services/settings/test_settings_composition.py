@@ -86,6 +86,7 @@ EXPECTED_FIELDS = {
     "cache_expire",
     "cache_dir",
     "langchain_cache",
+    "component_compilation_cache_enabled",
     "redis_host",
     "redis_port",
     "redis_db",
@@ -302,6 +303,7 @@ def test_critical_defaults_unchanged():
     assert settings.port == 7860
     assert settings.workers == 1
     assert settings.cache_type == "async"
+    assert settings.component_compilation_cache_enabled is False
     assert settings.storage_type == "local"
     assert settings.event_delivery == "streaming"
     assert settings.model_provider_policy_refresh_interval_s == 10.0
@@ -464,6 +466,12 @@ def test_yaml_round_trip():
         ("LANGFLOW_WORKERS", "2", "workers", 2),
         ("LANGFLOW_LOG_LEVEL", "info", "log_level", "info"),
         ("LANGFLOW_CACHE_TYPE", "memory", "cache_type", "memory"),
+        (
+            "LANGFLOW_COMPONENT_COMPILATION_CACHE_ENABLED",
+            "true",
+            "component_compilation_cache_enabled",
+            True,
+        ),
         ("LANGFLOW_STORAGE_TYPE", "s3", "storage_type", "s3"),
         ("LANGFLOW_PROMETHEUS_ENABLED", "true", "prometheus_enabled", True),
         ("LANGFLOW_PROMETHEUS_PORT", "9999", "prometheus_port", 9999),

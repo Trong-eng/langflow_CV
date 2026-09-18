@@ -17,7 +17,9 @@ import os
 import platform
 import pstats
 import resource
+import shutil
 import statistics
+import subprocess
 import sys
 import threading
 import time
@@ -34,11 +36,13 @@ for source_root in (REPO_ROOT / "src" / "lfx" / "src", REPO_ROOT / "src" / "back
     sys.path.insert(0, str(source_root))
 
 DEFAULT_SAMPLES = 40
-GRAPH_SAMPLES = 7
+GRAPH_SAMPLES = 15
 WARMUP_ITERATIONS = 5
 CONCURRENT_REQUESTS = 32
 CONCURRENT_WORKERS = 8
+CONCURRENT_BATCH_SAMPLES = 15
 COMPILE_FLAGS_POSITION = 3
+BASELINE_SHA = "c9fbb3ef72c2027ce4fefd1f45d040ce6469a99d"  # pragma: allowlist secret
 
 PASS_THROUGH_SOURCE = """
 from lfx.custom import Component
@@ -84,7 +88,7 @@ def _rss_bytes() -> int:
 
 
 class ParseCompileProbe(AbstractContextManager["ParseCompileProbe"]):
-    """Count and time source parsing/compilation during a measured section."""
+    """Count and time all AST parsing/compilation during a measured section."""
 
     def __init__(self) -> None:
         self.parse_calls = 0
@@ -137,6 +141,51 @@ class ParseCompileProbe(AbstractContextManager["ParseCompileProbe"]):
 
         ast.parse = self._original_parse
         builtins.compile = self._original_compile
+
+
+class ArtifactPhaseProbe(AbstractContextManager["ArtifactPhaseProbe"]):
+    """Time the implementation's source-artifact build and AST restore phases."""
+
+    def __init__(self) -> None:
+        self.build_ns: list[int] = []
+        self.restore_ns: list[int] = []
+        self._validate_module = None
+        self._original_build = None
+        self._original_restore = None
+
+    def __enter__(self) -> Self:
+        from lfx.custom import validate
+
+        self._validate_module = validate
+        self._original_build = getattr(validate, "_prepare_component_compilation_artifact", None)
+        self._original_restore = getattr(validate, "_load_component_module_template", None)
+        if self._original_build is not None:
+
+            def timed_build(*args, **kwargs):
+                started = time.perf_counter_ns()
+                try:
+                    return self._original_build(*args, **kwargs)
+                finally:
+                    self.build_ns.append(time.perf_counter_ns() - started)
+
+            validate._prepare_component_compilation_artifact = timed_build  # noqa: SLF001
+        if self._original_restore is not None:
+
+            def timed_restore(*args, **kwargs):
+                started = time.perf_counter_ns()
+                try:
+                    return self._original_restore(*args, **kwargs)
+                finally:
+                    self.restore_ns.append(time.perf_counter_ns() - started)
+
+            validate._load_component_module_template = timed_restore  # noqa: SLF001
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        if self._original_build is not None:
+            self._validate_module._prepare_component_compilation_artifact = self._original_build  # noqa: SLF001
+        if self._original_restore is not None:
+            self._validate_module._load_component_module_template = self._original_restore  # noqa: SLF001
 
 
 def _cache_api() -> tuple[Any, Any] | None:
@@ -214,6 +263,7 @@ def _measure_eval_workloads() -> dict[str, Any]:
         constructor_samples.append(constructor)
         parse_compile_calls += calls
         component_classes.append(component_class)
+    steady_cache_stats = _cache_stats()
 
     distinct_samples: list[int] = []
     distinct_calls = 0
@@ -231,29 +281,46 @@ def _measure_eval_workloads() -> dict[str, Any]:
 
     return {
         "cold_process_first_eval": {
-            "source_preparation_ms": round(cold_preparation / 1_000_000, 6),
+            "parse_compile_activity_ms": round(cold_preparation / 1_000_000, 6),
             "class_creation_ms": round(cold_class / 1_000_000, 6),
             "constructor_ms": round(cold_constructor / 1_000_000, 6),
             "parse_compile_calls": cold_calls,
         },
         "first_cache_miss": {
-            "source_preparation_ms": round(miss_preparation / 1_000_000, 6),
+            "parse_compile_activity_ms": round(miss_preparation / 1_000_000, 6),
             "class_creation_ms": round(miss_class / 1_000_000, 6),
             "constructor_ms": round(miss_constructor / 1_000_000, 6),
             "parse_compile_calls": miss_calls,
         },
         "steady_same_source": {
-            "source_preparation": _latency_summary(preparation_samples),
+            "parse_compile_activity": _latency_summary(preparation_samples),
             "class_creation": _latency_summary(class_samples),
             "constructor": _latency_summary(constructor_samples),
             "parse_compile_calls": parse_compile_calls,
             "fresh_class_identities": len({id(component_class) for component_class in component_classes}),
+            "cache_stats": steady_cache_stats,
         },
         "distinct_sources": {
             "class_creation": _latency_summary(distinct_samples),
             "parse_compile_calls": distinct_calls,
         },
         "source_update_ms": round(source_update_ns / 1_000_000, 6),
+    }
+
+
+def _measure_artifact_phases() -> dict[str, Any]:
+    from lfx.custom.eval import eval_custom_component_code
+
+    _clear_cache()
+    with ArtifactPhaseProbe() as probe:
+        eval_custom_component_code(PASS_THROUGH_SOURCE)
+        for _ in range(DEFAULT_SAMPLES):
+            eval_custom_component_code(PASS_THROUGH_SOURCE)
+    return {
+        "artifact_build": _latency_summary(probe.build_ns),
+        "cache_hit_ast_restore": _latency_summary(probe.restore_ns),
+        "build_calls": len(probe.build_ns),
+        "restore_calls": len(probe.restore_ns),
     }
 
 
@@ -292,26 +359,34 @@ def _measure_graph_size(node_count: int) -> dict[str, Any]:
 
     cold_prepare: list[int] = []
     cold_flow: list[int] = []
-    for _ in range(GRAPH_SAMPLES):
-        started = time.perf_counter_ns()
-        graph = Graph.from_payload(deepcopy(payload))
-        prepared = time.perf_counter_ns()
-        asyncio.run(_consume_graph(graph))
-        finished = time.perf_counter_ns()
-        cold_prepare.append(prepared - started)
-        cold_flow.append(finished - started)
-
-    template = Graph.from_payload(deepcopy(payload), instantiate_components=False)
     warm_prepare: list[int] = []
     warm_flow: list[int] = []
-    for _ in range(GRAPH_SAMPLES):
-        started = time.perf_counter_ns()
-        graph = template.copy_for_run(user_id="benchmark-user")
-        prepared = time.perf_counter_ns()
-        asyncio.run(_consume_graph(graph))
-        finished = time.perf_counter_ns()
-        warm_prepare.append(prepared - started)
-        warm_flow.append(finished - started)
+    template = Graph.from_payload(deepcopy(payload), instantiate_components=False)
+    gc_was_enabled = gc.isenabled()
+    gc.collect()
+    gc.disable()
+    try:
+        for _ in range(GRAPH_SAMPLES):
+            started = time.perf_counter_ns()
+            graph = Graph.from_payload(deepcopy(payload))
+            prepared = time.perf_counter_ns()
+            asyncio.run(_consume_graph(graph))
+            finished = time.perf_counter_ns()
+            cold_prepare.append(prepared - started)
+            cold_flow.append(finished - started)
+
+        for _ in range(GRAPH_SAMPLES):
+            started = time.perf_counter_ns()
+            graph = template.copy_for_run(user_id="benchmark-user")
+            prepared = time.perf_counter_ns()
+            asyncio.run(_consume_graph(graph))
+            finished = time.perf_counter_ns()
+            warm_prepare.append(prepared - started)
+            warm_flow.append(finished - started)
+    finally:
+        if gc_was_enabled:
+            gc.enable()
+        gc.collect()
 
     return {
         "nodes": node_count,
@@ -319,6 +394,7 @@ def _measure_graph_size(node_count: int) -> dict[str, Any]:
         "cold_flow_wall": _latency_summary(cold_flow),
         "warm_graph_preparation": _latency_summary(warm_prepare),
         "warm_flow_wall": _latency_summary(warm_flow),
+        "cache_stats": _cache_stats(),
     }
 
 
@@ -335,7 +411,51 @@ def _measure_concurrent() -> dict[str, Any]:
         "workers": CONCURRENT_WORKERS,
         "wall_ms": round(elapsed / 1_000_000, 6),
         "fresh_class_identities": len({id(component_class) for component_class in classes}),
+        "cache_stats": _cache_stats(),
     }
+
+
+def _measure_concurrent_distinct_sources() -> dict[str, Any]:
+    from lfx.custom.eval import eval_custom_component_code
+
+    wall_samples: list[int] = []
+    fresh_class_identities = 0
+    for sample in range(CONCURRENT_BATCH_SAMPLES):
+        _clear_cache()
+        sources = [
+            _source_variant(
+                sample * CONCURRENT_REQUESTS + index,
+                class_name=f"ConcurrentDistinctComponent{sample}_{index}",
+            )
+            for index in range(CONCURRENT_REQUESTS)
+        ]
+        started = time.perf_counter_ns()
+        with ThreadPoolExecutor(max_workers=CONCURRENT_WORKERS) as pool:
+            classes = list(pool.map(eval_custom_component_code, sources))
+        wall_samples.append(time.perf_counter_ns() - started)
+        fresh_class_identities = len({id(component_class) for component_class in classes})
+    return {
+        "requests_per_batch": CONCURRENT_REQUESTS,
+        "workers": CONCURRENT_WORKERS,
+        "samples": CONCURRENT_BATCH_SAMPLES,
+        "wall": _latency_summary(wall_samples),
+        "fresh_class_identities_last_batch": fresh_class_identities,
+        "cache_stats_last_batch": _cache_stats(),
+    }
+
+
+def _detected_source_revision() -> str | None:
+    git_executable = shutil.which("git")
+    if git_executable is None:
+        return None
+    completed = subprocess.run(  # noqa: S603
+        [git_executable, "rev-parse", "HEAD"],
+        cwd=REPO_ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    return completed.stdout.strip() or None
 
 
 def _measure_memory() -> dict[str, Any]:
@@ -400,7 +520,13 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=("baseline", "off", "on"), required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--source-revision", help="Commit SHA of the source tree under measurement")
     args = parser.parse_args()
+    source_revision = args.source_revision or _detected_source_revision()
+    if args.mode == "baseline" and source_revision != BASELINE_SHA:
+        parser.error(f"baseline mode requires --source-revision {BASELINE_SHA}")
+    if source_revision is None:
+        parser.error("unable to detect source revision; pass --source-revision explicitly")
     _configure_mode(args.mode)
 
     # Imports occur inside workload functions so the feature flag is set before
@@ -415,16 +541,21 @@ def main() -> None:
             "warmup_iterations": WARMUP_ITERATIONS,
             "latency_samples": DEFAULT_SAMPLES,
             "graph_samples": GRAPH_SAMPLES,
+            "latency_gc": "disabled during graph timing; allocations measured separately",
             "concurrent_workers": CONCURRENT_WORKERS,
             "concurrent_requests": CONCURRENT_REQUESTS,
+            "concurrent_batch_samples": CONCURRENT_BATCH_SAMPLES,
+            "source_revision": source_revision,
         },
         "evaluation": _measure_eval_workloads(),
+        "artifact_phases": _measure_artifact_phases(),
         "memory": _measure_memory(),
         "graphs": {
             "10_nodes": _measure_graph_size(10),
             "100_nodes": _measure_graph_size(100),
         },
         "concurrent_same_source": _measure_concurrent(),
+        "concurrent_distinct_sources": _measure_concurrent_distinct_sources(),
         "cpu_profile": _profile_same_source(),
         "cache_stats": _cache_stats(),
     }
