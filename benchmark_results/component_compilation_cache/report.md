@@ -12,7 +12,7 @@
 - Memory workload: 128 unique sources in a separate process measurement
 - Benchmark component: local pass-through component; no model, network, or external-service calls
 
-The same harness, `scripts/benchmarks/benchmark_component_compilation_cache.py`, produced the committed `baseline.json`, `off.json`, and `on.json` files. Each JSON records `metadata.source_revision`; baseline mode rejects any revision other than the fixed baseline SHA. The baseline run used `git archive c9fbb3ef72c2027ce4fefd1f45d040ce6469a99d` in a temporary directory, copied the same harness into that archive, and ran it with `--mode baseline --source-revision c9fbb3ef72c2027ce4fefd1f45d040ce6469a99d`. OFF/ON used `--source-revision b133c5035`. This avoids checkout changes while making a wrong-revision baseline fail fast.
+The same harness, `scripts/benchmarks/benchmark_component_compilation_cache.py`, produced the committed `baseline.json`, `off.json`, and `on.json` files. Each JSON records `metadata.source_revision`. The harness takes no caller-supplied revision label: it reads Git HEAD, or the revision manifest created by the baseline wrapper. Run `scripts/benchmarks/run_component_compilation_cache_baseline.sh` to create a temporary `git archive` from the fixed baseline SHA and execute the copied harness there. Baseline mode rejects any other detected revision. OFF/ON were measured at implementation SHA `b133c5035`. This avoids checkout changes and prevents a current checkout from being mislabeled as baseline.
 
 ## Execution path
 

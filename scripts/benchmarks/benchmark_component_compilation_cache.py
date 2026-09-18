@@ -43,6 +43,7 @@ CONCURRENT_WORKERS = 8
 CONCURRENT_BATCH_SAMPLES = 15
 COMPILE_FLAGS_POSITION = 3
 BASELINE_SHA = "c9fbb3ef72c2027ce4fefd1f45d040ce6469a99d"  # pragma: allowlist secret
+REVISION_MANIFEST = ".benchmark-source-revision"
 
 PASS_THROUGH_SOURCE = """
 from lfx.custom import Component
@@ -448,16 +449,18 @@ def _measure_concurrent_distinct_sources() -> dict[str, Any]:
 
 def _detected_source_revision() -> str | None:
     git_executable = shutil.which("git")
-    if git_executable is None:
-        return None
-    completed = subprocess.run(  # noqa: S603
-        [git_executable, "rev-parse", "HEAD"],
-        cwd=REPO_ROOT,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    return completed.stdout.strip() or None
+    if git_executable is not None:
+        completed = subprocess.run(  # noqa: S603
+            [git_executable, "rev-parse", "HEAD"],
+            cwd=REPO_ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if completed.returncode == 0 and completed.stdout.strip():
+            return completed.stdout.strip()
+    manifest = REPO_ROOT / REVISION_MANIFEST
+    return manifest.read_text(encoding="utf-8").strip() if manifest.is_file() else None
 
 
 def _measure_memory() -> dict[str, Any]:
@@ -522,13 +525,12 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=("baseline", "off", "on"), required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--source-revision", help="Commit SHA of the source tree under measurement")
     args = parser.parse_args()
-    source_revision = args.source_revision or _detected_source_revision()
+    source_revision = _detected_source_revision()
     if args.mode == "baseline" and source_revision != BASELINE_SHA:
-        parser.error(f"baseline mode requires --source-revision {BASELINE_SHA}")
+        parser.error(f"baseline mode requires source revision {BASELINE_SHA}")
     if source_revision is None:
-        parser.error("unable to detect source revision; pass --source-revision explicitly")
+        parser.error("unable to detect source revision from Git or the benchmark revision manifest")
     _configure_mode(args.mode)
 
     # Imports occur inside workload functions so the feature flag is set before
