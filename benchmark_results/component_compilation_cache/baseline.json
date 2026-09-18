@@ -1,0 +1,220 @@
+{
+  "cache_stats": null,
+  "concurrent_same_source": {
+    "fresh_class_identities": 32,
+    "requests": 32,
+    "wall_ms": 37.771334,
+    "workers": 8
+  },
+  "cpu_profile": {
+    "iterations": 40,
+    "top_cumulative": [
+      {
+        "cumulative_time_ms": 124.509249,
+        "function": "eval.py:9:eval_custom_component_code",
+        "primitive_calls": 40,
+        "total_calls": 40,
+        "total_time_ms": 0.487173
+      },
+      {
+        "cumulative_time_ms": 122.273246,
+        "function": "validate.py:248:create_class",
+        "primitive_calls": 40,
+        "total_calls": 40,
+        "total_time_ms": 0.817519
+      },
+      {
+        "cumulative_time_ms": 82.08175,
+        "function": "validate.py:520:prepare_global_scope",
+        "primitive_calls": 40,
+        "total_calls": 40,
+        "total_time_ms": 2.01875
+      },
+      {
+        "cumulative_time_ms": 71.731211,
+        "function": "annotation_validation.py:605:snapshot_trusted_class_method_returns",
+        "primitive_calls": 40,
+        "total_calls": 40,
+        "total_time_ms": 8.356689
+      },
+      {
+        "cumulative_time_ms": 40.06452,
+        "function": "annotation_validation.py:500:resolve_type_annotation",
+        "primitive_calls": 4760,
+        "total_calls": 4760,
+        "total_time_ms": 1.472533
+      },
+      {
+        "cumulative_time_ms": 38.328231,
+        "function": "annotation_validation.py:398:_resolve_annotation_node",
+        "primitive_calls": 4760,
+        "total_calls": 8760,
+        "total_time_ms": 6.715889
+      },
+      {
+        "cumulative_time_ms": 26.278794,
+        "function": "~:0:<built-in method builtins.any>",
+        "primitive_calls": 3880,
+        "total_calls": 3880,
+        "total_time_ms": 13.070832
+      },
+      {
+        "cumulative_time_ms": 23.391509,
+        "function": "annotation_validation.py:305:_is_runtime_annotation_binding",
+        "primitive_calls": 1880,
+        "total_calls": 1960,
+        "total_time_ms": 1.361811
+      },
+      {
+        "cumulative_time_ms": 16.314097,
+        "function": "annotation_validation.py:571:_static_function_return",
+        "primitive_calls": 7480,
+        "total_calls": 7480,
+        "total_time_ms": 5.077228
+      },
+      {
+        "cumulative_time_ms": 16.21328,
+        "function": "~:0:<built-in method builtins.compile>",
+        "primitive_calls": 4880,
+        "total_calls": 4880,
+        "total_time_ms": 16.21328
+      },
+      {
+        "cumulative_time_ms": 14.81249,
+        "function": "ast.py:30:parse",
+        "primitive_calls": 4800,
+        "total_calls": 4800,
+        "total_time_ms": 1.016585
+      },
+      {
+        "cumulative_time_ms": 14.72709,
+        "function": "ast.py:284:iter_child_nodes",
+        "primitive_calls": 23120,
+        "total_calls": 23120,
+        "total_time_ms": 7.464624
+      }
+    ]
+  },
+  "evaluation": {
+    "cold_process_first_eval": {
+      "class_creation_ms": 17.75575,
+      "constructor_ms": 0.499459,
+      "parse_compile_calls": 126,
+      "source_preparation_ms": 9.149455
+    },
+    "distinct_sources": {
+      "class_creation": {
+        "mean_ms": 1.198498,
+        "p50_ms": 1.167917,
+        "p95_ms": 1.311313,
+        "samples": 40
+      },
+      "parse_compile_calls": 4880
+    },
+    "first_cache_miss": {
+      "class_creation_ms": 1.242625,
+      "constructor_ms": 0.120041,
+      "parse_compile_calls": 122,
+      "source_preparation_ms": 0.460005
+    },
+    "source_update_ms": 1.082375,
+    "steady_same_source": {
+      "class_creation": {
+        "mean_ms": 1.283431,
+        "p50_ms": 1.225999,
+        "p95_ms": 1.317132,
+        "samples": 40
+      },
+      "constructor": {
+        "mean_ms": 0.095958,
+        "p50_ms": 0.095042,
+        "p95_ms": 0.103127,
+        "samples": 40
+      },
+      "fresh_class_identities": 40,
+      "parse_compile_calls": 4880,
+      "source_preparation": {
+        "mean_ms": 0.49007,
+        "p50_ms": 0.44425,
+        "p95_ms": 0.457901,
+        "samples": 40
+      }
+    }
+  },
+  "graphs": {
+    "100_nodes": {
+      "cold_flow_wall": {
+        "mean_ms": 621.112274,
+        "p50_ms": 596.666583,
+        "p95_ms": 699.610816,
+        "samples": 7
+      },
+      "cold_graph_preparation": {
+        "mean_ms": 533.449578,
+        "p50_ms": 531.405209,
+        "p95_ms": 541.796187,
+        "samples": 7
+      },
+      "nodes": 100,
+      "warm_flow_wall": {
+        "mean_ms": 238.196351,
+        "p50_ms": 190.641375,
+        "p95_ms": 309.112533,
+        "samples": 7
+      },
+      "warm_graph_preparation": {
+        "mean_ms": 184.115256,
+        "p50_ms": 136.551875,
+        "p95_ms": 254.560812,
+        "samples": 7
+      }
+    },
+    "10_nodes": {
+      "cold_flow_wall": {
+        "mean_ms": 56.923649,
+        "p50_ms": 55.959709,
+        "p95_ms": 59.185258,
+        "samples": 7
+      },
+      "cold_graph_preparation": {
+        "mean_ms": 54.056226,
+        "p50_ms": 53.165042,
+        "p95_ms": 56.308954,
+        "samples": 7
+      },
+      "nodes": 10,
+      "warm_flow_wall": {
+        "mean_ms": 16.331286,
+        "p50_ms": 16.274584,
+        "p95_ms": 17.088058,
+        "samples": 7
+      },
+      "warm_graph_preparation": {
+        "mean_ms": 13.595482,
+        "p50_ms": 13.454542,
+        "p95_ms": 14.396933,
+        "samples": 7
+      }
+    }
+  },
+  "memory": {
+    "rss_after_bytes": 291028992,
+    "rss_before_bytes": 290127872,
+    "rss_delta_bytes": 901120,
+    "sources": 128,
+    "traced_allocated_delta_bytes": 1320248,
+    "traced_peak_bytes": 1539763
+  },
+  "metadata": {
+    "concurrent_requests": 32,
+    "concurrent_workers": 8,
+    "graph_samples": 7,
+    "latency_samples": 40,
+    "mode": "baseline",
+    "pid": 54199,
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.14",
+    "warmup_iterations": 5,
+    "worker_count": 1
+  }
+}
