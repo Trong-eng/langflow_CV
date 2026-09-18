@@ -1,0 +1,298 @@
+{
+  "artifact_phases": {
+    "artifact_build": {
+      "mean_ms": 0.322959,
+      "p50_ms": 0.322959,
+      "p95_ms": 0.322959,
+      "samples": 1
+    },
+    "build_calls": 1,
+    "cache_hit_ast_restore": {
+      "mean_ms": 0.085375,
+      "p50_ms": 0.076708,
+      "p95_ms": 0.090798,
+      "samples": 40
+    },
+    "restore_calls": 40
+  },
+  "cache_stats": {
+    "builds": 1,
+    "bypasses": 0,
+    "entries": 1,
+    "evictions": 0,
+    "hits": 39,
+    "misses": 1
+  },
+  "concurrent_distinct_sources": {
+    "cache_stats_last_batch": {
+      "builds": 32,
+      "bypasses": 0,
+      "entries": 32,
+      "evictions": 0,
+      "hits": 0,
+      "misses": 32
+    },
+    "fresh_class_identities_last_batch": 32,
+    "requests_per_batch": 32,
+    "samples": 15,
+    "wall": {
+      "mean_ms": 39.232236,
+      "p50_ms": 38.764542,
+      "p95_ms": 42.5501,
+      "samples": 15
+    },
+    "workers": 8
+  },
+  "concurrent_same_source": {
+    "cache_stats": {
+      "builds": 1,
+      "bypasses": 0,
+      "entries": 1,
+      "evictions": 0,
+      "hits": 31,
+      "misses": 1
+    },
+    "fresh_class_identities": 32,
+    "requests": 32,
+    "wall_ms": 32.138667,
+    "workers": 8
+  },
+  "cpu_profile": {
+    "iterations": 40,
+    "top_cumulative": [
+      {
+        "cumulative_time_ms": 96.25308,
+        "function": "eval.py:9:eval_custom_component_code",
+        "primitive_calls": 40,
+        "total_calls": 40,
+        "total_time_ms": 0.022833
+      },
+      {
+        "cumulative_time_ms": 96.230247,
+        "function": "validate.py:352:create_class_from_code",
+        "primitive_calls": 40,
+        "total_calls": 40,
+        "total_time_ms": 0.415668
+      },
+      {
+        "cumulative_time_ms": 94.615372,
+        "function": "validate.py:369:create_class",
+        "primitive_calls": 40,
+        "total_calls": 40,
+        "total_time_ms": 0.484002
+      },
+      {
+        "cumulative_time_ms": 82.966793,
+        "function": "validate.py:637:prepare_global_scope",
+        "primitive_calls": 40,
+        "total_calls": 40,
+        "total_time_ms": 1.883904
+      },
+      {
+        "cumulative_time_ms": 72.672168,
+        "function": "annotation_validation.py:605:snapshot_trusted_class_method_returns",
+        "primitive_calls": 40,
+        "total_calls": 40,
+        "total_time_ms": 8.347181
+      },
+      {
+        "cumulative_time_ms": 41.479037,
+        "function": "annotation_validation.py:500:resolve_type_annotation",
+        "primitive_calls": 4760,
+        "total_calls": 4760,
+        "total_time_ms": 1.470998
+      },
+      {
+        "cumulative_time_ms": 39.75491,
+        "function": "annotation_validation.py:398:_resolve_annotation_node",
+        "primitive_calls": 4760,
+        "total_calls": 8760,
+        "total_time_ms": 6.367776
+      },
+      {
+        "cumulative_time_ms": 27.687527,
+        "function": "~:0:<built-in method builtins.any>",
+        "primitive_calls": 3802,
+        "total_calls": 3802,
+        "total_time_ms": 12.842395
+      },
+      {
+        "cumulative_time_ms": 22.8151,
+        "function": "annotation_validation.py:305:_is_runtime_annotation_binding",
+        "primitive_calls": 1880,
+        "total_calls": 1960,
+        "total_time_ms": 1.334766
+      },
+      {
+        "cumulative_time_ms": 15.989882,
+        "function": "annotation_validation.py:571:_static_function_return",
+        "primitive_calls": 7480,
+        "total_calls": 7480,
+        "total_time_ms": 5.05285
+      },
+      {
+        "cumulative_time_ms": 11.008291,
+        "function": "component.py:171:__init__",
+        "primitive_calls": 40,
+        "total_calls": 40,
+        "total_time_ms": 0.36818
+      },
+      {
+        "cumulative_time_ms": 10.295854,
+        "function": "~:0:<built-in method builtins.compile>",
+        "primitive_calls": 4762,
+        "total_calls": 4762,
+        "total_time_ms": 10.295854
+      }
+    ]
+  },
+  "evaluation": {
+    "cold_process_first_eval": {
+      "class_creation_ms": 173.711709,
+      "constructor_ms": 1.285625,
+      "parse_compile_activity_ms": 10.954919,
+      "parse_compile_calls": 248
+    },
+    "distinct_sources": {
+      "class_creation": {
+        "mean_ms": 1.242268,
+        "p50_ms": 1.205105,
+        "p95_ms": 1.440538,
+        "samples": 40
+      },
+      "parse_compile_calls": 4840
+    },
+    "first_cache_miss": {
+      "class_creation_ms": 1.377625,
+      "constructor_ms": 0.121792,
+      "parse_compile_activity_ms": 0.433169,
+      "parse_compile_calls": 121
+    },
+    "source_update_ms": 1.11575,
+    "steady_same_source": {
+      "cache_stats": {
+        "builds": 1,
+        "bypasses": 0,
+        "entries": 1,
+        "evictions": 0,
+        "hits": 45,
+        "misses": 1
+      },
+      "class_creation": {
+        "mean_ms": 1.001228,
+        "p50_ms": 0.978813,
+        "p95_ms": 1.068371,
+        "samples": 40
+      },
+      "constructor": {
+        "mean_ms": 0.088402,
+        "p50_ms": 0.086938,
+        "p95_ms": 0.093709,
+        "samples": 40
+      },
+      "fresh_class_identities": 40,
+      "parse_compile_activity": {
+        "mean_ms": 0.285153,
+        "p50_ms": 0.281897,
+        "p95_ms": 0.291387,
+        "samples": 40
+      },
+      "parse_compile_calls": 4760
+    }
+  },
+  "graphs": {
+    "100_nodes": {
+      "cache_stats": {
+        "builds": 1,
+        "bypasses": 0,
+        "entries": 1,
+        "evictions": 0,
+        "hits": 3199,
+        "misses": 1
+      },
+      "cold_flow_wall": {
+        "mean_ms": 551.784822,
+        "p50_ms": 551.222375,
+        "p95_ms": 557.627067,
+        "samples": 15
+      },
+      "cold_graph_preparation": {
+        "mean_ms": 497.512253,
+        "p50_ms": 497.053834,
+        "p95_ms": 503.535584,
+        "samples": 15
+      },
+      "nodes": 100,
+      "warm_flow_wall": {
+        "mean_ms": 168.619,
+        "p50_ms": 168.124,
+        "p95_ms": 172.827955,
+        "samples": 15
+      },
+      "warm_graph_preparation": {
+        "mean_ms": 113.721766,
+        "p50_ms": 113.937667,
+        "p95_ms": 115.07175,
+        "samples": 15
+      }
+    },
+    "10_nodes": {
+      "cache_stats": {
+        "builds": 1,
+        "bypasses": 0,
+        "entries": 1,
+        "evictions": 0,
+        "hits": 319,
+        "misses": 1
+      },
+      "cold_flow_wall": {
+        "mean_ms": 52.942631,
+        "p50_ms": 52.653042,
+        "p95_ms": 54.006312,
+        "samples": 15
+      },
+      "cold_graph_preparation": {
+        "mean_ms": 50.172967,
+        "p50_ms": 49.971375,
+        "p95_ms": 51.255612,
+        "samples": 15
+      },
+      "nodes": 10,
+      "warm_flow_wall": {
+        "mean_ms": 14.172928,
+        "p50_ms": 14.135125,
+        "p95_ms": 14.47712,
+        "samples": 15
+      },
+      "warm_graph_preparation": {
+        "mean_ms": 11.515333,
+        "p50_ms": 11.508542,
+        "p95_ms": 11.72407,
+        "samples": 15
+      }
+    }
+  },
+  "memory": {
+    "rss_after_bytes": 311033856,
+    "rss_before_bytes": 308641792,
+    "rss_delta_bytes": 2392064,
+    "sources": 128,
+    "traced_allocated_delta_bytes": 2370081,
+    "traced_peak_bytes": 2510276
+  },
+  "metadata": {
+    "concurrent_batch_samples": 15,
+    "concurrent_requests": 32,
+    "concurrent_workers": 8,
+    "graph_samples": 15,
+    "latency_gc": "disabled during graph timing; allocations measured separately",
+    "latency_samples": 40,
+    "mode": "on",
+    "pid": 2809,
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.14",
+    "source_revision": "b133c5035",
+    "warmup_iterations": 5,
+    "worker_count": 1
+  }
+}

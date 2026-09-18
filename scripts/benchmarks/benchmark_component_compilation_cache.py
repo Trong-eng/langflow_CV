@@ -74,6 +74,8 @@ def _percentile(values: list[int], percentile: float) -> float:
 
 
 def _latency_summary(values_ns: list[int]) -> dict[str, float | int]:
+    if not values_ns:
+        return {"samples": 0, "p50_ms": 0.0, "p95_ms": 0.0, "mean_ms": 0.0}
     return {
         "samples": len(values_ns),
         "p50_ms": round(_percentile(values_ns, 0.50) / 1_000_000, 6),
@@ -545,7 +547,7 @@ def main() -> None:
             "concurrent_workers": CONCURRENT_WORKERS,
             "concurrent_requests": CONCURRENT_REQUESTS,
             "concurrent_batch_samples": CONCURRENT_BATCH_SAMPLES,
-            "source_revision": source_revision,
+            "source_revision": source_revision[:12],
         },
         "evaluation": _measure_eval_workloads(),
         "artifact_phases": _measure_artifact_phases(),
