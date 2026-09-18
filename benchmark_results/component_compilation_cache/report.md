@@ -1,130 +1,136 @@
-# Component compilation artifact cache benchmark
+# Benchmark bộ nhớ đệm cho dữ liệu trung gian khi biên dịch component
 
-## Scope and reproducibility
+## Phạm vi và khả năng chạy lại
 
 - Repository: `/Users/tranquangtrong/Desktop/langflow_CV`
-- Branch: `codex/cache-component-compilation-artifacts`
-- Baseline SHA: `c9fbb3ef72c2027ce4fefd1f45d040ce6469a99d`
-- Implementation SHA measured by OFF/ON: `b133c5035`
-- Python: 3.13.14, macOS 26.6.2 arm64, one worker
-- Latency samples: 40 component evaluations and 15 graph runs after 5 warm-up iterations
-- Concurrent workloads: 32 requests on 8 threads; 15 batches for distinct-source p50/p95
-- Memory workload: 128 unique sources in a separate process measurement
-- Benchmark component: local pass-through component; no model, network, or external-service calls
+- Nhánh: `codex/cache-component-compilation-artifacts`
+- SHA baseline: `c9fbb3ef72c2027ce4fefd1f45d040ce6469a99d`
+- SHA của phần triển khai dùng để đo OFF/ON: `b133c5035`
+- Môi trường: Python 3.13.14, macOS 26.6.2 arm64, một worker
+- Mẫu đo độ trễ: 40 lần evaluate component và 15 lần chạy graph, sau 5 vòng warm-up
+- Workload đồng thời: 32 request trên 8 thread; 15 batch để tính p50/p95 cho trường hợp source khác nhau
+- Workload bộ nhớ: 128 source khác nhau, đo trong một process riêng
+- Component benchmark: pass-through component chạy local; không gọi model, network hoặc dịch vụ bên ngoài
 
-The same harness, `scripts/benchmarks/benchmark_component_compilation_cache.py`, produced the committed `baseline.json`, `off.json`, and `on.json` files. Each JSON records `metadata.source_revision`. The harness takes no caller-supplied revision label: it reads Git HEAD, or the revision manifest created by the baseline wrapper. Run `scripts/benchmarks/run_component_compilation_cache_baseline.sh` to create a temporary `git archive` from the fixed baseline SHA and execute the copied harness there. Baseline mode rejects any other detected revision. OFF/ON were measured at implementation SHA `b133c5035`. This avoids checkout changes and prevents a current checkout from being mislabeled as baseline.
+Cùng một harness `scripts/benchmarks/benchmark_component_compilation_cache.py` đã tạo ra ba file `baseline.json`, `off.json` và `on.json` được commit trong repository. Mỗi file JSON ghi `metadata.source_revision`. Harness không nhận revision do người chạy tự gắn nhãn: nó đọc Git HEAD hoặc revision manifest do baseline wrapper tạo ra. Chạy `scripts/benchmarks/run_component_compilation_cache_baseline.sh` để tạo một `git archive` tạm thời từ SHA baseline cố định và chạy bản sao của harness trong đó. Chế độ baseline sẽ từ chối mọi revision khác. Hai cấu hình OFF/ON được đo tại implementation SHA `b133c5035`. Cách này không làm thay đổi checkout hiện tại và ngăn việc gắn nhầm code hiện tại thành baseline.
 
-## Execution path
+## Đường thực thi
 
-Before:
-
-```text
-resolve trusted source -> parse/validate/compile -> fresh namespace/exec -> fresh class -> fresh instance
-```
-
-After, with the feature enabled:
+Trước khi có cache:
 
 ```text
-resolve trusted source -> cache key + lookup
-                         | miss: parse/validate/compile -> retain source artifact
-                         | hit:  load source artifact
-                       -> fresh AST -> fresh namespace/exec -> fresh class -> fresh instance
+resolve trusted source -> parse/validate/compile -> namespace/exec mới -> class mới -> instance mới
 ```
 
-Trusted-source resolution and execution policy checks remain before evaluation. A cache hit does not reuse the execution namespace, class object, component instance, parameters, user/session bindings, runtime outputs, or tracing state. Imports, source helper definitions, class-body execution, decorators, annotation registration, and the constructor still execute for every evaluation.
+Sau khi bật tính năng:
 
-## Cache design
+```text
+resolve trusted source -> tạo key + tra cache
+                         | miss: parse/validate/compile -> lưu source artifact
+                         | hit:  nạp source artifact
+                       -> AST mới -> namespace/exec mới -> class mới -> instance mới
+```
 
-The cached artifact contains only:
+Việc resolve trusted source và các policy check cho phép thực thi code vẫn diễn ra trước bước evaluate. Cache hit không tái sử dụng execution namespace, class object, component instance, parameters, user/session binding, runtime output hoặc tracing state. Imports, helper được định nghĩa trong source, class body, decorator, annotation registration và constructor vẫn chạy lại ở mọi lần evaluate.
 
-- the extracted component class name;
-- a serialized immutable AST template, deserialized to a fresh AST on hits;
-- the compiled target-class code object;
-- statically proven trusted vector-store decorator metadata.
+## Thiết kế cache
 
-The key is `(artifact generation, SHA-256(full resolved source), class-selection variant)`. The entry and artifact also retain and compare the exact source, and artifact consumption checks its generation, so even a digest collision or incorrectly paired internal call cannot execute another source's artifact. Source changes and generation changes miss naturally.
+Artifact được cache chỉ gồm:
 
-The cache is process-local, protected by an `RLock`, and uses an LRU limit of 128 entries. Source larger than 262,144 UTF-8 bytes bypasses it. Miss preparation is serialized to prevent a same-source compile stampede; runtime imports, `exec`, class construction, and component construction occur outside the lock. Failed validation/compilation is not inserted. `clear_component_compilation_cache()` clears artifacts, counters, and the process-level feature-setting snapshot.
+- tên class component được trích xuất từ source;
+- AST template bất biến đã được serialize; mỗi cache hit sẽ deserialize thành một AST mới;
+- compiled code object của class đích;
+- metadata của trusted vector-store decorator đã được chứng minh bằng phân tích tĩnh.
 
-The feature is disabled by default. Enable with:
+Cache key là `(artifact generation, SHA-256(full resolved source), class-selection variant)`. Cache entry và artifact đều giữ và so sánh exact source; lúc dùng artifact cũng kiểm tra generation. Vì vậy, kể cả khi digest bị collision hoặc code nội bộ ghép nhầm artifact với source khác, artifact sai cũng không được thực thi. Source hoặc generation thay đổi sẽ tự tạo cache miss.
+
+Cache chỉ tồn tại trong process hiện tại, được bảo vệ bằng `RLock` và dùng LRU tối đa 128 entry. Source lớn hơn 262.144 byte UTF-8 sẽ bỏ qua cache. Bước chuẩn bị khi miss được tuần tự hóa để tránh nhiều thread cùng compile một source; các bước import lúc runtime, `exec`, tạo class và tạo component nằm ngoài lock. Lỗi validation/compilation không được đưa vào cache. `clear_component_compilation_cache()` xóa artifact, counter và cả snapshot của feature setting trong process.
+
+Tính năng mặc định tắt. Bật bằng:
 
 ```bash
 LANGFLOW_COMPONENT_COMPILATION_CACHE_ENABLED=true make backend
 ```
 
-Disable or roll back with `LANGFLOW_COMPONENT_COMPILATION_CACHE_ENABLED=false` (the default). A running worker reads the setting once; restart it, or call the internal clear hook in tests/lifecycle code, after changing the environment.
+Tắt hoặc rollback bằng `LANGFLOW_COMPONENT_COMPILATION_CACHE_ENABLED=false`, cũng là giá trị mặc định. Worker đang chạy chỉ đọc setting một lần; sau khi đổi biến môi trường, cần restart worker hoặc gọi clear hook nội bộ trong test/lifecycle code.
 
-## Results
+## Kết quả
 
-Percentages are relative to the baseline; negative is faster/lower. Values are milliseconds unless noted.
+Phần trăm được tính so với baseline. Số âm nghĩa là nhanh hơn hoặc dùng ít tài nguyên hơn. Nếu không ghi chú khác, đơn vị là mili giây.
 
-### Repeated same-source evaluation
+### Evaluate lặp lại cùng một source
 
-| Metric | Baseline | Cache OFF | OFF vs baseline | Cache ON | ON vs baseline |
+| Chỉ số | Baseline | Cache OFF | OFF so với baseline | Cache ON | ON so với baseline |
 |---|---:|---:|---:|---:|---:|
-| Parse/compile activity p50 | 0.439 | 0.395 | -10.0% | 0.282 | -35.8% |
-| Parse/compile activity p95 | 0.452 | 0.410 | -9.2% | 0.291 | -35.5% |
-| Namespace/class creation p50 | 1.247 | 1.257 | +0.8% | 0.979 | -21.5% |
-| Namespace/class creation p95 | 1.335 | 1.357 | +1.7% | 1.068 | -20.0% |
+| Hoạt động parse/compile p50 | 0.439 | 0.395 | -10.0% | 0.282 | -35.8% |
+| Hoạt động parse/compile p95 | 0.452 | 0.410 | -9.2% | 0.291 | -35.5% |
+| Tạo namespace/class p50 | 1.247 | 1.257 | +0.8% | 0.979 | -21.5% |
+| Tạo namespace/class p95 | 1.335 | 1.357 | +1.7% | 1.068 | -20.0% |
 | Constructor p50 | 0.092 | 0.090 | -1.8% | 0.087 | -5.4% |
 | Constructor p95 | 0.099 | 0.099 | +0.7% | 0.094 | -4.9% |
 
-The parse/compile probe is deliberately labeled as broad activity: it includes runtime annotation work and excludes hashing, validation walks, serialization, and LRU overhead. The implementation-specific phase probe measured the cache-OFF artifact build at 0.324/0.343 ms p50/p95 (41 builds), the cache-ON first build at 0.323 ms, and cache-hit AST restoration at 0.077/0.091 ms p50/p95 (40 restores). Baseline has no separable artifact phase, so its phase-probe fields are zero rather than a misleading estimate.
+Probe parse/compile được gọi là “hoạt động tổng quát” vì nó bao gồm cả phần xử lý annotation lúc runtime, nhưng không bao gồm hashing, duyệt validation, serialize và chi phí LRU. Probe riêng cho implementation đo được:
 
-The constructor is never skipped; its small apparent change is run-to-run noise rather than cached work. On the first enabled miss, broad parse/compile activity was 0.433 ms, class creation 1.378 ms, and construction 0.122 ms. The steady workload recorded 1 build, 1 miss, and 45 hits (including warm-up/probes), while all 40 measured evaluations had distinct class identities.
+- Cache OFF: build artifact mất 0.324 ms ở p50 và 0.343 ms ở p95, tổng cộng 41 lần build.
+- Cache ON: lần build đầu tiên mất 0.323 ms.
+- Cache hit: khôi phục AST mất 0.077 ms ở p50 và 0.091 ms ở p95, tổng cộng 40 lần khôi phục.
 
-Different-source class creation was 1.205 ms p50 with cache ON. Updating source in the same worker took 1.116 ms and produced a miss/new artifact.
+Baseline chưa có một phase artifact tách riêng, nên các field phase-probe của baseline được ghi là 0 thay vì đưa ra một số ước lượng dễ gây hiểu nhầm.
 
-### Graph preparation
+Constructor không bao giờ bị bỏ qua; chênh lệch nhỏ của chỉ số constructor chỉ là nhiễu giữa các lượt chạy, không phải công việc được cache. Ở cache miss đầu tiên khi cache bật, hoạt động parse/compile tổng quát mất 0.433 ms, tạo class mất 1.378 ms và tạo instance mất 0.122 ms. Workload steady ghi nhận 1 build, 1 miss và 45 hit, có tính cả warm-up/probe. Cả 40 lần đo đều tạo class identity khác nhau.
 
-| Workload | Percentile | Baseline | Cache OFF | OFF vs baseline | Cache ON | ON vs baseline |
+Với các source khác nhau, tạo class khi cache ON có p50 là 1.205 ms. Cập nhật source trong cùng worker mất 1.116 ms và tạo đúng một miss/artifact mới.
+
+### Chuẩn bị graph
+
+| Tải kiểm thử | Phân vị | Baseline | Cache OFF | OFF so với baseline | Cache ON | ON so với baseline |
 |---|---|---:|---:|---:|---:|---:|
-| Cold 10-node preparation | p50 | 52.196 | 56.290 | +7.8% | 49.971 | -4.3% |
-| Cold 10-node preparation | p95 | 52.729 | 63.339 | +20.1% | 51.256 | -2.8% |
-| Warm 10-node preparation | p50 | 13.644 | 13.866 | +1.6% | 11.509 | -15.7% |
-| Warm 10-node preparation | p95 | 13.748 | 14.617 | +6.3% | 11.724 | -14.7% |
-| Cold 100-node preparation | p50 | 526.278 | 538.516 | +2.3% | 497.054 | -5.6% |
-| Cold 100-node preparation | p95 | 536.193 | 551.765 | +2.9% | 503.536 | -6.1% |
-| Warm 100-node preparation | p50 | 134.596 | 140.156 | +4.1% | 113.938 | -15.3% |
-| Warm 100-node preparation | p95 | 143.670 | 154.756 | +7.7% | 115.072 | -19.9% |
+| Chuẩn bị cold graph 10 node | p50 | 52.196 | 56.290 | +7.8% | 49.971 | -4.3% |
+| Chuẩn bị cold graph 10 node | p95 | 52.729 | 63.339 | +20.1% | 51.256 | -2.8% |
+| Chuẩn bị warm graph 10 node | p50 | 13.644 | 13.866 | +1.6% | 11.509 | -15.7% |
+| Chuẩn bị warm graph 10 node | p95 | 13.748 | 14.617 | +6.3% | 11.724 | -14.7% |
+| Chuẩn bị cold graph 100 node | p50 | 526.278 | 538.516 | +2.3% | 497.054 | -5.6% |
+| Chuẩn bị cold graph 100 node | p95 | 536.193 | 551.765 | +2.9% | 503.536 | -6.1% |
+| Chuẩn bị warm graph 100 node | p50 | 134.596 | 140.156 | +4.1% | 113.938 | -15.3% |
+| Chuẩn bị warm graph 100 node | p95 | 143.670 | 154.756 | +7.7% | 115.072 | -19.9% |
 
-### Flow wall time
+### Tổng thời gian chạy flow
 
-| Workload | Percentile | Baseline | Cache OFF | OFF vs baseline | Cache ON | ON vs baseline |
+| Tải kiểm thử | Phân vị | Baseline | Cache OFF | OFF so với baseline | Cache ON | ON so với baseline |
 |---|---|---:|---:|---:|---:|---:|
-| Cold 10-node flow | p50 | 54.928 | 59.769 | +8.8% | 52.653 | -4.1% |
-| Cold 10-node flow | p95 | 55.631 | 66.751 | +20.0% | 54.006 | -2.9% |
-| Warm 10-node flow | p50 | 16.359 | 16.750 | +2.4% | 14.135 | -13.6% |
-| Warm 10-node flow | p95 | 16.586 | 17.473 | +5.3% | 14.477 | -12.7% |
-| Cold 100-node flow | p50 | 580.677 | 595.027 | +2.5% | 551.222 | -5.1% |
-| Cold 100-node flow | p95 | 592.103 | 609.806 | +3.0% | 557.627 | -5.8% |
-| Warm 100-node flow | p50 | 188.281 | 194.940 | +3.5% | 168.124 | -10.7% |
-| Warm 100-node flow | p95 | 198.989 | 213.679 | +7.4% | 172.828 | -13.1% |
+| Cold flow 10 node | p50 | 54.928 | 59.769 | +8.8% | 52.653 | -4.1% |
+| Cold flow 10 node | p95 | 55.631 | 66.751 | +20.0% | 54.006 | -2.9% |
+| Warm flow 10 node | p50 | 16.359 | 16.750 | +2.4% | 14.135 | -13.6% |
+| Warm flow 10 node | p95 | 16.586 | 17.473 | +5.3% | 14.477 | -12.7% |
+| Cold flow 100 node | p50 | 580.677 | 595.027 | +2.5% | 551.222 | -5.1% |
+| Cold flow 100 node | p95 | 592.103 | 609.806 | +3.0% | 557.627 | -5.8% |
+| Warm flow 100 node | p50 | 188.281 | 194.940 | +3.5% | 168.124 | -10.7% |
+| Warm flow 100 node | p95 | 198.989 | 213.679 | +7.4% | 172.828 | -13.1% |
 
-The enabled 10-node graph workload recorded 1 build, 1 miss, and 319 hits; the 100-node workload recorded 1 build, 1 miss, and 3,199 hits. Warm graph copies still instantiate every component for every run.
+Tải kiểm thử graph 10 node khi bật cache ghi nhận 1 build, 1 miss và 319 hit. Tải kiểm thử 100 node ghi nhận 1 build, 1 miss và 3.199 hit. Bản sao warm graph vẫn tạo instance mới cho từng component ở mỗi lần chạy.
 
-### Concurrency, compile probes, and CPU profile
+### Chạy đồng thời, probe compile và CPU profile
 
-| Metric | Baseline | Cache OFF | OFF vs baseline | Cache ON | ON vs baseline |
+| Chỉ số | Baseline | Cache OFF | OFF so với baseline | Cache ON | ON so với baseline |
 |---|---:|---:|---:|---:|---:|
-| 32 same-source requests wall time | 38.822 | 38.969 | +0.4% | 32.139 | -17.2% |
-| 32 distinct-source requests p50 | 38.529 | 38.250 | -0.7% | 38.765 | +0.6% |
-| 32 distinct-source requests p95 | 40.202 | 39.305 | -2.2% | 42.550 | +5.8% |
-| Parse/compile probe calls, 40 steady evaluations | 4,880 | 4,840 | -0.8% | 4,760 | -2.5% |
+| Tổng thời gian 32 request cùng source | 38.822 | 38.969 | +0.4% | 32.139 | -17.2% |
+| 32 request có source khác nhau, p50 | 38.529 | 38.250 | -0.7% | 38.765 | +0.6% |
+| 32 request có source khác nhau, p95 | 40.202 | 39.305 | -2.2% | 42.550 | +5.8% |
+| Số lần probe parse/compile trong 40 steady evaluation | 4.880 | 4.840 | -0.8% | 4.760 | -2.5% |
 
-The same-source concurrent cache-ON run had 1 build, 1 miss, 31 hits, and 32 distinct class identities. Each distinct-source batch had 32 builds/misses; the global miss lock increased p95 by 5.8% while p50 was effectively neutral. The broad probe count includes runtime annotation resolution that deliberately remains per request; the source-artifact build count fell to one only for the repeated-source workload. The cache-ON profile still attributes most time to `prepare_global_scope` and runtime annotation snapshots, explaining why cache hits do not eliminate most component-creation cost.
+Lượt chạy đồng thời cùng source với cache ON có 1 build, 1 miss, 31 hit và 32 class identity khác nhau. Mỗi batch source khác nhau có 32 build/miss; global miss lock làm p95 tăng 5.8%, còn p50 gần như không đổi. Số đếm probe tổng quát vẫn bao gồm bước resolve annotation lúc runtime vì phần này bắt buộc chạy ở mỗi request. Số lần build source artifact chỉ giảm còn một trong workload lặp lại cùng source. CPU profile khi cache ON cho thấy phần lớn thời gian còn lại nằm ở `prepare_global_scope` và snapshot annotation lúc runtime; vì vậy cache hit không thể loại bỏ phần lớn chi phí tạo component.
 
-### Memory
+### Bộ nhớ
 
-| Metric for 128 unique sources | Baseline | Cache OFF | Cache ON | ON vs baseline |
+| Chỉ số với 128 source khác nhau | Baseline | Cache OFF | Cache ON | ON so với baseline |
 |---|---:|---:|---:|---:|
-| RSS delta | 901,120 B | 868,352 B | 2,392,064 B | +165.5% |
-| Traced allocation delta | 1,323,586 B | 987,930 B | 2,370,081 B | +79.1% |
+| Chênh lệch RSS | 901.120 B | 868.352 B | 2.392.064 B | +165.5% |
+| Chênh lệch traced allocation | 1.323.586 B | 987.930 B | 2.370.081 B | +79.1% |
 
-The enabled traced delta is about 18.1 KiB per full cache entry at the 128-entry limit. RSS is allocator- and process-state-sensitive, so this is a bounded workload estimate, not a production sizing guarantee.
+Khi bật cache, traced allocation tăng khoảng 18,1 KiB cho mỗi entry nếu cache đầy 128 entry. RSS phụ thuộc vào allocator và trạng thái process, vì vậy đây chỉ là ước lượng cho workload benchmark có giới hạn, không phải cam kết sizing cho production.
 
-## Assessment
+## Đánh giá
 
-The cache improved repeated-source workloads in this run: 100-node warm flow improved 10.7% at p50 and 13.1% at p95, and same-source concurrency improved 17.2%. It did not improve the miss-heavy distinct-source tail: p95 regressed 5.8%, quantifying the global miss-lock risk. Cache OFF also showed up to 20% variation in the very short 10-node p95 result, so small-run differences should be treated as noise/regression signals to monitor rather than evidence from a single run.
+Cache cải thiện các workload lặp lại cùng source trong lần đo này: warm flow 100 node nhanh hơn 10.7% ở p50 và 13.1% ở p95; workload đồng thời cùng source nhanh hơn 17.2%. Tuy nhiên, cache không cải thiện phần đuôi của workload nhiều cache miss: p95 khi các source đều khác nhau chậm hơn 5.8%, qua đó cho thấy rõ rủi ro của global miss lock. Cache OFF cũng dao động tới 20% ở kết quả p95 của flow 10 node rất ngắn. Vì vậy, các chênh lệch trong workload nhỏ nên được xem là tín hiệu cần theo dõi, không nên kết luận chỉ từ một lượt benchmark.
 
-Recommendation: keep the default off and enable only as an opt-in canary for deployments with repeated identical component source and meaningful warm-graph reuse. Monitor worker RSS, hit rate, and small-flow tail latency before wider rollout. Remaining risks are workload-dependent hit rate, serialized miss preparation for many concurrent unique sources, per-process memory multiplication across workers, and invalidation discipline when source-derived validation/compiler rules change; such changes must increment `COMPONENT_COMPILATION_ARTIFACT_GENERATION`.
+Khuyến nghị: tiếp tục để cache mặc định tắt và chỉ bật thử theo kiểu canary ở những deployment có nhiều request dùng source component giống nhau và có mức tái sử dụng warm graph đáng kể. Trước khi triển khai rộng, cần theo dõi RSS của worker, cache hit rate và tail latency của flow nhỏ. Các rủi ro còn lại gồm hit rate phụ thuộc workload, bước chuẩn bị cache miss bị tuần tự hóa khi nhiều source khác nhau đến đồng thời, bộ nhớ cache nhân theo số worker và yêu cầu tăng `COMPONENT_COMPILATION_ARTIFACT_GENERATION` mỗi khi logic compiler/validation thuần source thay đổi.

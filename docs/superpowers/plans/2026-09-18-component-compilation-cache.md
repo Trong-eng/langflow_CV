@@ -1,172 +1,182 @@
-# Component Compilation Artifact Cache Implementation Plan
+# Kế hoạch triển khai bộ nhớ đệm cho dữ liệu trung gian khi biên dịch component
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **Dành cho agent thực thi:** Cần dùng `superpowers:subagent-driven-development` (khuyến nghị) hoặc `superpowers:executing-plans` để thực hiện lần lượt từng đầu việc. Các bước dùng cú pháp checkbox (`- [ ]`) để theo dõi tiến độ.
 
-**Goal:** Add a disabled-by-default, bounded, process-local cache for source-derived custom-component compilation artifacts while preserving fresh runtime namespaces, classes, constructors, policy checks, and instances.
+**Mục tiêu:** Thêm một cache (bộ nhớ đệm) nội bộ theo từng process, có giới hạn dung lượng và mặc định tắt. Cache chỉ tái sử dụng artifact, tức dữ liệu trung gian được tạo ra khi phân tích và biên dịch source code của custom component. Namespace, class, constructor context và instance vẫn phải được tạo mới ở mỗi lần chạy; các policy check cũng phải tiếp tục chạy đầy đủ.
 
-**Architecture:** A focused `lfx.custom.component_compilation_cache` module owns an exact-source-verified LRU keyed by SHA-256 plus an artifact-generation identifier. `eval_custom_component_code` obtains a prepared immutable artifact, while `create_class` deep-copies its AST template and continues to import and execute module/class code on every call. The benchmark harness exercises the same public evaluation and graph-instantiation paths in baseline, cache-off, and cache-on configurations.
+**Kiến trúc:** Module `lfx.custom.component_compilation_cache` quản lý một LRU cache. Khóa cache gồm SHA-256 đầy đủ của source code và phiên bản artifact; source gốc cũng được so sánh lại để tránh dùng nhầm. `eval_custom_component_code` lấy artifact đã chuẩn bị, còn `create_class` dựng một AST riêng cho request rồi tiếp tục import và thực thi module/class ở mỗi lần gọi. Benchmark chạy qua đúng các đường public evaluation và graph instantiation ở ba cấu hình: baseline, cache tắt và cache bật.
 
-**Tech Stack:** Python 3.13, `ast`, `hashlib`, `threading.RLock`, Pydantic settings, pytest, `resource`, `time.perf_counter_ns`.
+**Công nghệ:** Python 3.13, `ast`, `hashlib`, `threading.RLock`, Pydantic settings, pytest, `resource`, `time.perf_counter_ns`.
 
-**Spec:** `/Users/tranquangtrong/.codex/attachments/4e82310d-549f-4126-8e4d-eec70f49fe50/pasted-text.txt`
+**Đặc tả gốc:** `/Users/tranquangtrong/.codex/attachments/4e82310d-549f-4126-8e4d-eec70f49fe50/pasted-text.txt`
 
-## Global Constraints
+## Các ràng buộc chung
 
-- Work directly in `/Users/tranquangtrong/Desktop/langflow_CV` on `codex/cache-component-compilation-artifacts`; do not create a worktree or clone.
-- Baseline production commit is `c9fbb3ef72c2027ce4fefd1f45d040ce6469a99d`.
-- Cache is process-local, bounded, disabled by default, and bypasses sources above 262,144 UTF-8 bytes.
-- Cache entries contain no credentials, parameters, user/session objects, graph/vertex references, runtime namespaces, classes, instances, or outputs.
-- Trusted-source resolution, runtime imports, module/class-body execution, annotation enforcement, constructor execution, and instance creation remain on every request.
-- Use `uv run` for Python commands and do not push, merge, or deploy.
+- Làm trực tiếp trong `/Users/tranquangtrong/Desktop/langflow_CV` trên nhánh `codex/cache-component-compilation-artifacts`; không tạo worktree hoặc clone repository khác.
+- Commit production dùng làm baseline là `c9fbb3ef72c2027ce4fefd1f45d040ce6469a99d`.
+- Cache chỉ tồn tại trong process hiện tại, có giới hạn, mặc định tắt và bỏ qua source lớn hơn 262.144 byte UTF-8.
+- Cache entry không được chứa credentials, parameters, object user/session, tham chiếu graph/vertex, runtime namespace, class, instance hoặc output.
+- Việc resolve trusted source, import lúc runtime, thực thi module/class body, kiểm tra annotation, chạy constructor và tạo instance vẫn phải diễn ra ở mọi request.
+- Dùng `uv run` cho các lệnh Python; không push, merge hoặc deploy.
 
 ---
 
-### Task 1: Reproducible Baseline Benchmark
+### Đầu việc 1: Tạo benchmark baseline có thể chạy lại
 
-**Files:**
-- Create: `scripts/benchmarks/benchmark_component_compilation_cache.py`
-- Create: `benchmark_results/component_compilation_cache/baseline.json`
+**Các file:**
 
-**Interfaces:**
-- Consumes: `lfx.custom.eval.eval_custom_component_code`, `lfx.interface.initialize.loading.instantiate_class`, and `lfx.graph.graph.base.Graph._instantiate_components_in_vertices`.
-- Produces: CLI `--mode baseline|off|on`, JSON containing environment, sample counts, p50/p95, parse/compile counters, cache counters when available, CPU profile totals, and RSS deltas.
+- Tạo: `scripts/benchmarks/benchmark_component_compilation_cache.py`
+- Tạo: `scripts/benchmarks/run_component_compilation_cache_baseline.sh`
+- Tạo: `benchmark_results/component_compilation_cache/baseline.json`
 
-- [ ] **Step 1: Add the benchmark harness**
+**Đầu vào/đầu ra:**
 
-  Implement deterministic same-source, distinct-source, 10-node, 100-node, sequential, concurrent, source-update, cold/miss/hit, constructor, graph-preparation, and local pass-through workloads. Use warm-up iterations outside measured samples, literal sample counts in metadata, and no network/model calls.
+- Dùng các API: `lfx.custom.eval.eval_custom_component_code`, `lfx.interface.initialize.loading.instantiate_class` và `lfx.graph.graph.base.Graph._instantiate_components_in_vertices`.
+- Cung cấp CLI `--mode baseline|off|on` và JSON chứa thông tin môi trường, số mẫu, p50/p95, số lần parse/compile, thống kê cache nếu có, CPU profile và chênh lệch RSS.
 
-- [ ] **Step 2: Run the harness against baseline production code**
+- [ ] **Bước 1: Thêm benchmark harness**
 
-  Run: `uv run python scripts/benchmarks/benchmark_component_compilation_cache.py --mode baseline --output benchmark_results/component_compilation_cache/baseline.json`
+  Triển khai các workload có tính lặp lại: cùng source, nhiều source khác nhau, graph 10 node, graph 100 node, tuần tự, đồng thời, cập nhật source, cold/miss/hit, constructor, chuẩn bị graph và local pass-through component. Warm-up phải nằm ngoài mẫu đo. Ghi rõ số mẫu trong metadata và không gọi network, model hoặc dịch vụ bên ngoài.
 
-  Expected: exit 0, valid JSON, and no cache counters in baseline mode.
+- [ ] **Bước 2: Chạy harness trên production baseline**
 
-- [ ] **Step 3: Commit benchmark-only changes**
+  Chạy: `scripts/benchmarks/run_component_compilation_cache_baseline.sh`
 
-  Run: `uv run git commit -m "perf: add component compilation benchmark harness"`
+  Kỳ vọng: exit code 0, JSON hợp lệ, revision đúng baseline và không có cache counter trong chế độ baseline.
 
-### Task 2: Cache Settings and Core LRU Behavior
+- [ ] **Bước 3: Commit riêng phần benchmark**
 
-**Files:**
-- Create: `src/lfx/src/lfx/custom/component_compilation_cache.py`
-- Modify: `src/lfx/src/lfx/services/settings/groups/cache.py`
-- Modify: `src/lfx/tests/unit/services/settings/test_settings_composition.py`
-- Create: `src/lfx/tests/unit/custom/test_component_compilation_cache.py`
+  Chạy: `uv run git commit -m "perf: add component compilation benchmark harness"`
 
-**Interfaces:**
-- Consumes: `Settings.component_compilation_cache_enabled`, exact source strings, and a zero-argument artifact builder.
-- Produces: `get_or_build_component_artifact(source, builder)`, `clear_component_compilation_cache()`, `component_compilation_cache_stats()`, `COMPONENT_COMPILATION_ARTIFACT_GENERATION`, and an immutable `ComponentCompilationArtifact`.
+### Đầu việc 2: Settings và hành vi LRU cache cốt lõi
 
-- [ ] **Step 1: Write failing settings and cache behavior tests**
+**Các file:**
 
-  Cover default-off/env-on behavior, first miss/second hit, different source, same class name with different source, source update, LRU eviction, clear, oversize bypass, disabled bypass, invalid builder errors not cached, generation invalidation, exact-source verification, and concurrent same-source construction once.
+- Tạo: `src/lfx/src/lfx/custom/component_compilation_cache.py`
+- Sửa: `src/lfx/src/lfx/services/settings/groups/cache.py`
+- Sửa: `src/lfx/tests/unit/services/settings/test_settings_composition.py`
+- Tạo: `src/lfx/tests/unit/custom/test_component_compilation_cache.py`
 
-- [ ] **Step 2: Verify tests fail for missing APIs**
+**Đầu vào/đầu ra:**
 
-  Run: `uv run pytest src/lfx/tests/unit/custom/test_component_compilation_cache.py src/lfx/tests/unit/services/settings/test_settings_composition.py -q`
+- Nhận `Settings.component_compilation_cache_enabled`, chuỗi source chính xác và một hàm builder không có tham số.
+- Cung cấp `get_or_build_component_artifact(source, builder)`, `clear_component_compilation_cache()`, `component_compilation_cache_stats()`, `COMPONENT_COMPILATION_ARTIFACT_GENERATION` và `ComponentCompilationArtifact` bất biến.
 
-  Expected: FAIL because the new setting/module/API does not exist.
+- [ ] **Bước 1: Viết test lỗi trước cho settings và hành vi cache**
 
-- [ ] **Step 3: Implement the bounded process-local cache**
+  Bao phủ các trường hợp: mặc định tắt/bật bằng biến môi trường, lần đầu miss/lần sau hit, source khác nhau, cùng tên class nhưng source khác, cập nhật source, LRU eviction, clear, source quá lớn, cache bị tắt, lỗi builder không được cache, thay đổi generation, kiểm tra exact source và nhiều luồng cùng source chỉ build một lần.
 
-  Add `component_compilation_cache_enabled: bool = False`; use a 128-entry `OrderedDict`, SHA-256 full digest plus generation key, stored exact source comparison, a 262,144-byte limit, `RLock`, build-under-lock single-flight behavior, no error entries, and counters for hits/misses/bypasses/evictions/builds.
+- [ ] **Bước 2: Xác nhận test đang fail vì chưa có API**
 
-- [ ] **Step 4: Verify focused tests pass**
+  Chạy: `uv run pytest src/lfx/tests/unit/custom/test_component_compilation_cache.py src/lfx/tests/unit/services/settings/test_settings_composition.py -q`
 
-  Run: `uv run pytest src/lfx/tests/unit/custom/test_component_compilation_cache.py src/lfx/tests/unit/services/settings/test_settings_composition.py -q`
+  Kỳ vọng: FAIL vì setting/module/API mới chưa tồn tại.
 
-  Expected: PASS.
+- [ ] **Bước 3: Triển khai cache có giới hạn trong process**
 
-### Task 3: Integrate Artifacts Without Reusing Runtime State
+  Thêm `component_compilation_cache_enabled: bool = False`; dùng `OrderedDict` tối đa 128 entry, khóa gồm SHA-256 đầy đủ và generation, so sánh lại source gốc, giới hạn 262.144 byte, dùng `RLock`, build dưới lock để tránh nhiều luồng compile cùng source, không lưu lỗi và có counter cho hit/miss/bypass/eviction/build.
 
-**Files:**
-- Modify: `src/lfx/src/lfx/custom/eval.py`
-- Modify: `src/lfx/src/lfx/custom/validate.py`
-- Modify: `src/lfx/tests/unit/custom/test_component_compilation_cache.py`
-- Modify: `src/lfx/tests/unit/custom/component/test_validate.py`
+- [ ] **Bước 4: Xác nhận các test tập trung đã pass**
 
-**Interfaces:**
-- Consumes: `ComponentCompilationArtifact` with normalized source, class name, AST template, future imports, compiled target-class code, and trusted vector-store decorator alias.
-- Produces: `prepare_component_compilation_artifact(code, class_name=None)` and `create_class(code, class_name, *, artifact=None)` while preserving the existing public calls.
+  Chạy: `uv run pytest src/lfx/tests/unit/custom/test_component_compilation_cache.py src/lfx/tests/unit/services/settings/test_settings_composition.py -q`
 
-- [ ] **Step 1: Write failing integration and isolation tests**
+  Kỳ vọng: PASS.
 
-  Cover parse/compile count reduction, fresh class identity, fresh function globals, mutable class/global isolation, decorators and helper side effects on every call, imports, inheritance, constructor/user/parameter behavior, independent component inputs/outputs, concurrent isolation, weak-reference release of graph/request objects, annotation rejection, and a warmed cache followed by a runtime policy denial before eval.
+### Đầu việc 3: Tích hợp artifact nhưng không tái sử dụng runtime state
 
-- [ ] **Step 2: Verify integration tests fail for absent artifact reuse**
+**Các file:**
 
-  Run: `uv run pytest src/lfx/tests/unit/custom/test_component_compilation_cache.py src/lfx/tests/unit/custom/component/test_validate.py src/lfx/tests/unit/custom/test_annotation_validation.py src/lfx/tests/unit/utils/test_resolve_trusted_code_for_build.py -q`
+- Sửa: `src/lfx/src/lfx/custom/eval.py`
+- Sửa: `src/lfx/src/lfx/custom/validate.py`
+- Sửa: `src/lfx/tests/unit/custom/test_component_compilation_cache.py`
+- Sửa: `src/lfx/tests/unit/custom/component/test_validate.py`
 
-  Expected: new cache assertions FAIL while existing compatibility/security tests remain green.
+**Đầu vào/đầu ra:**
 
-- [ ] **Step 3: Implement artifact preparation and per-call materialization**
+- Nhận `ComponentCompilationArtifact` chứa exact source, generation, tên class, AST template đã serialize, compiled code của class đích và alias của trusted vector-store decorator.
+- Cung cấp `prepare_component_compilation_artifact(code, class_name=None)` và `create_class(code, class_name, *, artifact=None)` nhưng vẫn giữ tương thích với cách gọi public hiện có.
 
-  Move only source transforms, AST parsing, static annotation validation, future-import insertion, trusted decorator analysis, and target-class compilation into artifact construction. Deep-copy the cached AST before every `prepare_global_scope` call; rebuild `exec_globals`, helper classes/functions, the component class, annotation sidecars, and vector-store decoration every time. Never hold the cache lock during `prepare_global_scope`, `exec`, class construction, or instance construction.
+- [ ] **Bước 1: Viết test integration và isolation ở trạng thái fail**
 
-- [ ] **Step 4: Verify integration and security suites pass**
+  Bao phủ: giảm số lần parse/compile, class identity mới, function globals mới, tách biệt mutable class/global, side effect của decorator và helper ở mỗi lần gọi, imports, inheritance, constructor/user/parameter, inputs/outputs riêng biệt, chạy đồng thời không rò state, graph/request object được giải phóng, annotation nguy hiểm tiếp tục bị chặn và policy bị siết sau khi cache warm vẫn chặn trước eval.
 
-  Run: `uv run pytest src/lfx/tests/unit/custom/test_component_compilation_cache.py src/lfx/tests/unit/custom/component/test_validate.py src/lfx/tests/unit/custom/test_annotation_validation.py src/lfx/tests/unit/interface/test_loading_custom_component_code_param.py src/lfx/tests/unit/utils/test_resolve_trusted_code_for_build.py src/backend/tests/unit/api/test_warm_graph_execution.py src/backend/tests/unit/api/v1/test_custom_component_policy.py -q`
+- [ ] **Bước 2: Xác nhận test integration fail vì chưa tái sử dụng artifact**
 
-  Expected: PASS.
+  Chạy: `uv run pytest src/lfx/tests/unit/custom/test_component_compilation_cache.py src/lfx/tests/unit/custom/component/test_validate.py src/lfx/tests/unit/custom/test_annotation_validation.py src/lfx/tests/unit/utils/test_resolve_trusted_code_for_build.py -q`
 
-### Task 4: Benchmark OFF and ON, Document Results
+  Kỳ vọng: các assertion mới về cache FAIL, còn test compatibility/security hiện có vẫn pass.
 
-**Files:**
-- Modify: `scripts/benchmarks/benchmark_component_compilation_cache.py`
-- Create: `benchmark_results/component_compilation_cache/off.json`
-- Create: `benchmark_results/component_compilation_cache/on.json`
-- Create: `benchmark_results/component_compilation_cache/report.md`
+- [ ] **Bước 3: Triển khai bước chuẩn bị artifact và dựng runtime cho từng lần gọi**
 
-**Interfaces:**
-- Consumes: the final cache clear/stats API and `LANGFLOW_COMPONENT_COMPILATION_CACHE_ENABLED`.
-- Produces: comparable absolute and percentage results for baseline/OFF/ON, including p50/p95, parse/compile counts, RSS, cold-miss overhead, concurrent and graph-size workloads.
+  Chỉ đưa các phần thuần source vào artifact: biến đổi source, parse AST, validation annotation tĩnh, thêm future import, phân tích trusted decorator và compile class đích. Mỗi lần dùng cache hit phải deserialize thành AST mới; sau đó dựng lại `exec_globals`, helper class/function, component class, annotation sidecar và vector-store decoration. Không giữ cache lock khi chạy `prepare_global_scope`, `exec`, tạo class hoặc tạo instance.
 
-- [ ] **Step 1: Run final code with cache disabled**
+- [ ] **Bước 4: Xác nhận các suite integration và security đã pass**
 
-  Run: `LANGFLOW_COMPONENT_COMPILATION_CACHE_ENABLED=false uv run python scripts/benchmarks/benchmark_component_compilation_cache.py --mode off --output benchmark_results/component_compilation_cache/off.json`
+  Chạy: `uv run pytest src/lfx/tests/unit/custom/test_component_compilation_cache.py src/lfx/tests/unit/custom/component/test_validate.py src/lfx/tests/unit/custom/test_annotation_validation.py src/lfx/tests/unit/interface/test_loading_custom_component_code_param.py src/lfx/tests/unit/utils/test_resolve_trusted_code_for_build.py src/backend/tests/unit/api/test_warm_graph_execution.py src/backend/tests/unit/api/v1/test_custom_component_policy.py -q`
 
-  Expected: exit 0 and cache entries remain zero.
+  Kỳ vọng: PASS.
 
-- [ ] **Step 2: Run final code with cache enabled**
+### Đầu việc 4: Benchmark cache OFF/ON và viết báo cáo
 
-  Run: `LANGFLOW_COMPONENT_COMPILATION_CACHE_ENABLED=true uv run python scripts/benchmarks/benchmark_component_compilation_cache.py --mode on --output benchmark_results/component_compilation_cache/on.json`
+**Các file:**
 
-  Expected: exit 0, same-source hits occur, and source updates miss.
+- Sửa: `scripts/benchmarks/benchmark_component_compilation_cache.py`
+- Tạo: `benchmark_results/component_compilation_cache/off.json`
+- Tạo: `benchmark_results/component_compilation_cache/on.json`
+- Tạo: `benchmark_results/component_compilation_cache/report.md`
 
-- [ ] **Step 3: Write the measured comparison report**
+**Đầu vào/đầu ra:**
 
-  Generate a Markdown table from the JSON outputs with absolute p50/p95, percentage deltas, CPU/profile summary, parse/compile counts, hit/miss/bypass/eviction counts, RSS cost, Python version, worker count, sample count, limitations, and a deployment recommendation based only on measured data.
+- Dùng API clear/stats cuối cùng và `LANGFLOW_COMPONENT_COMPILATION_CACHE_ENABLED`.
+- Tạo số liệu tuyệt đối và phần trăm cho baseline/OFF/ON, gồm p50/p95, số lần parse/compile, RSS, chi phí cold miss, workload đồng thời và các kích thước graph.
 
-### Task 5: Final Verification and Diff Review
+- [ ] **Bước 1: Chạy code cuối với cache tắt**
 
-**Files:**
-- Modify only files listed by Tasks 1-4 as required by formatting.
+  Chạy: `LANGFLOW_COMPONENT_COMPILATION_CACHE_ENABLED=false uv run python scripts/benchmarks/benchmark_component_compilation_cache.py --mode off --output benchmark_results/component_compilation_cache/off.json`
 
-**Interfaces:**
-- Consumes: completed implementation and benchmark artifacts.
-- Produces: verified branch ready for user review, without push/merge/deploy.
+  Kỳ vọng: exit code 0 và số cache entry vẫn bằng 0.
 
-- [ ] **Step 1: Format backend changes**
+- [ ] **Bước 2: Chạy code cuối với cache bật**
 
-  Run: `make format_backend`
+  Chạy: `LANGFLOW_COMPONENT_COMPILATION_CACHE_ENABLED=true uv run python scripts/benchmarks/benchmark_component_compilation_cache.py --mode on --output benchmark_results/component_compilation_cache/on.json`
 
-  Expected: exit 0.
+  Kỳ vọng: exit code 0, cùng source tạo cache hit và source thay đổi tạo cache miss.
 
-- [ ] **Step 2: Run focused tests again**
+- [ ] **Bước 3: Viết báo cáo so sánh từ số liệu thực đo**
 
-  Run: `uv run pytest src/lfx/tests/unit/custom/test_component_compilation_cache.py src/lfx/tests/unit/custom/component/test_validate.py src/lfx/tests/unit/custom/test_annotation_validation.py src/lfx/tests/unit/interface/test_loading_custom_component_code_param.py src/lfx/tests/unit/utils/test_resolve_trusted_code_for_build.py src/lfx/tests/unit/services/settings/test_settings_composition.py src/backend/tests/unit/api/test_warm_graph_execution.py src/backend/tests/unit/api/v1/test_custom_component_policy.py -q`
+  Tạo bảng Markdown từ các file JSON với p50/p95 tuyệt đối, phần trăm chênh lệch, tóm tắt CPU/profile, số lần parse/compile, số hit/miss/bypass/eviction, chi phí RSS, phiên bản Python, số worker, số mẫu, giới hạn và khuyến nghị triển khai chỉ dựa trên dữ liệu đã đo.
 
-  Expected: PASS.
+### Đầu việc 5: Kiểm chứng cuối và review diff
 
-- [ ] **Step 3: Run lint/type checks scoped to changed Python files**
+**Các file:**
 
-  Run: `uv run ruff check src/lfx/src/lfx/custom/component_compilation_cache.py src/lfx/src/lfx/custom/eval.py src/lfx/src/lfx/custom/validate.py src/lfx/src/lfx/services/settings/groups/cache.py src/lfx/tests/unit/custom/test_component_compilation_cache.py scripts/benchmarks/benchmark_component_compilation_cache.py`
+- Chỉ format các file đã được liệt kê trong đầu việc 1-4 nếu cần.
 
-  Expected: PASS.
+**Đầu vào/đầu ra:**
 
-- [ ] **Step 4: Review the final diff and repository state**
+- Nhận implementation và artifact benchmark đã hoàn tất.
+- Tạo một nhánh đã kiểm chứng, sẵn sàng để người dùng review nhưng chưa push/merge/deploy.
 
-  Run: `git diff --check && git diff --stat c9fbb3ef72c2027ce4fefd1f45d040ce6469a99d && git status --short --branch`
+- [ ] **Bước 1: Format thay đổi backend**
 
-  Expected: no whitespace errors and no files outside the planned scope.
+  Chạy: `make format_backend`
 
+  Kỳ vọng: exit code 0.
+
+- [ ] **Bước 2: Chạy lại các test tập trung**
+
+  Chạy: `uv run pytest src/lfx/tests/unit/custom/test_component_compilation_cache.py src/lfx/tests/unit/custom/component/test_validate.py src/lfx/tests/unit/custom/test_annotation_validation.py src/lfx/tests/unit/interface/test_loading_custom_component_code_param.py src/lfx/tests/unit/utils/test_resolve_trusted_code_for_build.py src/lfx/tests/unit/services/settings/test_settings_composition.py src/backend/tests/unit/api/test_warm_graph_execution.py src/backend/tests/unit/api/v1/test_custom_component_policy.py -q`
+
+  Kỳ vọng: PASS.
+
+- [ ] **Bước 3: Chạy lint/check cho các file Python đã thay đổi**
+
+  Chạy: `uv run ruff check src/lfx/src/lfx/custom/component_compilation_cache.py src/lfx/src/lfx/custom/eval.py src/lfx/src/lfx/custom/validate.py src/lfx/src/lfx/services/settings/groups/cache.py src/lfx/tests/unit/custom/test_component_compilation_cache.py scripts/benchmarks/benchmark_component_compilation_cache.py`
+
+  Kỳ vọng: PASS.
+
+- [ ] **Bước 4: Review diff và trạng thái repository**
+
+  Chạy: `git diff --check && git diff --stat c9fbb3ef72c2027ce4fefd1f45d040ce6469a99d && git status --short --branch`
+
+  Kỳ vọng: không có lỗi whitespace và không có file ngoài phạm vi kế hoạch.
