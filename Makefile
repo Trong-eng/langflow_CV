@@ -302,7 +302,7 @@ ifdef login
 		--factory langflow.main:create_app \
 		--host 0.0.0.0 \
 		--port $(port) \
-		$(if $(filter-out 1,$(workers)),, --reload --reload-dir src/backend/base/langflow --reload-dir src/lfx) \
+		$(if $(filter-out 1,$(workers)),, --reload --reload-dir src/backend/base/langflow --reload-dir src/lfx/src/lfx) \
 		--env-file $(env) \
 		--loop asyncio \
 		$(if $(workers),--workers $(workers),)
@@ -312,7 +312,7 @@ else
 		--factory langflow.main:create_app \
 		--host 0.0.0.0 \
 		--port $(port) \
-		$(if $(filter-out 1,$(workers)),, --reload --reload-dir src/backend/base/langflow --reload-dir src/lfx) \
+		$(if $(filter-out 1,$(workers)),, --reload --reload-dir src/backend/base/langflow --reload-dir src/lfx/src/lfx) \
 		--env-file $(env) \
 		--loop asyncio \
 		$(if $(workers),--workers $(workers),)

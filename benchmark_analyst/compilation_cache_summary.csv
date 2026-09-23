@@ -1,0 +1,17 @@
+metric,description,count,mean,p50,p95,min,max,std
+upload_latency_ms,Fresh image upload latency via /files/upload/{flow_id},100,9.0288,8.8445,10.33,7.7549,12.6665,0.7322
+flow_api_latency_ms,Flow POST /run latency after image has been freshly uploaded,100,111.2063,103.1119,119.9041,91.7815,413.5263,44.401
+user_e2e_latency_ms,Realistic client latency: fresh upload + flow run + response,100,120.3152,112.7829,128.7535,101.5733,423.0098,44.3861
+trace_total_latency_ms,Langflow internal full-flow trace latency,100,59.23,59.0,66.2,47.0,132.0,8.548
+chat_input_ms,Chat Input component latency,100,2.9,2.0,3.05,2.0,65.0,6.3158
+scrfd_preprocess_ms,SCRFD Preprocess component latency,100,12.33,12.0,18.0,7.0,40.0,4.0999
+scrfd_inference_ms,SCRFD Inference component latency,100,28.43,29.0,33.0,16.0,44.0,3.9702
+scrfd_draw_detections_ms,SCRFD Draw Detections component latency,100,5.15,5.0,6.0,4.0,11.0,0.7437
+detection_image_output_ms,Detection Image Output component latency,100,0.18,0.0,1.0,0.0,1.0,0.3861
+chat_output_ms,Chat Output component latency,100,2.01,2.0,2.0,1.0,15.0,1.4319
+component_sum_ms,Sum of six component latencies,100,51.0,50.0,57.25,39.0,125.0,8.676
+internal_orchestration_overhead_ms,Trace Total - Component Sum (internal Langflow orchestration/framework gap),100,8.23,8.0,11.0,6.0,13.0,1.2622
+internal_orchestration_overhead_percent,Internal orchestration gap as percentage of trace total,100,14.0626,13.7931,18.3812,5.303,22.807,2.4842
+flow_api_minus_trace_ms,"Flow POST latency - trace total (outer flow/API gap, excludes upload)",100,51.9763,44.0536,55.8655,41.7378,365.5263,45.0852
+user_e2e_minus_trace_ms,User E2E - trace total (includes fresh upload + outer flow/API gap),100,61.0852,52.957,65.2109,50.8471,375.0098,45.0587
+user_e2e_minus_component_sum_ms,User E2E - component sum,100,69.3152,61.0911,73.7311,58.7461,381.0098,44.8606
