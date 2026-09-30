@@ -1,0 +1,10 @@
+# Standalone analysis/CLI code: permit console reports and direct validation errors.
+target-version = "py310"
+line-length = 120
+
+[lint]
+select = ["E", "F", "I", "B", "UP", "S"]
+ignore = ["E501", "S101", "S603", "S607"]
+
+[lint.per-file-ignores]
+"tests/*" = ["S105", "S106"]

@@ -694,16 +694,26 @@ async def test_try_warm_cold_on_context(
     assert await warm_graph.try_warm_run_graph(flow, _api_req(), user_id=active_user.id, context={"x": 1}) is None
 
 
-async def test_try_warm_cold_on_auto_bind_flow(
+async def test_try_warm_cold_on_matching_auto_bind_flow(
     client,  # noqa: ARG001
     active_user,
     clean_registry,  # noqa: ARG001
     monkeypatch,
 ):
-    """A flow with an eligible empty str field must NOT be warm-served (auto-bind gap)."""
+    """A matching caller binding still requires the cold, user-specific graph."""
     from langflow.api import warm_graph
+    from langflow.api.v1 import global_variable_defaults
+
+    async def get_default_field_bindings(*, user_id, session):  # noqa: ARG001
+        assert user_id == active_user.id
+        return [("user_api_key", ["Key"])]
 
     monkeypatch.setattr(warm_graph, "is_warm_registry_enabled", lambda _s: True)
+    monkeypatch.setattr(
+        global_variable_defaults,
+        "get_variable_service",
+        lambda: SimpleNamespace(get_default_field_bindings=get_default_field_bindings),
+    )
     auto_bind_field = {"type": "str", "show": True, "value": "", "display_name": "Key"}
     auto_bind_data = {"nodes": [{"data": {"node": {"template": {"k": auto_bind_field}}}}]}
     flow = _flow_obj(str(UUID(int=4)), auto_bind_data)

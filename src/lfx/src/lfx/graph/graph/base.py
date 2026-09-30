@@ -167,9 +167,10 @@ class Graph:
         # graphs keep the historical eager-instantiation behavior.
         self._instantiate_components_on_initialize = instantiate_components
         # Warm parsing cannot emit migration/error events into an authenticated
-        # user's keyspace. Such templates stay cold-only so request parsing can
-        # preserve the historical per-user extension-event contract.
+        # user's keyspace. Warm copies must replay errors for the calling user;
+        # actual rewrites still need cold parsing of the original stored bytes.
         self.requires_extension_event_replay = False
+        self.extension_migration_had_rewrites: bool | None = None
         # Optional caller-supplied label forwarded to tracing providers. Kept
         # distinct from ``self.user_id`` so request-supplied identifiers can be
         # surfaced in external traces (e.g. Langfuse trace metadata) without
@@ -1601,6 +1602,8 @@ class Graph:
             "has_session_id_vertices": self.has_session_id_vertices,
             "_sorted_vertices_layers": self._sorted_vertices_layers,
             "_instantiate_components_on_initialize": self._instantiate_components_on_initialize,
+            "requires_extension_event_replay": self.requires_extension_event_replay,
+            "extension_migration_had_rewrites": self.extension_migration_had_rewrites,
         }
 
     def _copy_graph(
@@ -1680,6 +1683,7 @@ class Graph:
                 before_initialize(new_graph)
 
         new_graph.requires_extension_event_replay = self.requires_extension_event_replay
+        new_graph.extension_migration_had_rewrites = self.extension_migration_had_rewrites
 
         # Store the newly created object in memo
         memo[id(self)] = new_graph
@@ -1721,6 +1725,7 @@ class Graph:
         # must retain the historical eager-instantiation behavior.
         state.setdefault("_instantiate_components_on_initialize", True)
         state.setdefault("requires_extension_event_replay", False)
+        state.setdefault("extension_migration_had_rewrites", None)
         # Graphs cached before source-flow provenance was introduced remain
         # loadable and simply have no additional trusted storage namespace.
         state.setdefault("source_flow_id", None)
@@ -1785,62 +1790,14 @@ class Graph:
         # reference produces typed errors on the report but never raises, so
         # flow load remains as forgiving as it was pre-Phase-A.
         migration_report = migrate_flow_payload(payload)
-        # Surface every typed error from the report through the standard
-        # logger so unmapped or ambiguous component references are not
-        # silently dropped.  We log rather than raise because the
-        # rewriter is intentionally tolerant -- a partially-broken flow
-        # still loads, and the frontend renders missing nodes as red
-        # placeholders.  The structured ``code``/``hint`` come from
-        # ``ExtensionError`` so log scrapers can parse the payload.
-        for migration_error in migration_report.errors:
-            # Use %s-style positional formatting consistent with the rest of
-            # the extension subsystem so the rendered message is readable
-            # without relying on structlog's keyword-binding behavior.
-            logger.warning(
-                "extension migration: code=%s flow_id=%s location=%s hint=%s message=%s",
-                migration_error.code,
-                flow_id,
-                migration_error.location,
-                migration_error.hint,
-                migration_error.message,
-            )
-        # Emit extension events so the frontend can surface migration results.
-        if emit_extension_events:
-            try:
-                from lfx.services.deps import get_extension_events_service
+        from lfx.extension.migration.events import report_migration
 
-                _svc = get_extension_events_service()
-                if _svc is not None:
-                    # Per-user keyspace so flow_id / migration error details only
-                    # reach the user that loaded the flow; fall back to "global"
-                    # for unauthenticated paths (CLI, tests, single-user dev).
-                    _keyspace = f"user:{user_id}" if user_id else "global"
-                    if migration_report.any_rewritten:
-                        _svc.emit(
-                            "flow_migrated",
-                            {
-                                "flow_id": str(flow_id) if flow_id else None,
-                                "rewritten_count": migration_report.rewritten_count,
-                            },
-                            keyspace=_keyspace,
-                        )
-                    for migration_error in migration_report.errors:
-                        _svc.emit(
-                            "extension_error",
-                            {
-                                "flow_id": str(flow_id) if flow_id else None,
-                                "code": migration_error.code,
-                                "message": migration_error.message,
-                                "hint": migration_error.hint,
-                                "location": migration_error.location,
-                            },
-                            keyspace=_keyspace,
-                        )
-            except Exception:  # noqa: BLE001 -- best-effort emit; never break flow load on an event-bus failure
-                logger.warning(
-                    "extension.event_emit_failed: failed to emit migration events in from_payload.",
-                    exc_info=True,
-                )
+        report_migration(
+            migration_report,
+            flow_id=flow_id,
+            user_id=user_id,
+            emit_extension_events=emit_extension_events,
+        )
         # Restricted deployments (allow_custom_components=False) never execute a node's stored
         # code — the build substitutes this server's copy keyed by code hash. Rewrite the code of
         # recognized built-ins whose stored copy has merely drifted across versions, so the
@@ -1890,6 +1847,7 @@ class Graph:
             )
             graph.add_nodes_and_edges(vertices, edges)
             graph.requires_extension_event_replay = bool(migration_report.any_rewritten or migration_report.errors)
+            graph.extension_migration_had_rewrites = migration_report.any_rewritten
         except KeyError as exc:
             logger.exception("Extension migration replay failed while reading the payload")
             if "nodes" not in payload and "edges" not in payload:

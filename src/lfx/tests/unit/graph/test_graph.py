@@ -324,15 +324,19 @@ def test_copy_for_run_preserves_grouped_flow_shape(monkeypatch):
 def test_graph_state_preserves_lazy_template_flag_and_defaults_old_payloads():
     """Serialized templates keep their mode while old graph payloads stay eager."""
     template = Graph(instantiate_components=False)
+    template.extension_migration_had_rewrites = False
     state = template.__getstate__()
     assert state["_instantiate_components_on_initialize"] is False
+    assert state["extension_migration_had_rewrites"] is False
 
     old_state = state.copy()
     old_state.pop("_instantiate_components_on_initialize")
+    old_state.pop("extension_migration_had_rewrites")
     restored = Graph.__new__(Graph)
     restored.__setstate__(old_state)
 
     assert restored._instantiate_components_on_initialize is True
+    assert restored.extension_migration_had_rewrites is None
 
 
 def test_find_last_node(grouped_chat_json_flow):

@@ -1,0 +1,164 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Langflow / SCRFD overhead</title><style>
+body{font:16px/1.6 system-ui,sans-serif;color:#172b3a;background:#f5f7fa;margin:0}
+main{max-width:1100px;margin:auto;padding:36px;background:white}
+h1,h2{line-height:1.25}h2{margin-top:2.2em;border-top:1px solid #dce4eb;padding-top:1em}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:14px}
+th,td{padding:8px 12px;border-bottom:1px solid #dce4eb;text-align:right;white-space:nowrap}
+th{background:#edf3f7}td:first-child,th:first-child{text-align:left}
+.table-wrap{overflow:auto}img{width:100%;height:auto}pre{overflow:auto;padding:18px;background:#eef3f7;font-size:13px}
+strong{color:#173f5f}@media print{main{padding:0}body{background:white}h2{break-after:avoid}tr{break-inside:avoid}}
+</style></head><body><main><h1>Overhead điều phối Langflow / SCRFD</h1>
+<p><strong>VALID · CAMPAIGN — 1.000 request đo/arm</strong></p>
+<p>Experiment: main-v2</p>
+<p>langflow_overhead_ms = server_total_ms - scrfd_processing_ms. server_total_ms là wall-clock trong worker từ điểm vào middleware benchmark của /run đến khi gửi xong response body. scrfd_processing_ms là độ dài hợp các khoảng output method của bốn node SCRFD, không cộng hai lần phần chồng lấn. Upload, tải ảnh kết quả và toàn bộ xử lý SCRFD nằm ngoài chỉ số chính. Chat Input/Output, tạo graph/component, validation, auth bên trong middleware và serialize response vẫn được tính. Đây không phải CPU time hay latency end-user.</p>
+<p>Ranh giới ghi trong manifest: Outer application ASGI entry through final response body send, including all Langflow middleware and HTTP telemetry, excluding post-response background work, minus union of SCRFD output method bodies</p>
+<h2>Tính hợp lệ</h2>
+<p>Đủ số mẫu theo manifest; output, timing, cờ và counter trong worker đều đạt kiểm tra.</p>
+<h2>Thiết kế và cách đọc</h2>
+<p>Arm có bit thứ nhất = compilation cache, bit thứ hai = warm graph registry; 1 bật, 0 tắt. HTTP connection reuse tắt ở mọi arm. Mỗi slot dùng một worker độc lập, concurrency 1. Thiết kế khai báo 1000 mẫu đo/arm, bốn block, 5 warmup/slot. Warmup không đi vào thống kê độ trễ.</p>
+<p>p50/p95/p99 dùng nội suy tuyến tính (Hyndman-Fan type 7). Mỗi request có trọng số bằng nhau; các block cân bằng nên mean tổng hợp cũng bằng mean của các mean block. Các percentile mô tả phân phối mẫu, không phải khoảng tin cậy.</p>
+<h2>Chỉ số chính: Langflow overhead (ms)</h2>
+<div class="table-wrap"><table>
+<tr><th>Arm</th><th>Đã thử</th><th>Output hợp lệ</th><th>n timing</th><th>Mean</th><th>p50</th><th>p95</th><th>p99</th></tr>
+<tr><td>00</td><td>1000</td><td>1000</td><td>1000</td><td>63.528</td><td>55.177</td><td>86.800</td><td>156.122</td></tr>
+<tr><td>01</td><td>1000</td><td>1000</td><td>1000</td><td>63.828</td><td>57.180</td><td>77.953</td><td>193.858</td></tr>
+<tr><td>10</td><td>1000</td><td>1000</td><td>1000</td><td>54.065</td><td>44.675</td><td>70.277</td><td>423.070</td></tr>
+<tr><td>11</td><td>1000</td><td>1000</td><td>1000</td><td>57.437</td><td>48.979</td><td>68.610</td><td>370.681</td></tr>
+</table></div>
+<img src="charts.png" alt="Overhead: percentiles, block means and request sequence">
+<h2>Hiệu ứng trên mean overhead</h2>
+<p>Δ = mean bật - mean đối chứng: âm nghĩa là overhead thấp hơn trong lần chạy này. Giảm (%) = (đối chứng - bật) / đối chứng x 100; âm nghĩa là chậm hơn. Không mặc định cache hoặc kết hợp hai cache luôn nhanh hơn.</p>
+<div class="table-wrap"><table>
+<tr><th>So sánh</th><th>Δ ms</th><th>Giảm %</th></tr>
+<tr><td>01 - 00</td><td>0.300</td><td>-0.472</td></tr>
+<tr><td>10 - 00</td><td>-9.463</td><td>14.896</td></tr>
+<tr><td>11 - 00</td><td>-6.091</td><td>9.588</td></tr>
+<tr><td>Compilation khi warm OFF (10 - 00)</td><td>-9.463</td><td>14.896</td></tr>
+<tr><td>Compilation khi warm ON (11 - 01)</td><td>-6.391</td><td>10.013</td></tr>
+<tr><td>Warm khi compilation OFF (01 - 00)</td><td>0.300</td><td>-0.472</td></tr>
+<tr><td>Warm khi compilation ON (11 - 10)</td><td>3.372</td><td>-6.236</td></tr>
+</table></div>
+<p>Tương tác μ11 - μ10 - μ01 + μ00 = <strong>3.072 ms</strong>. Giá trị âm cho thấy mức giảm kết hợp lớn hơn tổng hai mức giảm riêng theo thang ms.</p>
+<p>Không báo CI hay p-value. Chỉ có bốn block độc lập; 4.000 request không phải 4.000 lần lặp độc lập của điều kiện máy. Kết quả là quan sát tại workload, source và máy đã ghi nhận.</p>
+<h2>Theo block (chỉ số chính, ms)</h2>
+<div class="table-wrap"><table>
+<tr><th>Block</th><th>Arm</th><th>n</th><th>Mean</th><th>p50</th><th>p95</th><th>p99</th></tr>
+<tr><td>1</td><td>00</td><td>250</td><td>67.703</td><td>56.329</td><td>107.735</td><td>157.396</td></tr>
+<tr><td>1</td><td>01</td><td>250</td><td>61.602</td><td>56.415</td><td>74.083</td><td>140.657</td></tr>
+<tr><td>1</td><td>10</td><td>250</td><td>56.663</td><td>45.632</td><td>73.358</td><td>301.241</td></tr>
+<tr><td>1</td><td>11</td><td>250</td><td>55.427</td><td>47.169</td><td>64.021</td><td>119.387</td></tr>
+<tr><td>2</td><td>00</td><td>250</td><td>58.246</td><td>52.471</td><td>69.210</td><td>101.311</td></tr>
+<tr><td>2</td><td>01</td><td>250</td><td>63.808</td><td>59.068</td><td>77.227</td><td>118.130</td></tr>
+<tr><td>2</td><td>10</td><td>250</td><td>51.738</td><td>43.448</td><td>63.670</td><td>282.362</td></tr>
+<tr><td>2</td><td>11</td><td>250</td><td>54.808</td><td>46.355</td><td>68.313</td><td>280.600</td></tr>
+<tr><td>3</td><td>00</td><td>250</td><td>72.135</td><td>61.673</td><td>99.083</td><td>214.210</td></tr>
+<tr><td>3</td><td>01</td><td>250</td><td>62.858</td><td>56.296</td><td>79.128</td><td>217.981</td></tr>
+<tr><td>3</td><td>10</td><td>250</td><td>50.495</td><td>42.935</td><td>58.358</td><td>254.449</td></tr>
+<tr><td>3</td><td>11</td><td>250</td><td>63.293</td><td>53.310</td><td>72.026</td><td>278.144</td></tr>
+<tr><td>4</td><td>00</td><td>250</td><td>56.029</td><td>53.221</td><td>65.428</td><td>79.209</td></tr>
+<tr><td>4</td><td>01</td><td>250</td><td>67.043</td><td>57.259</td><td>86.742</td><td>332.725</td></tr>
+<tr><td>4</td><td>10</td><td>250</td><td>57.365</td><td>47.206</td><td>76.477</td><td>277.533</td></tr>
+<tr><td>4</td><td>11</td><td>250</td><td>56.220</td><td>47.259</td><td>64.289</td><td>295.930</td></tr>
+</table></div>
+<h2>Chỉ số phụ (ms)</h2>
+<p>server_total và SCRFD dùng để kiểm tra ranh giới phép trừ. flow_api gồm thời gian phía client quanh API /run; upload được ghi riêng và không cộng vào overhead.</p>
+<div class="table-wrap"><table>
+<tr><th>Arm</th><th>Metric</th><th>n</th><th>Mean</th><th>p50</th><th>p95</th><th>p99</th></tr>
+<tr><td>00</td><td>server_total_ms</td><td>1000</td><td>101.589</td><td>88.120</td><td>150.739</td><td>294.085</td></tr>
+<tr><td>00</td><td>scrfd_processing_ms</td><td>1000</td><td>38.061</td><td>32.251</td><td>64.141</td><td>116.206</td></tr>
+<tr><td>00</td><td>flow_api_ms</td><td>1000</td><td>101.665</td><td>88.228</td><td>150.906</td><td>294.088</td></tr>
+<tr><td>00</td><td>upload_ms</td><td>1000</td><td>7.974</td><td>6.784</td><td>13.662</td><td>24.309</td></tr>
+<tr><td>01</td><td>server_total_ms</td><td>1000</td><td>97.994</td><td>87.776</td><td>125.963</td><td>372.053</td></tr>
+<tr><td>01</td><td>scrfd_processing_ms</td><td>1000</td><td>34.166</td><td>30.246</td><td>48.442</td><td>87.129</td></tr>
+<tr><td>01</td><td>flow_api_ms</td><td>1000</td><td>98.067</td><td>87.892</td><td>126.282</td><td>372.352</td></tr>
+<tr><td>01</td><td>upload_ms</td><td>1000</td><td>8.925</td><td>6.342</td><td>12.185</td><td>25.913</td></tr>
+<tr><td>10</td><td>server_total_ms</td><td>1000</td><td>87.907</td><td>75.326</td><td>118.536</td><td>454.427</td></tr>
+<tr><td>10</td><td>scrfd_processing_ms</td><td>1000</td><td>33.842</td><td>30.197</td><td>49.798</td><td>76.777</td></tr>
+<tr><td>10</td><td>flow_api_ms</td><td>1000</td><td>88.003</td><td>75.428</td><td>118.713</td><td>454.374</td></tr>
+<tr><td>10</td><td>upload_ms</td><td>1000</td><td>7.522</td><td>6.598</td><td>13.666</td><td>21.271</td></tr>
+<tr><td>11</td><td>server_total_ms</td><td>1000</td><td>90.508</td><td>79.587</td><td>112.273</td><td>401.143</td></tr>
+<tr><td>11</td><td>scrfd_processing_ms</td><td>1000</td><td>33.071</td><td>30.361</td><td>47.704</td><td>58.199</td></tr>
+<tr><td>11</td><td>flow_api_ms</td><td>1000</td><td>90.594</td><td>79.686</td><td>112.559</td><td>401.160</td></tr>
+<tr><td>11</td><td>upload_ms</td><td>1000</td><td>6.960</td><td>6.304</td><td>10.491</td><td>16.975</td></tr>
+</table></div>
+<h2>Bằng chứng worker</h2>
+<p>Counter bên dưới là after_measurement - after_warmup. Warm ON phải hit ở mọi request đo và không cold; OFF phải cold ở mọi request và không hit. Compilation ON phải có hit đo được; OFF phải có bypass và không hit. PID/cờ phải nhất quán trước warmup, sau warmup và sau đo.</p>
+<div class="table-wrap"><table>
+<tr><th>block</th><th>arm</th><th>pid</th><th>measured_attempts</th><th>compilation_hits</th><th>compilation_bypasses</th><th>warm_hits</th><th>warm_cold</th></tr>
+<tr><td>1</td><td>00</td><td>19342</td><td>250</td><td>0</td><td>1500</td><td>0</td><td>250</td></tr>
+<tr><td>1</td><td>01</td><td>20222</td><td>250</td><td>0</td><td>1500</td><td>250</td><td>0</td></tr>
+<tr><td>1</td><td>11</td><td>21080</td><td>250</td><td>1500</td><td>0</td><td>250</td><td>0</td></tr>
+<tr><td>1</td><td>10</td><td>21790</td><td>250</td><td>1500</td><td>0</td><td>0</td><td>250</td></tr>
+<tr><td>2</td><td>01</td><td>22544</td><td>250</td><td>0</td><td>1500</td><td>250</td><td>0</td></tr>
+<tr><td>2</td><td>10</td><td>23400</td><td>250</td><td>1500</td><td>0</td><td>0</td><td>250</td></tr>
+<tr><td>2</td><td>00</td><td>24151</td><td>250</td><td>0</td><td>1500</td><td>0</td><td>250</td></tr>
+<tr><td>2</td><td>11</td><td>24910</td><td>250</td><td>1500</td><td>0</td><td>250</td><td>0</td></tr>
+<tr><td>3</td><td>10</td><td>25639</td><td>250</td><td>1500</td><td>0</td><td>0</td><td>250</td></tr>
+<tr><td>3</td><td>11</td><td>26372</td><td>250</td><td>1500</td><td>0</td><td>250</td><td>0</td></tr>
+<tr><td>3</td><td>01</td><td>27134</td><td>250</td><td>0</td><td>1500</td><td>250</td><td>0</td></tr>
+<tr><td>3</td><td>00</td><td>27944</td><td>250</td><td>0</td><td>1500</td><td>0</td><td>250</td></tr>
+<tr><td>4</td><td>11</td><td>28803</td><td>250</td><td>1500</td><td>0</td><td>250</td><td>0</td></tr>
+<tr><td>4</td><td>00</td><td>29520</td><td>250</td><td>0</td><td>1500</td><td>0</td><td>250</td></tr>
+<tr><td>4</td><td>10</td><td>30284</td><td>250</td><td>1500</td><td>0</td><td>0</td><td>250</td></tr>
+<tr><td>4</td><td>01</td><td>31083</td><td>250</td><td>0</td><td>1500</td><td>250</td><td>0</td></tr>
+</table></div>
+<h2>Nguồn và khả năng tái lập</h2>
+<p>manifest.json giữ thiết kế, hashes workload/source; requests.jsonl giữ mọi attempt; worker_evidence.jsonl giữ snapshot worker. Báo cáo đọc offline và không sửa ba file raw. Thiếu, sai số lượng, lỗi output/timing hoặc thiếu bằng chứng làm toàn bộ run INVALID.</p>
+<pre>
+{
+
+  &quot;workload&quot;: {
+
+    &quot;flow_id&quot;: &quot;d7b1b956-0181-472e-8d6f-ccf7e55a4066&quot;,
+
+    &quot;model_path&quot;: &quot;/Users/tranquangtrong/Downloads/det_500m.onnx&quot;,
+
+    &quot;image_path&quot;: &quot;/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/inputs/face_detection_example.jpg&quot;,
+
+    &quot;flow_export_path&quot;: &quot;/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/inputs/scrfd-flow.json&quot;,
+
+    &quot;input_node_id&quot;: &quot;ChatInput-Q4OPx&quot;,
+
+    &quot;output_node_id&quot;: &quot;ChatOutput-PNysN&quot;,
+
+    &quot;scrfd_node_ids&quot;: [
+
+      &quot;CustomComponent-68ngh&quot;,
+
+      &quot;CustomComponent-gHGu0&quot;,
+
+      &quot;CustomComponent-z55Zl&quot;,
+
+      &quot;CustomComponent-SSIb3&quot;
+
+    ],
+
+    &quot;expected_faces&quot;: 3,
+
+    &quot;timeout_seconds&quot;: 60,
+
+    &quot;reference_pixel_sha256&quot;: &quot;69ad6123b68bddb4a1c0dab702bf2e153e4f38db2e527e07deee3eb1e44f86a1&quot;,
+
+    &quot;flow_sha256&quot;: &quot;1567ae27b44e66d126f239f77b88fec8a090d5264bbc962c3d994885e792bfc0&quot;,
+
+    &quot;input_sha256&quot;: &quot;c908a84bd0ce2e8140ea17e3afededcabd64b064b6bb2b9f9fd4aa624b05a3c2&quot;,
+
+    &quot;model_sha256&quot;: &quot;5e4447f50245bbd7966bd6c0fa52938c61474a04ec7def48753668a9d8b4ea3a&quot;
+
+  },
+
+  &quot;source&quot;: {
+
+    &quot;git_revision&quot;: &quot;43772e04ce51d3f643484f8d83135c206402d37b&quot;,
+
+    &quot;sha256&quot;: &quot;9f0d0dc4fd8f830adc3979875bec77f794341c499dff9f6ce5fcddb9a65d1f84&quot;,
+
+    &quot;recorded_file_count&quot;: 1728
+
+  }
+
+}
+
+</pre></main></body></html>

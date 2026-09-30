@@ -1,0 +1,16 @@
+{
+  "flow_id": "REPLACE_WITH_SAVED_FLOW_ID",
+  "flow_export_path": "../runs/inputs/scrfd-flow.json",
+  "image_path": "../runs/inputs/example.jpg",
+  "model_path": "/absolute/path/to/model.onnx",
+  "input_node_id": "ChatInput-REPLACE",
+  "output_node_id": "ChatOutput-REPLACE",
+  "scrfd_node_ids": [
+    "CustomComponent-PREPROCESS",
+    "CustomComponent-INFERENCE",
+    "CustomComponent-DRAW",
+    "CustomComponent-SAVE"
+  ],
+  "expected_faces": 3,
+  "timeout_seconds": 60
+}

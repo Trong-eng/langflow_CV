@@ -158,6 +158,7 @@ async def test_permissive_policy_leaves_the_warm_fast_path_intact(run_flow_env, 
         assert is_superuser is False
 
     monkeypatch.setattr(endpoints, "prepare_flow_build_for_user", permissive)
+    monkeypatch.setattr(warm_graph, "is_warm_registry_enabled", lambda _settings: True)
     monkeypatch.setattr(warm_graph, "warm_deepcopy", AsyncMock(return_value=warm))
     monkeypatch.setattr(
         endpoints.Graph,
@@ -191,6 +192,7 @@ async def test_superuser_status_is_forwarded_to_the_policy(run_flow_env, monkeyp
         seen["is_superuser"] = is_superuser
 
     monkeypatch.setattr(endpoints, "prepare_flow_build_for_user", record)
+    monkeypatch.setattr(warm_graph, "is_warm_registry_enabled", lambda _settings: True)
     monkeypatch.setattr(warm_graph, "warm_deepcopy", AsyncMock(return_value=warm))
 
     await endpoints.simple_run_flow(
