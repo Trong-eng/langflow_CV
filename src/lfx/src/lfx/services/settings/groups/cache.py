@@ -14,6 +14,8 @@ class CacheSettings(BaseModel):
     cache_dir: str | None = None
     """Directory used by FlowEventsService for cross-worker event storage. Defaults to a temp dir if not set."""
     langchain_cache: str = "InMemoryCache"
+    component_compilation_cache_enabled: bool = False
+    """Reuse source-derived custom-component compilation artifacts within each worker process."""
 
     # Redis
     redis_host: str = "localhost"
