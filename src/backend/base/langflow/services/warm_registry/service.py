@@ -114,6 +114,27 @@ class WarmGraphRegistry:
         # Bound CPU-heavy snapshot/parse work and the executor queue feeding it.
         self._build_semaphore = asyncio.Semaphore(max(1, min(max_entries, 4)))
 
+    def accounting_snapshot(self) -> dict[str, object]:
+        """Read JSON payload budgets on the owning loop without yielding or copying graphs.
+
+        Writers mutate these fields without awaits while holding the loop-local
+        lock. This synchronous read is consistent on that same serving loop.
+        JSON bytes exclude parsed graph/native/Python heap overhead.
+        """
+        return {
+            "entries": len(self._flows),
+            "resident_payload_bytes": self._total_payload_bytes,
+            "reservations": len(self._build_reservations),
+            "reserved_payload_bytes": self._reserved_payload_bytes,
+            "heap_bytes": None,
+            "accounting_unit": "retained_json_payload_bytes",
+            "limits": {
+                "max_entries": self._max_entries,
+                "max_flow_bytes": self._max_flow_bytes,
+                "max_total_payload_bytes": self._max_total_bytes,
+            },
+        }
+
     def _build_lock(self, flow_id: str) -> asyncio.Lock:
         """Return the stable per-flow build lock for this registry."""
         # There is no await between lookup and insertion, so this is atomic with respect

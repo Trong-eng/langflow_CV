@@ -1,0 +1,6 @@
+# Runner-only tools; production dependencies remain owned by the workspace uv.lock.
+psutil==7.2.2
+matplotlib==3.11.2
+pillow==12.3.0
+requests==2.34.2
+python-dotenv==1.2.2

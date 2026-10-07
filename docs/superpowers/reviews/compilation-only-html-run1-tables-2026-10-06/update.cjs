@@ -1,0 +1,56 @@
+const fs = require('fs'), path = require('path'), crypto = require('crypto'), assert = require('assert/strict'), cp = require('child_process');
+const qa = __dirname, previousQA = path.resolve('docs/superpowers/reviews/compilation-only-html-original-style-2026-10-06');
+const htmlFile = path.resolve('optimize_compilation_cache_langflow_CV_original_style.html');
+const hash = f => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
+const previousBefore = JSON.parse(fs.readFileSync(path.join(previousQA, 'before.json')));
+const protectedFiles = [...Object.keys(previousBefore.hashes), path.join(previousQA, 'verification_receipt.json'), path.join(previousQA, 'after.json')];
+const before = {created_at: new Date().toISOString(), branch: cp.execFileSync('git',['branch','--show-current']).toString().trim(), hashes: Object.fromEntries(protectedFiles.map(f => [f, hash(f)])), git_status: cp.execFileSync('git',['status','--short']).toString().trimEnd().split('\n'), editable_html: htmlFile, editable_html_sha256: hash(htmlFile)};
+assert(!fs.existsSync(path.join(qa,'before.json')), 'Do not overwrite existing revision evidence');
+fs.writeFileSync(path.join(qa,'before.json'), JSON.stringify(before,null,2));
+let html = fs.readFileSync(htmlFile,'utf8');
+fs.writeFileSync(path.join(qa,'html_before.html'),html);
+const originalHtml = html;
+function replace(oldText,newText) {assert(html.includes(oldText), 'missing expected text: '+oldText); html = html.replace(oldText,newText);}
+const tableMatch = html.match(/<table class="data-table" id="benchmarkTable">([\s\S]*?)<\/table>/);
+assert(tableMatch);
+let table = tableMatch[0];
+table = table.replace('<th>Lượt</th>','').replace(/<tr><td>2<\/td>[\s\S]*?<\/tr>/g,'').replace(/<tr><td>1<\/td>/g,'<tr>');
+assert.equal((table.match(/<tbody>([\s\S]*?)<\/tbody>/)[1].match(/<tr>/g)||[]).length,2);
+replace(tableMatch[0],table);
+const ramStart = html.indexOf('<div style="font-size: .95rem; font-weight: 700; color: var(--accent-cyan); margin-top: 1rem;">RAM toàn worker');
+const ramEnd = html.indexOf('        <!-- PHẦN 4:',ramStart);
+assert(ramStart>0 && ramEnd>ramStart);
+const ram = `<div style="font-size: .95rem; font-weight: 700; color: var(--accent-cyan); margin-top: 1rem;">RAM toàn worker — chênh lệch RSS sau idle</div>
+<div class="table-container" style="margin-top: 1rem;"><table class="data-table" id="ramTable" style="min-width: 0;"><thead><tr><th>COMPILE dùng RAM cao hơn MAIN</th></tr></thead><tbody><tr><td><strong><span id="verified-44" style="font-family: var(--font-mono); white-space: nowrap; color: var(--accent-rose);">+87.102</span> MiB/worker (<span id="verified-45" style="font-family: var(--font-mono); white-space: nowrap; color: var(--accent-rose);">+8.10%</span>)</strong></td></tr></tbody></table></div>
+<p style="font-size: .8rem; color: var(--text-secondary); margin-top: .6rem;">COMPILE − MAIN tại mốc sau 5 giây không chạy thêm flow; RSS trung bình của 4 worker/nhóm. Đây là RAM toàn worker tại điểm lấy mẫu, không phải peak RAM hoặc dung lượng riêng của cache; RSS giữa blocks biến động. USS unavailable: <code>value: null</code>, <code>reason: AccessDenied</code>.</p>
+<p style="margin-top: .75rem; font-size: .8rem; line-height: 1.6; color: var(--text-secondary);">Nguồn: <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/resource_summary.csv" target="_blank" rel="noopener">RSS / USS</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv" target="_blank" rel="noopener">RAM delta</a></p>`;
+html = html.slice(0,ramStart)+ram+html.slice(ramEnd);
+replace('Hai lượt MAIN–COMPILE mới đo mean/p95 của server và client API, cùng RSS toàn worker.','Kết quả MAIN–COMPILE trình bày từ dữ liệu benchmark đầu tiên: mean/p95 của server và client API, cùng RSS toàn worker.');
+replace('Hai lượt MAIN–COMPILE đánh giá mean/p95 thực tế và RAM toàn worker.','MAIN–COMPILE đánh giá mean/p95 thực tế và RAM toàn worker.');
+replace('BENCHMARK MAIN–COMPILE V6 · HAI LƯỢT','BENCHMARK MAIN–COMPILE V6');
+replace('Hai lượt VALID · 4.000 measured requests + 80 warmup · Mean, p95 và RSS toàn worker · Pipeline SCRFD','VALID · 2.000 measured requests + 40 warmup · Mean, p95 và RSS toàn worker · Pipeline SCRFD');
+replace('2 lượt: 4.000 measured','2.000 measured');
+replace('Mỗi lượt 4 blocks × 250 measured/nhóm = 1.000/nhóm; tổng hai lượt 4.000 measured + 80 warmup.','4 blocks × 250 measured/nhóm = 1.000/nhóm; tổng 2.000 measured + 40 warmup.');
+replace('p95 tính trên dữ liệu gộp trong từng lượt, không lấy trung bình percentile các blocks, không gộp hai lượt.','p95 tính trên dữ liệu gộp của 4 blocks, không lấy trung bình percentile các blocks.');
+replace('tính riêng trong mỗi lượt, không phải bảo đảm SLA.','tính trên dữ liệu benchmark được trình bày, không phải bảo đảm SLA.');
+replace('Mỗi dòng latency dựa trên 1.000 measured/nhóm/lượt.','Mỗi dòng latency dựa trên 1.000 measured/nhóm từ dữ liệu benchmark đầu tiên.');
+replace('>Lượt 1</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/report.html" target="_blank" rel="noopener">Repeat</a>','>Báo cáo benchmark</a>');
+replace('Cả hai lượt: mean/p95 server và client API gộp đều giảm. Mean server giảm <strong>5,924–6,719 ms</strong>; p95 giảm <strong>9,911–10,969 ms</strong>.','Mean/p95 server và client API gộp đều giảm. Mean server giảm <strong>5,924 ms (−6,60%)</strong>; p95 giảm <strong>9,911 ms (−7,91%)</strong>.');
+replace('RSS sau idle tăng <strong>87,102 MiB (+8,10%)</strong>, repeat <strong>206,668 MiB (+23,13%)</strong>. Đổi khoảng 6–7 ms mean và 10–11 ms p95 lấy mức tăng quan sát 87–207 MiB/worker; đáng cân nhắc khi có nhiều worker.','RSS sau idle tăng <strong>87,102 MiB/worker (+8,10%)</strong>, đi cùng mean server giảm 5,924 ms và p95 giảm 9,911 ms. Đây là đánh đổi quan sát của toàn worker; cần cân nhắc ngân sách RAM khi có nhiều worker.');
+replace('Có lợi cho mean/p95 gộp của workload này ở cả hai lượt;','Có lợi cho mean/p95 gộp của workload đã đo;');
+replace('Block 4 có p95 bất lợi; RSS penalty không ổn định.','Block 4 có p95 bất lợi; RSS giữa blocks biến động.');
+replace('p95 server COMPILE lượt 1 = 115.353 ms','p95 server COMPILE = 115.353 ms');
+replace('mức tăng 8–23% cần ngân sách phù hợp','mức tăng quan sát 8,10% cần ngân sách phù hợp');
+replace('Mean và p95 của cả hai latency thực tế giảm ở cả hai lượt đầy đủ; bốn blocks/lượt là đơn vị lặp.','Mean và p95 của cả hai latency thực tế giảm ở cả hai lượt đầy đủ; bốn blocks/lượt là đơn vị lặp. Bản này chỉ trình bày số liệu của benchmark đầu tiên.');
+replace('Hai lượt, 16 worker mới (mỗi slot 1 worker), concurrency 1; 4 block × 250 measured/nhóm/lượt; 5 warmup/worker (tổng 80 ngoài steady-state).','8 worker mới (mỗi slot 1 worker), concurrency 1; 4 block × 250 measured/nhóm; 5 warmup/worker (tổng 40 ngoài steady-state).');
+replace('p95 server block 4 tăng +7,50% ở lượt 1 và +8,80% ở repeat; client tương ứng +7,59% và +8,97%. p95 gộp tính riêng trên 1.000 mẫu/nhóm/lượt, không trung bình percentile từng block và không gộp hai lượt.','p95 server block 4 tăng +7,50%; client tăng +7,59%. p95 gộp tính trên 1.000 mẫu/nhóm, không trung bình percentile từng block.');
+replace('RSS sau idle tăng khác nhau rõ giữa hai lượt;','RSS sau idle tăng 87,102 MiB/worker (+8,10%) nhưng không xác định được footprint riêng của cache;');
+replace('chi phí /run warmup biến thiên giữa hai lượt','chi phí /run warmup được báo riêng');
+replace('docs/superpowers/reviews/compilation-only-html-original-style-2026-10-06/verification_receipt.json','docs/superpowers/reviews/compilation-only-html-run1-tables-2026-10-06/verification_receipt.json');
+assert.equal(html.match(/<style>([\s\S]*?)<\/style>/)[1],originalHtml.match(/<style>([\s\S]*?)<\/style>/)[1]);
+assert.equal(html.match(/<script>([\s\S]*?)<\/script>/)[1],originalHtml.match(/<script>([\s\S]*?)<\/script>/)[1]);
+fs.writeFileSync(htmlFile,html);
+const destination=JSON.parse(fs.readFileSync(path.join(previousQA,'destination.json'))); fs.writeFileSync(path.join(qa,'destination.json'),JSON.stringify(destination,null,2));
+const numeric=JSON.parse(fs.readFileSync(path.join(previousQA,'numeric_evidence.json'))).filter(n => Number(n.id.split('-')[1])<=16 || ['verified-44','verified-45'].includes(n.id));
+fs.writeFileSync(path.join(qa,'numeric_evidence.json'),JSON.stringify(numeric,null,2));
+console.log(JSON.stringify({html:htmlFile,before_sha256:before.editable_html_sha256,after_sha256:hash(htmlFile),latency_rows:2,latency_columns:7,ram_rows:1,ram_columns:1,numeric_values:numeric.length,original_style_unchanged:true}));

@@ -1,0 +1,282 @@
+{
+  "status": "PASS",
+  "checked_at": "2026-10-06T09:09:32.305Z",
+  "files": [
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-mean-p95/summary.csv",
+      "expected": "3b699631d199854089418ba31d7b9ba5828189ac39a49a9817855454dd4c9bcf",
+      "actual": "3b699631d199854089418ba31d7b9ba5828189ac39a49a9817855454dd4c9bcf",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-mean-p95/ram_comparisons.csv",
+      "expected": "47e6f9d38093b41a6e904cb7d9c6b290c9425743844013ae96ea3abbd2f1a6d4",
+      "actual": "47e6f9d38093b41a6e904cb7d9c6b290c9425743844013ae96ea3abbd2f1a6d4",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-mean-p95/report.md",
+      "expected": "2348c052fdd374b018cec6b472d90ed79622b225c218d1e4197240bd7211bbc7",
+      "actual": "2348c052fdd374b018cec6b472d90ed79622b225c218d1e4197240bd7211bbc7",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-mean-p95/warmup_summary.csv",
+      "expected": "2c29f84aa4000072c54e952ce7f6fefe9505a48bd25873c624607cf4934df110",
+      "actual": "2c29f84aa4000072c54e952ce7f6fefe9505a48bd25873c624607cf4934df110",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-mean-p95/charts.png",
+      "expected": "196a6e000d21b5ecaa9502e01333c7cabe0b7eb9fccb01ebe1e9c58ec510dd23",
+      "actual": "196a6e000d21b5ecaa9502e01333c7cabe0b7eb9fccb01ebe1e9c58ec510dd23",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-mean-p95/verification_receipt.json",
+      "expected": "ac8372dad0f6da5bcb97f52fc4dedf65570cf41840f53f8da4a5333967c08c20",
+      "actual": "ac8372dad0f6da5bcb97f52fc4dedf65570cf41840f53f8da4a5333967c08c20",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-mean-p95/tradeoffs.png",
+      "expected": "996773ec0aabb6c0a2ce9b12e7a2f07352d52cd2b52993b0e3d3f7656745211f",
+      "actual": "996773ec0aabb6c0a2ce9b12e7a2f07352d52cd2b52993b0e3d3f7656745211f",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-mean-p95/resource_summary.csv",
+      "expected": "81497699faeac34490d6f5e13cd11c6ca1ffaac04036d2ffda40ab7ca7b421eb",
+      "actual": "81497699faeac34490d6f5e13cd11c6ca1ffaac04036d2ffda40ab7ca7b421eb",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-mean-p95/comparisons.csv",
+      "expected": "d8826dd5bd0ac0fe9a791e32a51fb4532f49072b5c6235ac2bc51d91c8e7ce08",
+      "actual": "d8826dd5bd0ac0fe9a791e32a51fb4532f49072b5c6235ac2bc51d91c8e7ce08",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-mean-p95/manifest.json",
+      "expected": "f9e97d62c26657cfdc46b70ee4a9bef8b982b7555eb87b164fe5e6fe2a13aefe",
+      "actual": "f9e97d62c26657cfdc46b70ee4a9bef8b982b7555eb87b164fe5e6fe2a13aefe",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-mean-p95/analysis.json",
+      "expected": "57a7cbe4e68cdf172bbd8d6fde09b86e876bf80a8556d3254bf0eb54f0db8368",
+      "actual": "57a7cbe4e68cdf172bbd8d6fde09b86e876bf80a8556d3254bf0eb54f0db8368",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-mean-p95/report.html",
+      "expected": "0777b81703b339d7f32d937de301e1cc9aa69f95ded997f5658d5f8c6ff84633",
+      "actual": "0777b81703b339d7f32d937de301e1cc9aa69f95ded997f5658d5f8c6ff84633",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/summary.csv",
+      "expected": "f5ecb03971c9dc3288c6a88b6695e42dae4b3225e99788ab1ac172cf5da9a71d",
+      "actual": "f5ecb03971c9dc3288c6a88b6695e42dae4b3225e99788ab1ac172cf5da9a71d",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/ram_comparisons.csv",
+      "expected": "f520b4778f66dce4f6ea2dea4189a5cf6cb1b4685f63b967a32f1876ab6b5bdf",
+      "actual": "f520b4778f66dce4f6ea2dea4189a5cf6cb1b4685f63b967a32f1876ab6b5bdf",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/report.md",
+      "expected": "f02534271f0d20997097f0343f6ca204f9a9bc029f487f04bcb0c5881dce4858",
+      "actual": "f02534271f0d20997097f0343f6ca204f9a9bc029f487f04bcb0c5881dce4858",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/warmup_summary.csv",
+      "expected": "c88af36ed3433fc6eaa030b2733da24d3dc75072987254adb8a7c250cc1d4b24",
+      "actual": "c88af36ed3433fc6eaa030b2733da24d3dc75072987254adb8a7c250cc1d4b24",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/charts.png",
+      "expected": "e69fab5afc4e664d1c8f0db5bfb518ba87f4ac828c9fc1bed88974f7aa4590a7",
+      "actual": "e69fab5afc4e664d1c8f0db5bfb518ba87f4ac828c9fc1bed88974f7aa4590a7",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/verification_receipt.json",
+      "expected": "04117de167f795c39133ea86e8932d836433d73583c63ad52cffc21483165c46",
+      "actual": "04117de167f795c39133ea86e8932d836433d73583c63ad52cffc21483165c46",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/tradeoffs.png",
+      "expected": "88638540ff25cc22c7ef5809d4ea63cf62a9b006aa45a2c9cb7a8767ab0421e8",
+      "actual": "88638540ff25cc22c7ef5809d4ea63cf62a9b006aa45a2c9cb7a8767ab0421e8",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/resource_summary.csv",
+      "expected": "3513c86d85a79e5da22ec8c3ffc21c62f976e2ef0bd77762049894f775be50f0",
+      "actual": "3513c86d85a79e5da22ec8c3ffc21c62f976e2ef0bd77762049894f775be50f0",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/comparisons.csv",
+      "expected": "dde68931edaf96eb3ec6e875dda23c3042585ef9f6be63950acb980873e36d06",
+      "actual": "dde68931edaf96eb3ec6e875dda23c3042585ef9f6be63950acb980873e36d06",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/manifest.json",
+      "expected": "a672b5fe9fda9311a4d4bf14c13b9e06662d8eac4b4b9be80f6708bc7761ba87",
+      "actual": "a672b5fe9fda9311a4d4bf14c13b9e06662d8eac4b4b9be80f6708bc7761ba87",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/analysis.json",
+      "expected": "7838f9b41b69dafad27c63250e7f273608ee261ebf251d4f79d374d135af47de",
+      "actual": "7838f9b41b69dafad27c63250e7f273608ee261ebf251d4f79d374d135af47de",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/report.html",
+      "expected": "20ebcd10c00b4bbef60cbe90b9ec46ce9e21492176059784430ce55febcec05c",
+      "actual": "20ebcd10c00b4bbef60cbe90b9ec46ce9e21492176059784430ce55febcec05c",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/summary.csv",
+      "expected": "46db9fd969a4775e71a5c3cad74525c59c5a275a853fc0fb4208f4b8c488eaf2",
+      "actual": "46db9fd969a4775e71a5c3cad74525c59c5a275a853fc0fb4208f4b8c488eaf2",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+      "expected": "825feb3f7af9445d649fee6e648fe721f104591cd8bad6e17c1492034ddd9aee",
+      "actual": "825feb3f7af9445d649fee6e648fe721f104591cd8bad6e17c1492034ddd9aee",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.md",
+      "expected": "bd1b61eb89acdcbe5741460429b415eb1afc2ca0deb2a17ead018adb94dffa91",
+      "actual": "bd1b61eb89acdcbe5741460429b415eb1afc2ca0deb2a17ead018adb94dffa91",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv",
+      "expected": "3bc06ab9105775744df664876664a26ef9142933a3f0eaab501cd109118afc84",
+      "actual": "3bc06ab9105775744df664876664a26ef9142933a3f0eaab501cd109118afc84",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/charts.png",
+      "expected": "1df2ca77ba7cccfc39ee4d4fd47f593d25069093825086e73d235a6761a95ba8",
+      "actual": "1df2ca77ba7cccfc39ee4d4fd47f593d25069093825086e73d235a6761a95ba8",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/verification_receipt.json",
+      "expected": "32d8731d2f669f86238076e6ae991ed9d3e7f7fa6be1f60c29240ce8aa4ad8ec",
+      "actual": "32d8731d2f669f86238076e6ae991ed9d3e7f7fa6be1f60c29240ce8aa4ad8ec",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/tradeoffs.png",
+      "expected": "a4c685750ac14a9f4ca7966dee9b9057db7c40b195ed2f1cbdadd3ebfc2f203c",
+      "actual": "a4c685750ac14a9f4ca7966dee9b9057db7c40b195ed2f1cbdadd3ebfc2f203c",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/resource_summary.csv",
+      "expected": "f0de221f7049ecd182670bf8ffd628052f6d7fff9636c0ee27028fcf20bb6de4",
+      "actual": "f0de221f7049ecd182670bf8ffd628052f6d7fff9636c0ee27028fcf20bb6de4",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+      "expected": "85b6b78f996b9ee86fe7d27eb347b5127b5189bf650422b5ae52bf8c6b5a3a28",
+      "actual": "85b6b78f996b9ee86fe7d27eb347b5127b5189bf650422b5ae52bf8c6b5a3a28",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/manifest.json",
+      "expected": "bba45c89ff4d8e30fe796b0ed3a4f0f457c37a0c59532b77d911635f3f8851b0",
+      "actual": "bba45c89ff4d8e30fe796b0ed3a4f0f457c37a0c59532b77d911635f3f8851b0",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/analysis.json",
+      "expected": "5429110ce889a46004c39c82b412da35adb6715958406f9af22d473f1ea2303e",
+      "actual": "5429110ce889a46004c39c82b412da35adb6715958406f9af22d473f1ea2303e",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.html",
+      "expected": "98ea12285f21d57a53bd77ddf41154c27da16307a9119554388b093dcbcf7a34",
+      "actual": "98ea12285f21d57a53bd77ddf41154c27da16307a9119554388b093dcbcf7a34",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6/manifest.json",
+      "expected": "aabaef700212062e31a1403cd3906097037148a4c202c29ba1f6ed916675aca9",
+      "actual": "aabaef700212062e31a1403cd3906097037148a4c202c29ba1f6ed916675aca9",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6/requests.jsonl",
+      "expected": "e3db929f57d932c6190b32b5714095e4423a7e0709ddf9fd40d82c1fcb3d48f7",
+      "actual": "e3db929f57d932c6190b32b5714095e4423a7e0709ddf9fd40d82c1fcb3d48f7",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6/worker_evidence.jsonl",
+      "expected": "2d63b94068f98feccf199077e0c9b3b3050ded128f56ed240ba9bfa2054c05c5",
+      "actual": "2d63b94068f98feccf199077e0c9b3b3050ded128f56ed240ba9bfa2054c05c5",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6/memory.jsonl",
+      "expected": "c635cff794db39fa20f9e887b00c07dc3de6d0a9986152ae8930942aa3576ec9",
+      "actual": "c635cff794db39fa20f9e887b00c07dc3de6d0a9986152ae8930942aa3576ec9",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6/state.json",
+      "expected": "09e184e6bc0d4fa483de34c16fd9bbfee6803d6bea9f7bcb4d60ce10a84bf3b3",
+      "actual": "09e184e6bc0d4fa483de34c16fd9bbfee6803d6bea9f7bcb4d60ce10a84bf3b3",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat/manifest.json",
+      "expected": "697cc3824bf62d0887cf5e822c627c5e4c150762778b377723bc7c87bf4b4534",
+      "actual": "697cc3824bf62d0887cf5e822c627c5e4c150762778b377723bc7c87bf4b4534",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat/requests.jsonl",
+      "expected": "02bde1a161c4c2d24dea31f4b02ac5866b33304675874237f5d0fe9d467f8c46",
+      "actual": "02bde1a161c4c2d24dea31f4b02ac5866b33304675874237f5d0fe9d467f8c46",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat/worker_evidence.jsonl",
+      "expected": "edd60f05cf80f5ca54f95515f9e257b69ead9c56b1adea23cb3157e14933b8ba",
+      "actual": "edd60f05cf80f5ca54f95515f9e257b69ead9c56b1adea23cb3157e14933b8ba",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat/memory.jsonl",
+      "expected": "4b812165dd14723e9c8236ae18269337d397152022653467a6805a0d509f3aa2",
+      "actual": "4b812165dd14723e9c8236ae18269337d397152022653467a6805a0d509f3aa2",
+      "match": true
+    },
+    {
+      "file": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat/state.json",
+      "expected": "12408f870be2b4f8c3e3c692cbf938d07969203ed9bfd99aefefc48adf4b3ddc",
+      "actual": "12408f870be2b4f8c3e3c692cbf938d07969203ed9bfd99aefefc48adf4b3ddc",
+      "match": true
+    }
+  ]
+}

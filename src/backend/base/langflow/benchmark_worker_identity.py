@@ -53,8 +53,17 @@ class BenchmarkWorkerIdentityMiddleware:
 
     async def __call__(self, scope, receive, send):
         if scope["type"] == "lifespan" and _enabled():
+
+            async def observed_lifespan_send(message):
+                if message["type"] == "lifespan.startup.complete":
+                    self.observer.apply_access_logging_override()
+                await send(message)
+
             with self.observer.instrumentation():
-                return await self.app(scope, receive, send)
+                if self.observer.diagnostics is None:
+                    return await self.app(scope, receive, observed_lifespan_send)
+                async with self.observer.diagnostics.lifespan():
+                    return await self.app(scope, receive, observed_lifespan_send)
         if scope["type"] != "http":
             return await self.app(scope, receive, send)
         # Capture at the observation boundary before header validation. This
@@ -106,10 +115,10 @@ class BenchmarkWorkerIdentityMiddleware:
         if not _enabled():
             response = JSONResponse({"error": "benchmark control is disabled"}, status_code=404)
         else:
-            response = self._authorized_control_response(scope)
+            response = await self._authorized_control_response(scope)
         return await response(scope, receive, send)
 
-    def _authorized_control_response(self, scope):
+    async def _authorized_control_response(self, scope):
         peer = (scope.get("client") or ("", 0))[0]
         try:
             loopback = ipaddress.ip_address(peer).is_loopback
@@ -127,7 +136,9 @@ class BenchmarkWorkerIdentityMiddleware:
             return JSONResponse({"error": "benchmark requires one worker"}, status_code=409)
         path = scope["path"]
         if path == "/_benchmark/snapshot":
-            result = self.observer.snapshot()
+            result = await self.observer.snapshot_async()
+        elif path == "/_benchmark/diagnostics/drain":
+            result = self.observer.diagnostics_drain()
         elif path.startswith("/_benchmark/measurement/"):
             request_id = path.removeprefix("/_benchmark/measurement/")
             try:

@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ARMS = ("00", "01", "10", "11")
+DIAGNOSTIC_VARIANTS = ("D0", "D1", "D2", "D3")
 
 
 def make_schedule(requests_per_arm: int, blocks: int) -> list[dict]:
@@ -24,6 +25,28 @@ def make_schedule(requests_per_arm: int, blocks: int) -> list[dict]:
         for block in range(blocks)
         for arm in orders[block % 4]
     ]
+
+
+def make_diagnostic_schedule(requests_per_arm: int, blocks: int = 4) -> list[dict]:
+    """Balance variant position and arm order in the same four outer blocks."""
+    if blocks != 4 or requests_per_arm < 4 or requests_per_arm % blocks:
+        raise ValueError("diagnostic requires four balanced blocks and divisible request count")
+    schedule = []
+    for index in range(blocks):
+        variants = DIAGNOSTIC_VARIANTS[index:] + DIAGNOSTIC_VARIANTS[:index]
+        arms = ("10", "11") if index in (0, 3) else ("11", "10")
+        for variant in variants:
+            for arm in arms:
+                schedule.append(
+                    {
+                        "block": index + 1,
+                        "outer_block_id": index + 1,
+                        "variant": variant,
+                        "arm": arm,
+                        "count": requests_per_arm // blocks,
+                    }
+                )
+    return schedule
 
 
 def measure_overhead(observed: dict, node_ids: list[str]) -> dict[str, float]:
@@ -129,6 +152,7 @@ def source_identity(root: Path) -> dict:
             name.decode()
             for name in paths.split(b"\0")
             if name
+            and not name.startswith(b"benchmark_analyst/runs/")
             and (
                 name.startswith((b"benchmark_analyst/", b"src/backend/base/langflow/", b"src/lfx/src/lfx/"))
                 or name in (b"pyproject.toml", b"uv.lock")

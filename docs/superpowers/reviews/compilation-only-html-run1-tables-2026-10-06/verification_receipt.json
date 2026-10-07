@@ -1,0 +1,1058 @@
+{
+  "kind": "run1_tables_compilation_only_html_qa",
+  "status": "PASS",
+  "created_at": "2026-10-06T13:04:58.880Z",
+  "html": "/Users/tranquangtrong/Desktop/langflow_CV/optimize_compilation_cache_langflow_CV_original_style.html",
+  "html_sha256": "9a8e5b0e39816c3b8973079d9597f83f30a02d29dec8eebde53c347df3c00e64",
+  "slide_count": 10,
+  "original_slide_mapping": [
+    1,
+    2,
+    4,
+    5,
+    6,
+    7,
+    13,
+    14,
+    15,
+    16
+  ],
+  "removed_original_slides": [
+    3,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "checks": [
+    {
+      "name": "run1_tables_and_consistency",
+      "status": "PASS",
+      "detail": {
+        "latency_rows": 2,
+        "latency_columns": 7,
+        "ram_rows": 1,
+        "ram_columns": 1,
+        "no_run_column": true,
+        "source_run": "1",
+        "styles_and_script_unchanged": true,
+        "compilation_slides_unchanged": true,
+        "original_two_run_retention_criterion_preserved": true
+      }
+    },
+    {
+      "name": "original_presentation_preserved",
+      "status": "PASS",
+      "detail": {
+        "original_css_prefix_unchanged": true,
+        "Feynman_slide_body_unchanged": true,
+        "compilation_code_blocks_unchanged": true,
+        "retained_original_order": [
+          1,
+          2,
+          4,
+          5,
+          6,
+          7,
+          13,
+          14,
+          15,
+          16
+        ],
+        "deleted_original_slides": [
+          3,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "navigation_controls": "Original controls retained; no new menu or deck structure."
+      }
+    },
+    {
+      "name": "scope_exclusions",
+      "status": "PASS",
+      "detail": "Warm proposal removed except short note + OFF condition. Removed statistics/matrix/stale campaign/commit absent."
+    },
+    {
+      "name": "latency_RAM_and_static_claims",
+      "status": "PASS",
+      "detail": {
+        "numeric_values": 18,
+        "full_precision_comparison_rows_recomputed": 60,
+        "static_required_claims": 13
+      }
+    },
+    {
+      "name": "all_links_resolve",
+      "status": "PASS",
+      "detail": {
+        "anchors": 28,
+        "unique": 22,
+        "context": "Delivery file:// path, including measured COMPILE worktree source link."
+      }
+    },
+    {
+      "name": "evidence_link_opens_in_browser",
+      "status": "PASS",
+      "detail": "Campaign receipt link opens in a new browser tab from delivery path."
+    },
+    {
+      "name": "original_controls_and_edit_mode",
+      "status": "PASS",
+      "detail": "Previous/next, arrows, Space, PageUp/Down, Home/End, progress/page counts, document button/M and original edit/lock button verified. No values changed."
+    },
+    {
+      "name": "fullscreen_button_and_F",
+      "status": "PASS",
+      "detail": "Native fullscreen enter/exit in headless Chromium verified with trusted click/F."
+    },
+    {
+      "name": "all_slides_rendered",
+      "status": "PASS",
+      "detail": {
+        "renders": 40,
+        "viewports": [
+          "1440×1000",
+          "390×844"
+        ],
+        "themes": [
+          "light",
+          "dark"
+        ],
+        "result": "No global horizontal overflow or non-scrollable descendants outside slide bounds. Original tables retain local horizontal scroll at small viewport."
+      }
+    },
+    {
+      "name": "small_table_horizontal_scroll",
+      "status": "PASS",
+      "detail": "Latency table rightmost columns reachable via local horizontal scrolling; simplified RAM table fits small viewport with no horizontal scrolling."
+    },
+    {
+      "name": "document_mode_both_sizes",
+      "status": "PASS",
+      "detail": "All 10 slides visible in original document view, both sizes captured."
+    },
+    {
+      "name": "console_and_page_errors",
+      "status": "PASS",
+      "detail": {
+        "page_errors": 0,
+        "console_errors": 0,
+        "network_failures": []
+      }
+    },
+    {
+      "name": "source_original_and_previous_artifacts_unchanged",
+      "status": "PASS",
+      "detail": {
+        "status": "PASS",
+        "files": 113,
+        "original_sha256": "f301f215b3253e7e8e77d185f5b84a49253fffe70936644b55ad9a1a0ec63107",
+        "before": "before.json",
+        "after": "after.json",
+        "previous_14_slide_html_also_unchanged": true
+      }
+    },
+    {
+      "name": "independent_data_and_visual_review",
+      "status": "PASS",
+      "detail": {
+        "status": "PASS",
+        "root": "Reviewed all 10 light slides at desktop and small viewport via six contact sheets; zoomed benchmark and conclusion screenshots.",
+        "independent_reviewer": "run1_table_review checked numbers against CSV and visually reviewed dark desktop/small benchmark, right-edge table columns and desktop conclusion.",
+        "independent_screenshots": [
+          "screenshots/desktop-dark-09.png",
+          "screenshots/small-dark-09.png",
+          "screenshots/small-dark-benchmark-right-columns.png",
+          "screenshots/desktop-dark-10.png"
+        ],
+        "contact_sheets": [
+          "screenshots/contact-desktop-dark-1.jpg",
+          "screenshots/contact-desktop-dark-2.jpg",
+          "screenshots/contact-desktop-dark-3.jpg",
+          "screenshots/contact-desktop-light-1.jpg",
+          "screenshots/contact-desktop-light-2.jpg",
+          "screenshots/contact-desktop-light-3.jpg",
+          "screenshots/contact-small-dark-1.jpg",
+          "screenshots/contact-small-dark-2.jpg",
+          "screenshots/contact-small-dark-3.jpg",
+          "screenshots/contact-small-light-1.jpg",
+          "screenshots/contact-small-light-2.jpg",
+          "screenshots/contact-small-light-3.jpg"
+        ],
+        "result": "No blockers. Simplified RAM fits small viewport. Latency scrolls locally to all columns; no global horizontal spill."
+      }
+    }
+  ],
+  "screenshots": [
+    "screenshots/fullscreen.png",
+    "screenshots/desktop-light-01.png",
+    "screenshots/desktop-light-02.png",
+    "screenshots/desktop-light-03.png",
+    "screenshots/desktop-light-04.png",
+    "screenshots/desktop-light-05.png",
+    "screenshots/desktop-light-06.png",
+    "screenshots/desktop-light-07.png",
+    "screenshots/desktop-light-08.png",
+    "screenshots/desktop-light-09.png",
+    "screenshots/desktop-light-10.png",
+    "screenshots/desktop-dark-01.png",
+    "screenshots/desktop-dark-02.png",
+    "screenshots/desktop-dark-03.png",
+    "screenshots/desktop-dark-04.png",
+    "screenshots/desktop-dark-05.png",
+    "screenshots/desktop-dark-06.png",
+    "screenshots/desktop-dark-07.png",
+    "screenshots/desktop-dark-08.png",
+    "screenshots/desktop-dark-09.png",
+    "screenshots/desktop-dark-10.png",
+    "screenshots/small-light-01.png",
+    "screenshots/small-light-02.png",
+    "screenshots/small-light-03.png",
+    "screenshots/small-light-04.png",
+    "screenshots/small-light-05.png",
+    "screenshots/small-light-06.png",
+    "screenshots/small-light-07.png",
+    "screenshots/small-light-08.png",
+    "screenshots/small-light-09.png",
+    "screenshots/small-light-10.png",
+    "screenshots/small-dark-01.png",
+    "screenshots/small-dark-02.png",
+    "screenshots/small-dark-03.png",
+    "screenshots/small-dark-04.png",
+    "screenshots/small-dark-05.png",
+    "screenshots/small-dark-06.png",
+    "screenshots/small-dark-07.png",
+    "screenshots/small-dark-08.png",
+    "screenshots/small-dark-09.png",
+    "screenshots/small-dark-10.png",
+    "screenshots/small-dark-benchmark-right-columns.png",
+    "screenshots/all-slides-desktop.png",
+    "screenshots/all-slides-small.png",
+    "screenshots/original-slide-02-reference.png"
+  ],
+  "console_errors": [],
+  "page_errors": [],
+  "network_failures": [],
+  "scope": "Update presentation tables to run1 with no run column, simplify RAM and align result narrative; original CSS/JS and compilation content preserved. Separate revision QA only.",
+  "browser": {
+    "version": "154.0.8037.98",
+    "name": "Google Chrome via existing Playwright",
+    "headless": true
+  },
+  "links": [
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/final_verification_receipt.json",
+      "label": "Campaign verification receipt",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/final_verification_receipt.json"
+    },
+    {
+      "href": "benchmark_analyst/runs/setup-main-compile-v6/main-to-compile.patch",
+      "label": "Diff MAIN → COMPILE",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/setup-main-compile-v6/main-to-compile.patch"
+    },
+    {
+      "href": "benchmark_analyst/runs/setup-main-compile-v6/source_review.json",
+      "label": "Source review",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/setup-main-compile-v6/source_review.json"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6/manifest.json",
+      "label": "Manifest lượt 1",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6/manifest.json"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-repeat/manifest.json",
+      "label": "Manifest repeat",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat/manifest.json"
+    },
+    {
+      "href": "benchmark_analyst/runs/setup-main-compile-v6/main-to-compile.patch",
+      "label": "Code diff của hai source đã đo",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/setup-main-compile-v6/main-to-compile.patch"
+    },
+    {
+      "href": "../../.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/custom/component_compilation_cache.py",
+      "label": "Core cache tại commit COMPILE",
+      "resolved": "/Users/tranquangtrong/.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/custom/component_compilation_cache.py"
+    },
+    {
+      "href": "benchmark_analyst/revision_worker.py",
+      "label": "RevisionMiddleware / RevisionObserver",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/revision_worker.py"
+    },
+    {
+      "href": "benchmark_analyst/worker_observer.py",
+      "label": "Node spans",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/worker_observer.py"
+    },
+    {
+      "href": "benchmark_analyst/protocol.py",
+      "label": "Interval union",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/protocol.py"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/final_verification_receipt.json",
+      "label": "Harness/source identity",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/final_verification_receipt.json"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-v5/report.html",
+      "label": "v5",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-v5/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-v5-repeat/report.html",
+      "label": "v5 repeat",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-v5-repeat/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/diagnostic-v5/D1/report.html",
+      "label": "D1",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/diagnostic-v5/D1/report.html"
+    },
+    {
+      "href": "src/lfx/src/lfx/graph/graph/base.py",
+      "label": "copy_for_run",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/src/lfx/src/lfx/graph/graph/base.py"
+    },
+    {
+      "href": "benchmark_analyst/diagnostic_observer.py",
+      "label": "Span wrapper",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/diagnostic_observer.py"
+    },
+    {
+      "href": "benchmark_analyst/runs/setup-main-compile-v6/main-to-compile.patch",
+      "label": "Patch",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/setup-main-compile-v6/main-to-compile.patch"
+    },
+    {
+      "href": "benchmark_analyst/runs/setup-main-compile-v6/source_review.json",
+      "label": "Source review",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/setup-main-compile-v6/source_review.json"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/summary.csv",
+      "label": "Summary",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/summary.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+      "label": "Delta",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-mean-p95/report.html",
+      "label": "Báo cáo benchmark",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-mean-p95/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/resource_summary.csv",
+      "label": "RSS / USS",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/resource_summary.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+      "label": "RAM delta",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv",
+      "label": "CSV riêng",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.html",
+      "label": "Tổng hợp V6",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+      "label": "Block delta",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/final_verification_receipt.json",
+      "label": "Campaign receipt",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/final_verification_receipt.json"
+    },
+    {
+      "href": "docs/superpowers/reviews/compilation-only-html-run1-tables-2026-10-06/verification_receipt.json",
+      "label": "HTML QA receipt",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/docs/superpowers/reviews/compilation-only-html-run1-tables-2026-10-06/verification_receipt.json"
+    }
+  ],
+  "layouts": [
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1000,
+      "slideHeight": 574.671875,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 1
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1000,
+      "slideHeight": 765.671875,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 2
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1000,
+      "slideHeight": 608,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 3
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1194,
+      "slideHeight": 1071.015625,
+      "issues": [],
+      "local_scroll_tables": [
+        {
+          "clientWidth": 1145,
+          "scrollWidth": 1145,
+          "overflowX": "auto"
+        }
+      ],
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 4
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1000,
+      "slideHeight": 779.421875,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 5
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1140,
+      "slideHeight": 1016.828125,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 6
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1021,
+      "slideHeight": 897.53125,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 7
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1000,
+      "slideHeight": 822.671875,
+      "issues": [],
+      "local_scroll_tables": [
+        {
+          "clientWidth": 1145,
+          "scrollWidth": 1145,
+          "overflowX": "auto"
+        }
+      ],
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 8
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1587,
+      "slideHeight": 1463.765625,
+      "issues": [],
+      "local_scroll_tables": [
+        {
+          "clientWidth": 1145,
+          "scrollWidth": 1145,
+          "overflowX": "auto"
+        },
+        {
+          "clientWidth": 1145,
+          "scrollWidth": 1145,
+          "overflowX": "auto"
+        }
+      ],
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 9
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1017,
+      "slideHeight": 894.015625,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 10
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1000,
+      "slideHeight": 574.671875,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 1
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1000,
+      "slideHeight": 765.671875,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 2
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1000,
+      "slideHeight": 608,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 3
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1194,
+      "slideHeight": 1071.015625,
+      "issues": [],
+      "local_scroll_tables": [
+        {
+          "clientWidth": 1145,
+          "scrollWidth": 1145,
+          "overflowX": "auto"
+        }
+      ],
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 4
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1000,
+      "slideHeight": 779.421875,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 5
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1140,
+      "slideHeight": 1016.828125,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 6
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1021,
+      "slideHeight": 897.53125,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 7
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1000,
+      "slideHeight": 822.671875,
+      "issues": [],
+      "local_scroll_tables": [
+        {
+          "clientWidth": 1145,
+          "scrollWidth": 1145,
+          "overflowX": "auto"
+        }
+      ],
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 8
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1587,
+      "slideHeight": 1463.765625,
+      "issues": [],
+      "local_scroll_tables": [
+        {
+          "clientWidth": 1145,
+          "scrollWidth": 1145,
+          "overflowX": "auto"
+        },
+        {
+          "clientWidth": 1145,
+          "scrollWidth": 1145,
+          "overflowX": "auto"
+        }
+      ],
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 9
+    },
+    {
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageHeight": 1017,
+      "slideHeight": 894.015625,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 10
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 1187,
+      "slideHeight": 1019.03125,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "small",
+      "theme": "light",
+      "slide": 1
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 2114,
+      "slideHeight": 1946.046875,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "small",
+      "theme": "light",
+      "slide": 2
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 1417,
+      "slideHeight": 1248.6875,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "small",
+      "theme": "light",
+      "slide": 3
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 1777,
+      "slideHeight": 1609.09375,
+      "issues": [],
+      "local_scroll_tables": [
+        {
+          "clientWidth": 325,
+          "scrollWidth": 680,
+          "overflowX": "auto"
+        }
+      ],
+      "viewport": "small",
+      "theme": "light",
+      "slide": 4
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 2013,
+      "slideHeight": 1844.9375,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "small",
+      "theme": "light",
+      "slide": 5
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 1978,
+      "slideHeight": 1810.453125,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "small",
+      "theme": "light",
+      "slide": 6
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 1765,
+      "slideHeight": 1596.875,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "small",
+      "theme": "light",
+      "slide": 7
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 1671,
+      "slideHeight": 1502.96875,
+      "issues": [],
+      "local_scroll_tables": [
+        {
+          "clientWidth": 325,
+          "scrollWidth": 680,
+          "overflowX": "auto"
+        }
+      ],
+      "viewport": "small",
+      "theme": "light",
+      "slide": 8
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 3390,
+      "slideHeight": 3222.5,
+      "issues": [],
+      "local_scroll_tables": [
+        {
+          "clientWidth": 325,
+          "scrollWidth": 680,
+          "overflowX": "auto"
+        },
+        {
+          "clientWidth": 325,
+          "scrollWidth": 325,
+          "overflowX": "auto"
+        }
+      ],
+      "viewport": "small",
+      "theme": "light",
+      "slide": 9
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 2361,
+      "slideHeight": 2192.75,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "small",
+      "theme": "light",
+      "slide": 10
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 1187,
+      "slideHeight": 1019.03125,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 1
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 2114,
+      "slideHeight": 1946.046875,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 2
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 1417,
+      "slideHeight": 1248.6875,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 3
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 1777,
+      "slideHeight": 1609.09375,
+      "issues": [],
+      "local_scroll_tables": [
+        {
+          "clientWidth": 325,
+          "scrollWidth": 680,
+          "overflowX": "auto"
+        }
+      ],
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 4
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 2013,
+      "slideHeight": 1844.9375,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 5
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 1978,
+      "slideHeight": 1810.453125,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 6
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 1765,
+      "slideHeight": 1596.875,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 7
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 1671,
+      "slideHeight": 1502.96875,
+      "issues": [],
+      "local_scroll_tables": [
+        {
+          "clientWidth": 325,
+          "scrollWidth": 680,
+          "overflowX": "auto"
+        }
+      ],
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 8
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 3390,
+      "slideHeight": 3222.5,
+      "issues": [],
+      "local_scroll_tables": [
+        {
+          "clientWidth": 325,
+          "scrollWidth": 680,
+          "overflowX": "auto"
+        },
+        {
+          "clientWidth": 325,
+          "scrollWidth": 325,
+          "overflowX": "auto"
+        }
+      ],
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 9
+    },
+    {
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageHeight": 2361,
+      "slideHeight": 2192.75,
+      "issues": [],
+      "local_scroll_tables": [],
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 10
+    }
+  ],
+  "mobile_table_scroll_checks": [
+    {
+      "scrollLeft": 355,
+      "maxScroll": 355,
+      "rightColumnVisible": true
+    },
+    {
+      "scrollLeft": 0,
+      "maxScroll": 0,
+      "rightColumnVisible": true
+    }
+  ],
+  "input_integrity": {
+    "status": "PASS",
+    "files": 113,
+    "original_sha256": "f301f215b3253e7e8e77d185f5b84a49253fffe70936644b55ad9a1a0ec63107",
+    "before": "before.json",
+    "after": "after.json",
+    "previous_14_slide_html_also_unchanged": true,
+    "final_recheck_at": "2026-10-06T13:07:42.876Z",
+    "branch": "add_worker_warm_graph",
+    "previous_QA_receipt_and_after_snapshot_unchanged": true,
+    "git_status_unchanged": true
+  },
+  "limitations": [
+    "Fullscreen tested in headless Chrome, not macOS window/display chrome.",
+    "Small viewport keeps the original table layout with horizontal scrolling local to each table; all columns tested reachable.",
+    "Benchmarks/backend suites were not re-run; numbers are validated against existing campaign files."
+  ],
+  "completed_at": "2026-10-06T13:07:42.876Z",
+  "editable_html_before_sha256": "6d48fc002f8a7c972996e2b19e3c26fff7272525514c65e5f6265b41dcfb54b5",
+  "selected_result_scope": {
+    "source_run": "1",
+    "latency_rows": [
+      "Server",
+      "Client API"
+    ],
+    "run_column_removed_from_both_tables": true,
+    "RAM_metric": "RSS COMPILE−MAIN, after_idle, average four workers per group",
+    "RAM_delta_mib": 87.1015625,
+    "RAM_delta_percent": 8.097174812985692,
+    "RAM_display": "+87.102 MiB/worker (+8.10%)",
+    "original_retention_criterion": "Both full campaigns remain the evidence criterion; displayed results use the first campaign as requested."
+  },
+  "visual_review": {
+    "status": "PASS",
+    "root": "Reviewed all 10 light slides at desktop and small viewport via six contact sheets; zoomed benchmark and conclusion screenshots.",
+    "independent_reviewer": "run1_table_review checked numbers against CSV and visually reviewed dark desktop/small benchmark, right-edge table columns and desktop conclusion.",
+    "independent_screenshots": [
+      "screenshots/desktop-dark-09.png",
+      "screenshots/small-dark-09.png",
+      "screenshots/small-dark-benchmark-right-columns.png",
+      "screenshots/desktop-dark-10.png"
+    ],
+    "contact_sheets": [
+      "screenshots/contact-desktop-dark-1.jpg",
+      "screenshots/contact-desktop-dark-2.jpg",
+      "screenshots/contact-desktop-dark-3.jpg",
+      "screenshots/contact-desktop-light-1.jpg",
+      "screenshots/contact-desktop-light-2.jpg",
+      "screenshots/contact-desktop-light-3.jpg",
+      "screenshots/contact-small-dark-1.jpg",
+      "screenshots/contact-small-dark-2.jpg",
+      "screenshots/contact-small-dark-3.jpg",
+      "screenshots/contact-small-light-1.jpg",
+      "screenshots/contact-small-light-2.jpg",
+      "screenshots/contact-small-light-3.jpg"
+    ],
+    "result": "No blockers. Simplified RAM fits small viewport. Latency scrolls locally to all columns; no global horizontal spill."
+  },
+  "codex_preview": {
+    "request": "open_in_codex",
+    "url": "file:///Users/tranquangtrong/Desktop/langflow_CV/optimize_compilation_cache_langflow_CV_original_style.html",
+    "result": "queued",
+    "visible_panel_opening_verified": false
+  },
+  "screenshot_sha256": {
+    "screenshots/fullscreen.png": "15e0cffa4d028a7c450d7467963a6f8505e7db222038c86a6a6d866d3d9c99c2",
+    "screenshots/desktop-light-01.png": "9ddea76f583dcc140bd0ab45a07f6b9645c4e2ba133db5060441c6d9fd01ef3c",
+    "screenshots/desktop-light-02.png": "9d544bc1dc932c4260ff45e5e4198d6207cab9a0c3bcd73f409d20790c7cae3f",
+    "screenshots/desktop-light-03.png": "1774668899013f1f4e414527ecf85df7b0da132d0b23b3e36eb2f9ff79556a0f",
+    "screenshots/desktop-light-04.png": "072ebe7c689001a83b3e9db7534c1b75ef65b3d4c54de06e2f9d1743b92e5973",
+    "screenshots/desktop-light-05.png": "b83be3d1739e5d7d8e10e1ae78ee7b5b082b4d1fdfa2236255b5eed42a5eb804",
+    "screenshots/desktop-light-06.png": "400c61035ae9a3f1e1bc2fd2799d68df1a2cd3102e8c0a0eec5a6284bd733c00",
+    "screenshots/desktop-light-07.png": "5dfa28f1f3444a478591a24aa86042514659ee7d95f309cab4f5a6480184900c",
+    "screenshots/desktop-light-08.png": "d14e04e0b772f772a1a566699946f87d81b3943d9c184efb100d4169a98bfd41",
+    "screenshots/desktop-light-09.png": "3870625e8da5549ffaa61b0da07f44dbe009dccfcb4a2cb48043364e11b823ea",
+    "screenshots/desktop-light-10.png": "3d15281920d0ade16c35fb0d50c3c6308004509d9f5cb127a410bf16b8f4b7d3",
+    "screenshots/desktop-dark-01.png": "222d6b940204e2a552e0189faad804c132f8c90d22ad226d994d9a5e3e8f6bcd",
+    "screenshots/desktop-dark-02.png": "4cb6d29a8235773a43a17847166b66c9cd4a8ff99f15cdd85f8ab295a89e8ab5",
+    "screenshots/desktop-dark-03.png": "37e5a6bab9e3816c9d96afdd6384f144d1531eedef2eb43953116ca2c67867e0",
+    "screenshots/desktop-dark-04.png": "ee86236e10fdeaf89ca05396f8b99ab56ddda24d8ea694a81cb9292460555f42",
+    "screenshots/desktop-dark-05.png": "df620337c92e3c49283b9d3f4d8e430b53dcf72669c822c7b59ae3884840146c",
+    "screenshots/desktop-dark-06.png": "f9e6fcb5898ab117e3d7f257df55d41c0753f16271605ca784423c33075d2cf9",
+    "screenshots/desktop-dark-07.png": "cf1e38284f10809f0d82f49c5a736fdca17ff6930d34b46a8cd80eeade1c1201",
+    "screenshots/desktop-dark-08.png": "735f4693b354026bd19eb628214aa5c13527aebc3f88fa32e45f401132520f17",
+    "screenshots/desktop-dark-09.png": "2abbb226771d85c3a94e9704c9cd332e806a9a1b7ac69fdbe248496f1d052c5b",
+    "screenshots/desktop-dark-10.png": "f95262bd3bbda8bbf64f0eebc1be177cc58de6a932346b5baeabf977ba6a46d4",
+    "screenshots/small-light-01.png": "f8dd4e374ec0190245221dad3dbf655eece826be5983755da7fa8ccf6240233e",
+    "screenshots/small-light-02.png": "3ab3aec4359ff507fc1bfb791f17694d73a90733800342e2ae8b429407f69191",
+    "screenshots/small-light-03.png": "a8077bca3ecee78c3d4ab4c9e807651789dd3c68c014e098985836ed4d072e13",
+    "screenshots/small-light-04.png": "a53e042ee7fa1431dd4abcdadf2a7730e53b38e9ba5b75c11097193332a3d27f",
+    "screenshots/small-light-05.png": "7ed7847c1f1ea457ced895a78f930701499c7a871870362b59ca2c188d8771dc",
+    "screenshots/small-light-06.png": "5f6c7678cdf168def7c96bf5d5e95282348b707f59dd9db510e324060becee3c",
+    "screenshots/small-light-07.png": "731c4411c020068b1451edb5a17801c9bd3aa32a1615ec6bdccb2de1664b9514",
+    "screenshots/small-light-08.png": "55aea1fd7eca9c64341d65e2ab2715829d4ef27380e99513195a7ab027355f16",
+    "screenshots/small-light-09.png": "46569c4c135efa55f1a34023cdaa5ba685fda07435b2c7736d9b2cd27b8fbb20",
+    "screenshots/small-light-10.png": "4afe168b8d75202c5d8936dbb0d7f273ea8824870c0a920051804563c3f29762",
+    "screenshots/small-dark-01.png": "876b131e87ab16ba6d674e7e81abcaeb4d65cfab72d14d6cf07479c972e615a6",
+    "screenshots/small-dark-02.png": "e60a738ad630642061bb65ba92185d80264e734a622253fc5e09f4e33dfc575b",
+    "screenshots/small-dark-03.png": "990613ef0e620a61ffa406216e1b251fd57d8ee80b20f2f52bb10b06919e10b3",
+    "screenshots/small-dark-04.png": "71c60ea35c7a51c969ef7173ad35af1b456d2ed73d6d3b264f86c420b9be828b",
+    "screenshots/small-dark-05.png": "6786dc2724e366583d0d231d39d09360aa5ab9283564e286c83df8d95b17bd5f",
+    "screenshots/small-dark-06.png": "a4932873a6f24809a7da4a35ad94ad99fbe1db6e545726b7279f286a8060f7d1",
+    "screenshots/small-dark-07.png": "ab00c8f94be22269572cb1db3d6368dc612e402dab51219d41806146e061ba81",
+    "screenshots/small-dark-08.png": "e052f04416ce4f86c3d99db093c3e4cc728fff70431547e62579ff9bb764f14e",
+    "screenshots/small-dark-09.png": "2e3599999146d8cca649759a07c32b617ce62054fd0de720a69968cedc6e8198",
+    "screenshots/small-dark-10.png": "e5319598f2da89b332be4f1998ebdbc40d7a43ba951f74e00d9f3b305692874c",
+    "screenshots/small-dark-benchmark-right-columns.png": "c01b866741078f0ecd76772f910c9bdc0164718bb4d9258876463c227b063c93",
+    "screenshots/all-slides-desktop.png": "d768a36ad9b2aa56f1b139dd39d34952fcb861eccef315097281c6bafb309930",
+    "screenshots/all-slides-small.png": "d6ab9db4780a2857efec31629b975c4c589a1d4d1e88ca93d691db74c1b38ee8",
+    "screenshots/original-slide-02-reference.png": "2c0d7dc013b05476b1c975649960d4ef4f97e88c42b785814689af481bff9242",
+    "screenshots/contact-desktop-dark-1.jpg": "4f14cfa1e73e642ee418283da3ccf65e36fe5e5baec4de2b6dcca67d58e06d22",
+    "screenshots/contact-desktop-dark-2.jpg": "8c2cfd831d37f68143dbd102212708e0980707371317dbcf237dcde241c37c24",
+    "screenshots/contact-desktop-dark-3.jpg": "3cae159e009a0fe3f7127eb22cb35dc5a6ee9204d788220103ffb10cf5f80d51",
+    "screenshots/contact-desktop-light-1.jpg": "8e6ea85712cc3c4091fb2746b91e9b9e18ea52f5b848e95d6454385bffd7331a",
+    "screenshots/contact-desktop-light-2.jpg": "7b4cc2f42bae147ff772027e5aa29176309244df2bc4b87059933801012d63b4",
+    "screenshots/contact-desktop-light-3.jpg": "ab84f673bce4397c122b70fafe1089c438eb61e72d8b166ba4eebdcaa30fccfb",
+    "screenshots/contact-small-dark-1.jpg": "332de1d9b722fd0c089a928940b28938ba98e4549a129d64695bc18813f47461",
+    "screenshots/contact-small-dark-2.jpg": "6a1f02bc9ee6554f28c6107382554cb6a4db8ffb453a5dd6b85061a346960389",
+    "screenshots/contact-small-dark-3.jpg": "699a74e0e4030558705aa7e51105adeea6e8957434c6f5fd37fe12d1a610ea91",
+    "screenshots/contact-small-light-1.jpg": "09b8bc860d94478e949d3664871a2beb53ad64c997ed5a7031f194f561193bbd",
+    "screenshots/contact-small-light-2.jpg": "5921877bc24a730ab8527fd42b0e07d5310d92751a9a12b0d20b8a25acd69679",
+    "screenshots/contact-small-light-3.jpg": "7240c3e9fde4926592ec36aa0de2015a5cd5e21599172111645a89a18157ede9"
+  },
+  "review_notes": "review_notes.md"
+}

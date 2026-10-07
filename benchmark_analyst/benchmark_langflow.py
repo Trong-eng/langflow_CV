@@ -78,6 +78,12 @@ def prepare(args) -> None:
 
 
 def run(args) -> dict:
+    if getattr(args, "fixture", None) is not None:
+        from benchmark_analyst.campaigns import run_controlled
+
+        return run_controlled(args)
+    if getattr(args, "memory_checkpoints", False):
+        raise ValueError("--memory-checkpoints requires an isolated --fixture")
     config = read_config(args.config)
     if not config.get("reference_pixel_sha256"):
         raise ValueError("prepare a reference first; config requires reference_pixel_sha256")
@@ -87,18 +93,8 @@ def run(args) -> dict:
     if args.requests_per_arm >= 1000:
         if not args.smoke:
             raise ValueError("main requires --smoke pointing to a successful smoke experiment")
-        smoke = json.loads((args.smoke / "analysis.json").read_text())
-        smoke_manifest = json.loads((args.smoke / "manifest.json").read_text())
-        if (
-            not smoke.get("valid")
-            or smoke_manifest["workload"]["reference_pixel_sha256"] != config["reference_pixel_sha256"]
-        ):
-            raise ValueError("smoke must be valid and use the same reference")
     if args.output.exists():
         raise ValueError("output directory already exists; campaigns never overwrite or silently resume")
-    worker = Worker(ROOT, args.port, env_file=args.env_file, credentials_file=args.credentials_file)
-    if not worker.api_key:
-        raise ValueError("LANGFLOW_API_KEY is missing")
     image = Path(config["image_path"]).read_bytes()
     exported = json.loads(Path(config["flow_export_path"]).read_text())
     source = source_identity(ROOT)
@@ -109,10 +105,12 @@ def run(args) -> dict:
         "model_sha256": file_digest(Path(config["model_path"])),
     }
     if args.requests_per_arm >= 1000:
-        if smoke_manifest["source"]["sha256"] != source["sha256"]:
-            raise ValueError("source changed since smoke; run smoke again with final code")
-        if smoke_manifest["workload"] != workload or smoke_manifest["warmups"] != args.warmups:
-            raise ValueError("workload or warmup configuration changed since smoke")
+        from benchmark_analyst.campaign_contract import check_smoke
+
+        check_smoke(args.smoke, {"workload": workload, "source": source, "warmups": args.warmups})
+    worker = Worker(ROOT, args.port, env_file=args.env_file, credentials_file=args.credentials_file)
+    if not worker.api_key:
+        raise ValueError("LANGFLOW_API_KEY is missing")
     args.output.mkdir(parents=True)
     manifest = {
         "schema_version": 1,
@@ -217,23 +215,35 @@ def run(args) -> dict:
     return result
 
 
-def main() -> int:
+def make_parser():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("prepare", "run"):
+    for name in ("prepare", "run", "freeze", "diagnose"):
         command = commands.add_parser(name)
         command.add_argument("--config", type=Path, required=True)
         command.add_argument("--output", type=Path, required=True)
         command.add_argument("--env-file", type=Path, default=ROOT / ".env")
         command.add_argument("--credentials-file", type=Path)
         command.add_argument("--port", type=int, default=7860)
-        if name == "run":
+        if name in ("run", "diagnose"):
             command.add_argument("--requests-per-arm", type=int, default=1000)
             command.add_argument("--blocks", type=int, default=4)
             command.add_argument("--warmups", type=int, default=5)
             command.add_argument("--smoke", type=Path)
-    analysis = commands.add_parser("analyze")
-    analysis.add_argument("--output", type=Path, required=True)
+            command.add_argument("--fixture", type=Path, required=name == "diagnose")
+            command.add_argument("--memory-checkpoints", action="store_true")
+            command.add_argument("--keep-slot-data", action="store_true")
+        if name == "freeze":
+            command.add_argument("--source-database", type=Path)
+            command.add_argument("--source-storage", type=Path)
+    for name in ("analyze", "analyze-suite"):
+        analysis = commands.add_parser(name)
+        analysis.add_argument("--output", type=Path, required=True)
+    return parser
+
+
+def main() -> int:
+    parser = make_parser()
     args = parser.parse_args()
     args.output = args.output.resolve()
     if not args.output.is_relative_to(ROOT / "benchmark_analyst" / "runs"):
@@ -241,11 +251,25 @@ def main() -> int:
     if args.command == "prepare":
         prepare(args)
     elif args.command == "run":
-        return 0 if run(args)["valid"] else 2
+        result = run(args)
+        return 0 if result.get("overall_valid", result["valid"]) else 2
+    elif args.command == "freeze":
+        from benchmark_analyst.campaigns import freeze_fixture
+
+        freeze_fixture(args)
+    elif args.command == "diagnose":
+        from benchmark_analyst.campaigns import diagnose
+
+        return 0 if diagnose(args)["overall_valid"] else 2
+    elif args.command == "analyze-suite":
+        from benchmark_analyst.suite_reporting import analyze_suite
+
+        return 0 if analyze_suite(args.output)["overall_valid"] else 2
     else:
         from benchmark_analyst.reporting import analyze
 
-        return 0 if analyze(args.output)["valid"] else 2
+        result = analyze(args.output)
+        return 0 if result.get("overall_valid", result["valid"]) else 2
     return 0
 
 

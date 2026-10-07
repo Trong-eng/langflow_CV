@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Báo Cáo Bảo Vệ: Tối Ưu Overhead Điều Phối Pipeline Trên Langflow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&subset=vietnamese&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #090d16;
+      --bg-secondary: #0f172a;
+      --bg-card: #141e33;
+      --bg-card-hover: #1a2742;
+      --border-color: #233354;
+      --border-accent: #3b82f6;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-blue: #38bdf8;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #a855f7;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Plus Jakarta Sans", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "JetBrains Mono", monospace;
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.6);
+      --gradient-card: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+    }
+
+    html.light {
+      color-scheme: light;
+      --bg-primary: #ffffff;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --border-color: #e2e8f0;
+      --border-accent: #2563eb;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --accent-blue: #0369a1;
+      --accent-cyan: #0e7490;
+      --accent-green: #047857;
+      --accent-amber: #92400e;
+      --accent-rose: #be123c;
+      --accent-purple: #6d28d9;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08);
+      --gradient-card: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Style chuẩn cho code inline, chống lỗi vỡ chữ / giãn cách ký tự */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.86em;
+      background: rgba(56, 189, 248, 0.12);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 0.1rem 0.38rem;
+      border-radius: 4px;
+      font-weight: 600;
+      letter-spacing: 0 !important;
+      word-spacing: normal !important;
+    }
+    html.light code {
+      background: rgba(2, 132, 199, 0.08);
+      color: #0284c7;
+      border: 1px solid rgba(2, 132, 199, 0.2);
+    }
+
+    /* Top Navigation Bar */
+    header.deck-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    html.light header.deck-header {
+      background: rgba(255, 255, 255, 0.88);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand-badge {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    }
+    .deck-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 480px;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.825rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+    }
+    .btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-blue);
+      transform: translateY(-1px);
+    }
+    .btn:active {
+      transform: translateY(0);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      color: #ffffff;
+      border-color: #3b82f6;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+    }
+    .btn-sm {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.775rem;
+    }
+
+    .slide-indicator {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.1);
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    /* Progress bar */
+    .progress-track {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #38bdf8, #818cf8, #a855f7);
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Main Container */
+    main.presentation-stage {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      position: relative;
+    }
+
+    /* Slide Deck System */
+    .slide-wrapper {
+      width: 100%;
+      max-width: 1240px;
+      min-height: 680px;
+      position: relative;
+    }
+
+    .slide {
+      display: none;
+      opacity: 0;
+      transform: translateY(12px) scale(0.995);
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      background: var(--gradient-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 2.5rem 2.85rem;
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(10px);
+    }
+    .slide.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Document / Handout view mode */
+    body.document-mode header.deck-header {
+      position: sticky;
+      top: 0;
+    }
+    body.document-mode .slide-wrapper {
+      max-width: 1080px;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      padding-bottom: 4rem;
+    }
+    body.document-mode .slide {
+      display: block !important;
+      opacity: 1 !important;
+      transform: none !important;
+      min-height: auto;
+    }
+    body.document-mode .slide-nav-buttons {
+      display: none !important;
+    }
+
+    /* Typography & Slide Elements */
+    .slide-header {
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1.5rem;
+    }
+    .slide-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-blue);
+      margin-bottom: 0.35rem;
+    }
+    .slide-title {
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      line-height: 1.25;
+    }
+    .slide-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-top: 0.3rem;
+    }
+
+    /* Badges & Chips */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.55rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+    .chip-blue {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.3);
+      color: var(--accent-blue);
+    }
+    .chip-green {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: var(--accent-green);
+    }
+    .chip-amber {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: var(--accent-amber);
+    }
+    .chip-purple {
+      background: rgba(168, 85, 247, 0.12);
+      border-color: rgba(168, 85, 247, 0.3);
+      color: var(--accent-purple);
+    }
+    .chip-rose {
+      background: rgba(244, 63, 94, 0.12);
+      border-color: rgba(244, 63, 94, 0.3);
+      color: var(--accent-rose);
+    }
+
+    /* Grids & Cards */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.35rem;
+      transition: all 0.2s ease;
+    }
+    .card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+      background: var(--bg-card-hover);
+    }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card-desc {
+      font-size: 0.885rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Feynman Callout Cards */
+    .feynman-card {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 14px;
+      padding: 1.25rem 1.4rem;
+    }
+    .tech-card {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 14px;
+      padding: 1.25rem 1.4rem;
+    }
+
+    /* Callout & Q&A Box */
+    .qa-box {
+      background: linear-gradient(135deg, rgba(30, 58, 138, 0.25) 0%, rgba(15, 23, 42, 0.4) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-top: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .qa-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, #38bdf8, #3b82f6);
+    }
+    .qa-question {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+    }
+    .qa-answer {
+      font-size: 0.925rem;
+      color: var(--text-primary);
+      line-height: 1.7;
+    }
+
+    /* File Table */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--bg-card);
+      margin-top: 1rem;
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      text-align: left;
+    }
+    table.data-table th {
+      background: rgba(15, 23, 42, 0.6);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.775rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.85rem 1.15rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    html.light table.data-table th {
+      background: #f1f5f9;
+    }
+    table.data-table td {
+      padding: 0.85rem 1.15rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary);
+      vertical-align: top;
+    }
+    table.data-table tr:last-child td {
+      border-bottom: none;
+    }
+    table.data-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .file-path {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-cyan);
+      word-break: break-all;
+    }
+
+    /* Metric Big Numbers */
+    .metric-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .metric-value {
+      font-size: 2.25rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+      margin-bottom: 0.35rem;
+    }
+    .metric-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+    .metric-sub {
+      font-size: 0.75rem;
+      color: var(--accent-green);
+      margin-top: 0.25rem;
+      font-weight: 500;
+    }
+
+    /* Flow Chart / Visual comparison */
+    .compare-flow {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.65rem 0.5rem;
+      background: rgba(15, 23, 42, 0.55);
+      border-radius: 10px;
+      border: 1px dashed var(--border-color);
+      margin: 0.85rem 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .step-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 7px;
+      padding: 0.45rem 0.3rem;
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 600;
+      line-height: 1.25;
+      min-width: 0;
+      word-break: break-word;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      box-sizing: border-box;
+    }
+    .step-box.danger {
+      border-color: rgba(244, 63, 94, 0.4);
+      background: rgba(244, 63, 94, 0.08);
+      color: #fda4af;
+    }
+    .step-box.danger.highlight {
+      border-color: var(--accent-rose);
+      background: rgba(244, 63, 94, 0.22);
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 0 10px rgba(244, 63, 94, 0.3);
+    }
+    .step-box.success {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: rgba(16, 185, 129, 0.08);
+      color: #6ee7b7;
+    }
+    .flow-arrow {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 0 0.05rem;
+      user-select: none;
+      text-align: center;
+    }
+
+    /* CODE COMPARISON & CODE VIEWER STYLES */
+    .code-split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+    .code-frame {
+      background: #090e1a;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-md);
+    }
+    .code-frame.danger-border {
+      border-top: 4px solid var(--accent-rose);
+    }
+    .code-frame.success-border {
+      border-top: 4px solid var(--accent-green);
+    }
+    .code-header {
+      background: rgba(15, 23, 42, 0.85);
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .code-body {
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.775rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+      overflow-x: auto;
+      flex: 1;
+      white-space: pre;
+    }
+    .code-comment {
+      color: #94a3b8;
+      font-style: italic;
+    }
+    .code-comment.vn-bad {
+      color: #fb7185;
+      font-weight: 600;
+    }
+    .code-comment.vn-good {
+      color: #34d399;
+      font-weight: 600;
+    }
+    .code-highlight-bad {
+      background: rgba(244, 63, 94, 0.16);
+      border-left: 3px solid #f43f5e;
+      display: block;
+      margin: 0 -1rem;
+      padding: 0 1rem;
+    }
+    .code-highlight-good {
+      background: rgba(16, 185, 129, 0.16);
+      border-left: 3px solid #10b981;
+      display: block;
+      margin: 0 -1rem;
+      padding: 0 1rem;
+    }
+
+    /* Light presentation: preserve content and layout, adjust only colors. */
+    html.light code {
+      color: var(--accent-blue);
+    }
+    html.light .progress-track {
+      background: var(--border-color);
+    }
+    html.light .feynman-card {
+      background: #fffbeb;
+    }
+    html.light .tech-card,
+    html.light .qa-box {
+      background: #eff6ff;
+    }
+    html.light .compare-flow {
+      background: #f8fafc;
+    }
+    html.light .step-box.danger,
+    html.light .step-box.danger.highlight {
+      color: var(--accent-rose);
+    }
+    html.light .step-box.danger.highlight {
+      background: #ffe4e6;
+      box-shadow: none;
+    }
+    html.light .step-box.success {
+      color: var(--accent-green);
+    }
+    html.light .code-frame {
+      background: #f8fafc;
+    }
+    html.light .code-header {
+      background: #f1f5f9;
+    }
+    html.light .code-body {
+      color: var(--text-primary);
+    }
+    html.light .code-comment {
+      color: var(--text-muted);
+    }
+    html.light .code-comment.vn-bad {
+      color: var(--accent-rose);
+    }
+    html.light .code-comment.vn-good {
+      color: var(--accent-green);
+    }
+    html.light .code-highlight-bad {
+      background: #fff1f2;
+      border-left-color: var(--accent-rose);
+    }
+    html.light .code-highlight-good {
+      background: #ecfdf5;
+      border-left-color: var(--accent-green);
+    }
+    html.light .metric-value {
+      background-image: linear-gradient(135deg, #0369a1, #6d28d9);
+    }
+    html.light [style*="background: rgba(15, 23, 42,"] {
+      background: #f1f5f9 !important;
+    }
+    html.light [style*="background: rgba(0,0,0,"] {
+      background: #eff6ff !important;
+    }
+    html.light [style*="color: #38bdf8"] {
+      color: var(--accent-blue) !important;
+    }
+    html.light [style*="color: #fb7185"] {
+      color: var(--accent-rose) !important;
+    }
+    html.light [style*="color: #34d399"] {
+      color: var(--accent-green) !important;
+    }
+
+    /* Print styles */
+    @media print {
+      header.deck-header, .slide-footer-nav, .nav-controls {
+        display: none !important;
+      }
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .slide {
+        display: block !important;
+        opacity: 1 !important;
+        page-break-after: always;
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+        margin-bottom: 2rem;
+        background: white !important;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .grid-2, .grid-3, .grid-4, .code-split {
+        grid-template-columns: 1fr;
+      }
+      .slide {
+        padding: 1.5rem;
+      }
+      .slide-title {
+        font-size: 1.4rem;
+      }
+      .deck-title {
+        display: none;
+      }
+    }
+
+    /* Narrow-screen safeguards for the original slide layout. */
+    @media (max-width: 1100px) {
+      header.deck-header { flex-wrap: wrap; }
+      .brand-group, .nav-controls { min-width: 0; flex-wrap: wrap; }
+    }
+    @media (max-width: 992px) {
+      .nav-controls { gap: .4rem; }
+      .btn { padding: .4rem .55rem; }
+      .slide-header { flex-wrap: wrap; }
+      .slide-header > div { min-width: 0; }
+      .code-header { flex-wrap: wrap; gap: .5rem; }
+      .code-body { white-space: pre-wrap; overflow-wrap: anywhere; }
+      code, .chip { overflow-wrap: anywhere; }
+      .table-container > table { min-width: 680px; }
+    }
+    @media (max-width: 600px) {
+      header.deck-header { padding: .65rem .75rem; }
+      main.presentation-stage { padding: 1rem .75rem; }
+      .slide { padding: 1.15rem; }
+      .brand-group { flex-wrap: wrap; }
+      .nav-controls { width: 100%; }
+      .slide-indicator { font-size: .75rem; }
+      .slide-title code { font-size: .7em; word-break: break-all; }
+      .compare-flow { grid-template-columns: 1fr; }
+      .compare-flow .flow-arrow { transform: rotate(90deg); }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Top Persistent Header -->
+  <header class="deck-header">
+    <div class="brand-group">
+      <span class="brand-badge">BẢO VỆ ĐỀ TÀI</span>
+      <span class="deck-title">Tối Ưu Hóa Pipeline Production Cố Định Trên Langflow</span>
+      <span class="chip chip-blue">compilation cache · V6</span>
+    </div>
+
+    <div class="nav-controls">
+      <span class="slide-indicator" id="slideIndicator">Slide 1 / 10</span>
+      <button class="btn btn-sm" id="prevBtn" title="Phím tắt: Mũi tên trái (←)">◄ Trước</button>
+      <button class="btn btn-sm btn-primary" id="nextBtn" title="Phím tắt: Mũi tên phải (→) hoặc Space">Tiếp theo ►</button>
+      <button class="btn btn-sm" id="viewModeBtn" title="Chuyển chế độ Trình Chiếu / Báo Cáo In Ấn">📑 Xem Tất Cả</button>
+      <button class="btn btn-sm" id="themeToggleBtn" title="Đổi giao diện Sáng / Tối">🌓 Giao diện</button>
+      <button class="btn btn-sm" id="fullscreenBtn" title="Toàn màn hình (F)">⛶</button>
+    </div>
+
+    <!-- Top progress bar -->
+    <div class="progress-track">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </header>
+
+  <!-- Presentation Stage -->
+  <main class="presentation-stage">
+    <div class="slide-wrapper" id="slideWrapper">
+
+<section class="slide active" data-slide="1" data-original-slide="1" id="slide-1">
+        <div class="slide-header">
+          <div>
+            <div class="slide-eyebrow">BÁO CÁO BẢO VỆ GIẢI PHÁP TỐI ƯU HÓA HỆ THỐNG</div>
+            <h1 class="slide-title">Tối Ưu Overhead Điều Phối Cho Pipeline AI Cố Định Trên Langflow</h1>
+            <p class="slide-subtitle">Giảm công việc biên dịch lặp lại bằng Component Compilation Cache trên flow SCRFD</p>
+          </div>
+          <div style="text-align: right;">
+            <span class="chip chip-purple" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">Code & Benchmark: MAIN vs COMPILE · V6</span>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 1.5rem; grid-template-columns: 1fr;">
+          <div class="card" style="border-left: 4px solid var(--accent-blue);">
+            <div class="card-title">
+              <span style="font-size: 1.3rem;">⚡</span>
+              <span>PHƯƠNG PHÁP 1: Component Compilation Cache</span>
+            </div>
+            <p class="card-desc">
+              Lưu trữ artifact bytecode (CodeType) của Custom Component trong RAM theo mã băm SHA-256 của source code.
+              <br><br>
+              <strong>Mục tiêu:</strong> Giảm chi phí chuẩn bị source lặp lại qua <code>ast.parse()</code> và biên dịch class khi cache hit; vẫn thực hiện các bước khởi tạo runtime.
+            </p>
+            <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <span class="chip chip-blue">commit: c20b65912</span>
+              <span class="chip">Reuse source artifacts</span>
+              <span class="chip">Thread-safe LRU Cache</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="card" style="margin-top: 1.5rem; background: rgba(56, 189, 248, 0.05); border-color: rgba(56, 189, 248, 0.2);">
+          <div style="font-size: 0.9rem; color: var(--text-secondary);">
+            <strong>Môi trường thử nghiệm:</strong> Pipeline SCRFD cố định, mô hình ONNX, API synchronous <code>/api/v1/run/{flow_id}</code>. Kết quả MAIN–COMPILE trình bày từ dữ liệu benchmark đầu tiên: mean/p95 của server và client API, cùng RSS toàn worker. Upload/download ngoài latency /run; overhead trừ hợp output method của bốn node SCRFD chỉ dùng giải thích. Chưa đo CPU hoặc tải production đồng thời.
+          </div>
+        </div>
+      </section>
+
+<section class="slide" data-slide="2" data-original-slide="2" id="slide-2">
+        <div class="slide-header">
+          <div>
+            <div class="slide-eyebrow">BỐI CẢNH & PHÂN TÍCH NÚT THẮT HỆ THỐNG · VẤN ĐỀ 1</div>
+            <h2 class="slide-title">Vấn Đề 1: Lãng Phí Tài Nguyên Do AST Parse & Compile Lặp Lại</h2>
+            <p class="slide-subtitle">Tại sao một pipeline AI cố định lại liên tục tiêu tốn tài nguyên cho cùng một đoạn mã tĩnh không hề đổi?</p>
+          </div>
+          <span class="chip chip-rose" style="font-size: 0.85rem;">Component Level Bottleneck</span>
+        </div>
+
+        <div class="grid-2">
+          <!-- ẨN DỤ FEYNMAN -->
+          <div class="feynman-card">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <span style="font-size: 1.3rem;">💡</span>
+              <span style="font-weight: 700; color: var(--accent-amber); font-size: 1rem;">ẨN DỤ FEYNMAN DỄ HIỂU</span>
+            </div>
+            <p style="font-size: 0.885rem; color: var(--text-primary); line-height: 1.65;">
+              Hãy tưởng tượng bạn bước vào một nhà hàng quen thuộc và gọi một món ăn cố định (gọi API thực thi pipeline):
+            </p>
+            <div style="background: rgba(15, 23, 42, 0.6); border-radius: 8px; padding: 0.85rem; margin: 0.75rem 0; font-size: 0.84rem; line-height: 1.6; border-left: 3px solid var(--accent-amber);">
+              <strong>Quy trình vô lý ở nhánh main:</strong> Mỗi lần khách gọi món cơm sườn, đầu bếp lại bắt khách mở cuốn sách dạy nấu ăn ra. Đầu bếp ngồi đánh vần từng chữ cái, tra từ điển ngữ pháp (<code>ast.parse()</code>), rồi dịch cuốn sách từ tiếng Anh sang tiếng Việt (<code>compile()</code> ra bytecode), sau đó mới chịu nấu!<br><br>
+              Khách thứ hai, thứ ba, thứ một nghìn vào gọi đúng đĩa cơm đó... đầu bếp vẫn lặp lại đúng chu trình đánh vần và dịch sách đó từ đầu!
+            </div>
+            <p style="font-size: 0.835rem; color: var(--accent-rose); font-weight: 600;">
+              ⚠️ Hậu quả: Đầu bếp kiệt sức vì làm việc thừa mứa, khách hàng phải chờ đợi lâu dù món ăn không đổi.
+            </p>
+          </div>
+
+          <!-- BẢN CHẤT KỸ THUẬT CS/IT -->
+          <div class="tech-card">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <span style="font-size: 1.3rem;">⚙️</span>
+              <span style="font-weight: 700; color: var(--accent-blue); font-size: 1rem;">BẢN CHẤT KỸ THUẬT & COMPUTER SCIENCE</span>
+            </div>
+            <ul style="padding-left: 1.15rem; font-size: 0.84rem; color: var(--text-secondary); line-height: 1.65;">
+              <li>
+                <strong style="color: var(--text-primary);">Mã nguồn lưu dưới dạng chuỗi Text (String) trong Database:</strong> Custom Component trong Langflow là script Python lưu trong DB, không phải file <code>.py</code> tĩnh trên đĩa cứng. Trình thông dịch Python <strong>không thể tự động sinh file cache <code>.pyc</code></strong> như import thông thường.
+              </li>
+              <li style="margin-top: 0.5rem;">
+                <strong style="color: var(--text-primary);">Duyệt cây cú pháp AST (Abstract Syntax Tree):</strong> Khi chưa có artifact được tái sử dụng, worker phân tích source và dựng cây AST để kiểm tra cú pháp và chú thích kiểu.
+              </li>
+              <li style="margin-top: 0.5rem;">
+                <strong style="color: var(--text-primary);">Biên dịch Bytecode lặp đi lặp lại:</strong> Tiếp tục gọi hàm <code>compile()</code> để sinh đối tượng <code>CodeType</code>. Việc lặp lại trên cùng source tạo thêm công việc cho worker; tỷ trọng chi phí cần được đo, không suy ra chỉ từ số request.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Sơ đồ quy trình & Hướng giải pháp -->
+        <div class="compare-flow" style="margin-top: 1.25rem;">
+          <div class="step-box danger">1. Request đến</div>
+          <span class="flow-arrow">➔</span>
+          <div class="step-box danger">2. Đọc chuỗi Text DB</div>
+          <span class="flow-arrow">➔</span>
+          <div class="step-box danger">3. ast.parse() dựng cây AST</div>
+          <span class="flow-arrow">➔</span>
+          <div class="step-box danger">4. compile() sinh CodeType</div>
+        </div>
+
+        <div class="card" style="margin-top: 1rem; padding: 0.85rem 1.25rem; background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3);">
+          <div style="font-size: 0.885rem; color: var(--text-primary);">
+            ⚡ <strong>Định hướng giải quyết (Phương pháp 1):</strong> Đầu bếp có thể dùng lại bản công thức đã chuẩn bị! Cache artifact theo source (SHA-256, generation và variant), gồm Python bytecode <code>CodeType</code>. Khi hit, <strong>tái sử dụng phần chuẩn bị source/class</strong>; imports, exec và tạo class vẫn diễn ra. Bytecode không phải mã máy.
+          </div>
+        </div>
+      </section>
+
+<section class="slide" data-slide="3" data-original-slide="4" id="slide-3">
+        <div class="slide-header">
+          <div>
+            <div class="slide-eyebrow">GIẢI PHÁP 1 · CẤP ĐỘ COMPONENT</div>
+            <h2 class="slide-title">PHƯƠNG PHÁP 1: Cache Parse & Compile Python Component</h2>
+            <p class="slide-subtitle">Component Compilation Cache — Lưu trữ bytecode biên dịch sẵn trong RAM theo mã băm SHA256</p>
+          </div>
+          <span class="chip chip-blue" style="font-size: 0.85rem;">Feat Commit: c20b65912</span>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--accent-blue);">
+              1. Nguồn Code Đã Đo & Kiểm Chứng
+            </h3>
+            <div class="card" style="padding: 1rem 1.25rem;">
+              <div style="margin-bottom: 0.75rem;">
+                <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--accent-amber); font-weight: 700;">Commit Cốt Lõi:</span>
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
+                  <span class="chip chip-blue">c20b65912</span>
+                  <span style="font-weight: 600; font-size: 0.875rem;">feat: cache component compilation artifacts</span>
+                </div>
+              </div>
+
+              <div style="border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+                <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">MAIN Local Pin & Bằng Chứng V6:</span>
+                <div style="flex-direction: column; gap: 0.4rem; margin-top: 0.35rem; display: flex;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="chip">c9fbb3ef7</span><span style="font-size: 0.825rem; color: var(--text-secondary);">MAIN: codex/benchmark-main-baseline-v6</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="chip">c20b65912</span><span style="font-size: 0.825rem; color: var(--text-secondary);">COMPILE: codex/benchmark-compile-only-v6</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="chip">VALID × 2</span><span style="font-size: 0.825rem; color: var(--text-secondary);"><a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/final_verification_receipt.json" target="_blank" rel="noopener">Campaign verification receipt</a></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--accent-green);">
+              2. Tổng Thể Phạm Vi Tác Động
+            </h3>
+            <div class="card" style="padding: 1.1rem 1.25rem;">
+              <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.65;">
+                Commit <code style="color: var(--accent-blue);">c20b65912</code> can thiệp trực tiếp vào tầng lõi <code>src/lfx/</code> với <strong>6 files (+847 dòng, −46 dòng): 4 runtime files và 2 test files</strong>:
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 0.45rem; margin-top: 0.75rem; font-size: 0.82rem;">
+                <div>📦 <strong>1 File tạo mới:</strong> <code>component_compilation_cache.py</code> (Bộ não cache).</div>
+                <div>⚙️ <strong>3 File production sửa đổi:</strong> <code>validate.py</code>, <code>eval.py</code>, <code>cache.py</code>.</div>
+                <div>🧪 <strong>2 File test:</strong> Compilation suite +546 dòng; settings composition +8 dòng. Runtime +293/−46; tests +554.</div>
+              </div>
+              <div style="margin-top: 0.85rem; padding-top: 0.65rem; border-top: 1px dashed var(--border-color); font-size: 0.8rem; color: var(--accent-green);">
+                👉 Slide tiếp theo sẽ phân tích chi tiết ý nghĩa kỹ thuật của từng file.
+              </div>
+            </div>
+          </div>
+        </div>
+      <p class="card-desc" style="margin-top: .75rem; font-size: .78rem;"><strong>MAIN local pin:</strong> <span class="file-path">c9fbb3ef72c2027ce4fefd1f45d040ce6469a99d</span><br><span class="file-path">/Users/tranquangtrong/.codex/worktrees/benchmark-main-v6/langflow_CV</span><br><strong>COMPILE:</strong> <span class="file-path">c20b6591292e8c3e979db59f831987f3bc4cfbf0</span><br><span class="file-path">/Users/tranquangtrong/.codex/worktrees/benchmark-compile-v6/langflow_CV</span></p><p style="margin-top: .75rem; font-size: .8rem; line-height: 1.6; color: var(--text-secondary);">Nguồn: <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/setup-main-compile-v6/main-to-compile.patch" target="_blank" rel="noopener">Diff MAIN → COMPILE</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/setup-main-compile-v6/source_review.json" target="_blank" rel="noopener">Source review</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6/manifest.json" target="_blank" rel="noopener">Manifest lượt 1</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6-repeat/manifest.json" target="_blank" rel="noopener">Manifest repeat</a></p></section>
+
+<section class="slide" data-slide="4" data-original-slide="5" id="slide-4">
+        <div class="slide-header">
+          <div>
+            <div class="slide-eyebrow">GIẢI PHÁP 1 · PHÂN TÍCH KIẾN TRÚC MÃ NGUỒN</div>
+            <h2 class="slide-title">Ý Nghĩa & Tác Động Kỹ Thuật Toàn Bộ Các File (Phương Pháp 1)</h2>
+            <p class="slide-subtitle">Bóc tách cặn kẽ vai trò, nguyên nhân thay đổi và sự phối hợp đồng bộ giữa các file mã nguồn</p>
+          </div>
+          <span class="chip chip-blue">Chi Tiết 100% File</span>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 32%;">File & Vị Trí Trong Repo</th>
+                <th style="width: 14%;">Loại</th>
+                <th style="width: 54%;">Ý Nghĩa Kỹ Thuật & Tác Động Cốt Lõi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <span class="file-path">src/lfx/src/lfx/custom/component_compilation_cache.py</span>
+                </td>
+                <td>
+                  <span class="chip chip-green">Tạo Mới 100%</span>
+                </td>
+                <td>
+                  <strong>"Bộ Não Lưu Trữ Bytecode Trung Tâm":</strong><br>
+                  • Định nghĩa đối tượng <code>ComponentCompilationArtifact</code>: Đóng gói mã bytecode <code>compiled_class: CodeType</code> và <code>module_template: bytes</code> (AST bytes tạo trong tiến trình từ source đã chuẩn bị).<br>
+                  • Hàm <code>_source_digest()</code>: Khóa gồm generation, SHA-256 của source gốc và variant; kiểm tra thêm toàn bộ source khớp entry. Source đổi sẽ không tái sử dụng artifact của source cũ.<br>
+                  • Cơ chế bảo vệ bộ nhớ & đa luồng: Dùng <code>threading.RLock()</code> ngăn race condition (tránh compilation stampede khi nhiều request đến cùng lúc), kết hợp <code>OrderedDict</code> LRU giới hạn 128 entries/tiến trình; source lớn hơn 262.144 bytes bypass. Giới hạn entries không phải giới hạn tổng RSS.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="file-path">src/lfx/src/lfx/custom/validate.py</span>
+                </td>
+                <td>
+                  <span class="chip chip-amber">Sửa Đổi</span>
+                </td>
+                <td>
+                  <strong>"Cửa Ngõ Cắt Đứt Nút Thắt Biên Dịch":</strong><br>
+                  • Tái cấu trúc 2 hàm <code>create_class()</code> và <code>create_class_from_code()</code>.<br>
+                  • Ở <code>main</code>: Luôn gọi <code>ast.parse(code)</code> và <code>compile_class_code()</code> trên mọi request.<br>
+                  • Ở nhánh này: Chuyển hướng sang tra cứu cache. Khi <strong>Cache Hit</strong>, tái sử dụng <code>artifact.compiled_class</code> và module template, <strong>giảm phần parse/compile chuẩn bị artifact</strong>; runtime globals, exec và class vẫn được dựng.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="file-path">src/lfx/src/lfx/custom/eval.py</span>
+                </td>
+                <td>
+                  <span class="chip chip-amber">Sửa Đổi</span>
+                </td>
+                <td>
+                  <strong>"Đồng Bộ Hóa Luồng Đánh Giá Động":</strong><br>
+                  • Sửa hàm <code>eval_custom_component_code(code)</code> thay vì gọi <code>create_class()</code> không cache như ở main, nay chuyển sang dùng <code>create_class_from_code(code)</code>.<br>
+                  • Đảm bảo tính nhất quán: Đường gọi này dùng chung cơ chế cache khi bật cờ và source đủ điều kiện; không có nghĩa mọi lời gọi compile trong runtime đều được loại bỏ.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="file-path">src/lfx/src/lfx/services/settings/groups/cache.py</span>
+                </td>
+                <td>
+                  <span class="chip chip-amber">Sửa Đổi</span>
+                </td>
+                <td>
+                  <strong>"Quản Trị Cờ Tính Năng An Toàn (Opt-in)":</strong><br>
+                  • Bổ sung trường cấu hình: <code>component_compilation_cache_enabled: bool = False</code>.<br>
+                  • Ý nghĩa triển khai: Cho phép production chủ động bật/tắt tính năng cache qua biến môi trường hoặc file setting mà không cần sửa code, mặc định tắt để giữ đường chạy không cache; tính tương thích được kiểm tra trong phạm vi test hiện có.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="file-path">test_component_compilation_cache.py<br>test_settings_composition.py</span>
+                </td>
+                <td>
+                  <span class="chip chip-purple">Bổ Sung Kiểm Chứng</span>
+                </td>
+                <td>
+                  <strong>"Đảm Bảo Chất Lượng & Đo Đạc Khách Quan":</strong><br>
+                  • Bộ unit test 546 dòng: Kiểm tra toàn diện cache hit/miss, thread safety đa luồng, LRU eviction khi vượt quá dung lượng.<br>
+                  • Settings composition +8 dòng: Kiểm tra cờ opt-in mặc định False và cấu hình. Hai source MAIN/COMPILE và harness được xác minh riêng trong chiến dịch V6.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+<section class="slide" data-slide="5" data-original-slide="6" id="slide-5">
+        <div class="slide-header">
+          <div>
+            <div class="slide-eyebrow">GIẢI PHÁP 1 · MINH HỌA CODE RÚT GỌN</div>
+            <h2 class="slide-title">Đối Chiếu Code: Sửa Đổi Tại <code>src/lfx/src/lfx/custom/validate.py</code></h2>
+            <p class="slide-subtitle">So sánh trực tiếp luồng khởi tạo class giữa nhánh Main (Baseline) và Nhánh Tối Ưu</p>
+          </div>
+          <span class="chip chip-purple">2-Khung Song Song</span>
+        </div>
+
+        <div class="code-split">
+          <!-- KHUNG TRÁI: MAIN BASELINE -->
+          <div class="code-frame danger-border">
+            <div class="code-header">
+              <span style="color: var(--accent-rose);">❌ NHÁNH MAIN (BASELINE - NGHẼN TÀI NGUYÊN)</span>
+              <span class="chip">validate.py: create_class()</span>
+            </div>
+            <pre class="code-body"><span class="code-comment vn-bad"># [BẤT CẬP]: Mỗi request đều phải phân tích cú pháp từ đầu</span>
+module = ast.parse(code)
+validate_return_annotations(module)
+
+future_imports = [
+    n for n in runtime_module.body
+    if isinstance(n, ast.ImportFrom) and n.module == "__future__"
+]
+runtime_class_code = extract_class_code(runtime_module, class_name)
+
+<span class="code-highlight-bad"><span class="code-comment vn-bad"># ⚠️ NGUYÊN NHÂN LÃNG PHÍ:</span>
+<span class="code-comment vn-bad"># Gọi compile_class_code() dịch chuỗi code ra bytecode</span>
+<span class="code-comment vn-bad"># LẶP ĐI LẶP LẠI trên từng request cho cùng một đoạn mã tĩnh!</span>
+compiled_class = compile_class_code(runtime_class_code, future_imports)</span>
+
+component_class = build_class_constructor(
+    compiled_class, exec_globals, class_name
+)</pre>
+          </div>
+
+          <!-- KHUNG PHẢI: NHÁNH HIỆN TẠI -->
+          <div class="code-frame success-border">
+            <div class="code-header">
+              <span style="color: var(--accent-green);">✅ NHÁNH COMPILE (TỐI ƯU COMPILATION CACHE)</span>
+              <span class="chip chip-green">validate.py: create_class()</span>
+            </div>
+            <pre class="code-body"><span class="code-comment vn-good"># [CẢI TIẾN]: Kiểm tra và lấy artifact đã biên dịch trong RAM</span>
+if artifact is None:
+    lookup, prepared_module = _get_component_compilation_artifact(code, class_name)
+    artifact = lookup.artifact
+
+<span class="code-comment vn-good"># Khi cache hit: nạp lại template AST đã chuẩn bị</span>
+module = (
+    prepared_module if prepared_module is not None
+    else _load_component_module_template(artifact.module_template)
+)
+...
+<span class="code-highlight-good"><span class="code-comment vn-good"># TÁI SỬ DỤNG BYTECODE CLASS ĐÃ CHUẨN BỊ:</span>
+<span class="code-comment vn-good"># Khi hit: không biên dịch lại class artifact; vẫn có công việc runtime</span>
+<span class="code-comment vn-good"># Nạp thẳng bytecode đã compile sẵn từ RAM (artifact.compiled_class):</span>
+component_class = build_class_constructor(
+    artifact.compiled_class, exec_globals, class_name
+)</span></pre>
+          </div>
+        </div>
+
+        <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
+          <span style="color: var(--accent-green); font-size: 1.1rem;">💡</span>
+          <span><strong>Kết quả:</strong> Khi cache hit, worker tái sử dụng artifact đã chuẩn bị. Imports, globals, exec và tạo class vẫn thực hiện; một số định nghĩa ở cấp module vẫn đi qua <code>compile()</code>. Không đồng nhất cache hit với chi phí runtime bằng 0.</span>
+        </div>
+      <p style="margin-top: .75rem; font-size: .8rem; line-height: 1.6; color: var(--text-secondary);">Nguồn: <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/setup-main-compile-v6/main-to-compile.patch" target="_blank" rel="noopener">Code diff của hai source đã đo</a></p></section>
+
+<section class="slide" data-slide="6" data-original-slide="7" id="slide-6">
+        <div class="slide-header">
+          <div>
+            <div class="slide-eyebrow">GIẢI PHÁP 1 · KIẾN TRÚC FILE MỚI 100%</div>
+            <h2 class="slide-title">Core Code: <code>src/lfx/src/lfx/custom/component_compilation_cache.py</code></h2>
+            <p class="slide-subtitle">Trái tim lưu trữ bytecode, băm SHA-256 và quản lý Thread-Safe LRU Cache trong RAM tiến trình</p>
+          </div>
+          <span class="chip chip-blue">File Mới 100%</span>
+        </div>
+
+        <div class="code-frame success-border">
+          <div class="code-header">
+            <span style="color: var(--accent-blue);">📦 COMPONENT COMPILATION CACHE ARCHITECTURE</span>
+            <span class="chip">component_compilation_cache.py</span>
+          </div>
+          <pre class="code-body"><span class="code-comment vn-good"># 1. ĐỊNH NGHĨA ARTIFACT BIÊN DỊCH AN TOÀN TRONG RAM</span>
+@dataclass(frozen=True, slots=True)
+class <span class="code-func">ComponentCompilationArtifact</span>:
+    source: str                     <span class="code-comment"># Chuỗi source code Python gốc</span>
+    generation: int                 <span class="code-comment"># Phiên bản generation hợp lệ</span>
+    module_template: bytes          <span class="code-comment"># Template AST module đã serialize qua pickle</span>
+    class_name: str                 <span class="code-comment"># Tên class Component (VD: SCRFDNode)</span>
+    <span class="code-highlight-good">compiled_class: CodeType        # Bytecode đã compile sẵn - nạp thẳng vào runtime</span>
+    trusted_vector_store_alias: str | None
+
+<span class="code-comment vn-good"># 2. BĂM SHA-256 CỦA SOURCE CODE ĐỂ LÀM KHÓA TRUY VẤN DUY NHẤT</span>
+def <span class="code-func">_source_digest</span>(source: str) -> str:
+    return <span class="code-func">hashlib.sha256</span>(source.encode("utf-8", errors="surrogatepass")).hexdigest()
+
+<span class="code-comment vn-good"># 3. QUẢN LÝ CACHE TRONG RAM: THREAD LOCK TRÁNH RACE CONDITION + GIỚI HẠN LRU</span>
+_cache: OrderedDict[_CacheKey, _CacheEntry] = OrderedDict()
+_cache_lock = RLock()  <span class="code-comment"># Khóa luồng an toàn khi nhiều worker thread truy cập đồng thời</span>
+
+def <span class="code-func">get_or_build_component_artifact_with_status</span>(source, builder, *, variant=""):
+    key = (COMPONENT_COMPILATION_ARTIFACT_GENERATION, _source_digest(source), variant)
+    with _cache_lock:
+        cached = _cache.get(key)
+        if cached is not None and cached.source == source:
+            _cache.move_to_end(key)  <span class="code-comment"># Đánh dấu vừa truy cập (LRU)</span>
+            return ComponentArtifactLookup(artifact=cached.artifact, retained=True)
+
+        <span class="code-comment vn-good"># Nếu chưa có (Cache Miss): chuẩn bị artifact rồi lưu; có thể miss lại sau eviction</span>
+        artifact = builder()
+        _cache[key] = _CacheEntry(source=source, artifact=artifact)
+        return ComponentArtifactLookup(artifact=artifact, retained=True)</pre>
+        </div>
+
+        <div style="margin-top: 0.85rem; font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
+          <span style="color: var(--accent-blue);">ℹ️</span>
+          <span><strong>Tính toàn vẹn:</strong> Khóa gồm generation, SHA-256 của source và variant; cache kiểm tra thêm source khớp entry. Source thay đổi sẽ không tái sử dụng artifact của source cũ. Đoạn code trên rút gọn phần cờ bật/tắt, giới hạn LRU và counter.</span>
+        </div>
+      <p style="margin-top: .75rem; font-size: .8rem; line-height: 1.6; color: var(--text-secondary);">Nguồn: <a style="color: var(--accent-blue);" href="../../.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/custom/component_compilation_cache.py" target="_blank" rel="noopener">Core cache tại commit COMPILE</a></p></section>
+
+<section class="slide" data-slide="7" data-original-slide="13" id="slide-7">
+        <div class="slide-header">
+          <div>
+            <div class="slide-eyebrow">KIẾN TRÚC ĐO ĐẠC ĐỘC LẬP</div>
+            <h2 class="slide-title">Core Code Đo Đạc: ASGI Middleware & Worker Observer</h2>
+            <p class="slide-subtitle">Minh họa rút gọn: revision_worker.py (RevisionMiddleware / RevisionObserver) đo request; worker_observer.py thu spans; protocol.py tính overhead</p>
+          </div>
+          <span class="chip chip-cyan">File Mới 100%</span>
+        </div>
+
+        <div class="code-frame success-border">
+          <div class="code-header">
+            <span style="color: var(--accent-cyan);">🔬 WORKER OBSERVER & TIMING DISSECTION ARCHITECTURE</span>
+            <span class="chip">ASGI + observer + protocol</span>
+          </div>
+          <pre class="code-body"><span class="code-comment vn-good"># 1. THEO DÕI VÒNG ĐỜI REQUEST NGAY TẠI LỚP NGOÀI CÙNG ASGI CỦA WORKER</span>
+<span class="code-comment"># Pseudocode: factory revision_worker.create_app bọc production_app bên ngoài middleware/telemetry</span>
+app = RevisionMiddleware(production_app())
+
+async def observe_run(scope, receive, send):
+    t_start_asgi = time.perf_counter()
+    async def observed_send(message):
+        await send(message)
+        if message["type"] == "http.response.body" and not message.get("more_body", False):
+            server_total_ms = (time.perf_counter() - t_start_asgi) * 1000.0
+            record_server_total(server_total_ms)  <span class="code-comment"># Sau body cuối, trước background work</span>
+    await production_app(scope, receive, observed_send)
+
+<span class="code-comment vn-good"># 2. MINH HỌA INTERVAL UNION (logic thực nằm trong protocol.measure_overhead)</span>
+def <span class="code-func">interval_union_ms</span>(intervals: list[tuple[float, float]]) -> float:
+    total = 0.0
+    right = float("-inf")
+    for start, end in sorted(intervals):
+        total += max(0.0, end - max(start, right))
+        right = max(right, end)
+    <span class="code-highlight-good">return total  # Hợp các khoảng output method của 4 node SCRFD; interval tính bằng ms</span>
+
+<span class="code-comment vn-good"># 3. CÔNG THỨC BÓC TÁCH OVERHEAD ĐIỀU PHỐI THUẦN TÚY CỦA LANGFLOW FRAMEWORK:</span>
+<span class="code-highlight-good">langflow_overhead_ms = server_total_ms - scrfd_processing_ms</span></pre>
+        </div>
+
+        <div style="margin-top: 0.85rem; font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
+          <span style="color: var(--accent-cyan);">📊</span>
+          <span><strong>Tính khách quan của Benchmark:</strong> Loại hợp thời gian output method của bốn node SCRFD (preprocess, inference, vẽ/lưu ảnh); phần ngoài các method vẫn được tính. Đây là wall-clock có instrumentation, vẫn phụ thuộc phần cứng. Interval sai/thiếu bị loại là không hợp lệ; không clamp kết quả âm.</span>
+        </div>
+      <p style="margin-top: .75rem; font-size: .8rem; line-height: 1.6; color: var(--text-secondary);">Nguồn: <a style="color: var(--accent-blue);" href="benchmark_analyst/revision_worker.py" target="_blank" rel="noopener">RevisionMiddleware / RevisionObserver</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/worker_observer.py" target="_blank" rel="noopener">Node spans</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/protocol.py" target="_blank" rel="noopener">Interval union</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/final_verification_receipt.json" target="_blank" rel="noopener">Harness/source identity</a></p></section>
+
+<section class="slide" data-slide="8" data-original-slide="14" id="slide-8">
+        <div class="slide-header">
+          <div>
+            <div class="slide-eyebrow">TỔNG HỢP SO SÁNH · TRÌNH BÀY NHANH</div>
+            <h2 class="slide-title">Tóm Tắt Ngắn Gọn Đối Chiếu Giữa Main (Baseline) Và Nhánh Này</h2>
+            <p class="slide-subtitle">MAIN nguyên bản c9fbb3ef7 → COMPILE c20b65912; COMPILE xuất phát từ MAIN, chỉ thêm compilation cache.</p>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 22%;">Phương Pháp</th>
+                <th style="width: 20%;">Vị Trí Code / Commit</th>
+                <th style="width: 29%;">Hành Vi Ở Main (Baseline)</th>
+                <th style="width: 29%;">Cải Tiến Trên Nhánh Hiện Tại</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <strong style="color: var(--accent-blue);">Phương Pháp 1:</strong><br>
+                  Component Compilation Cache
+                </td>
+                <td>
+                  <span class="chip chip-blue">commit: c20b65912</span><br>
+                  <span class="file-path">component_compilation_cache.py</span><br>
+                  <span class="file-path">validate.py</span>
+                </td>
+                <td>
+                  • Mỗi request đều gọi <code>ast.parse()</code> và <code>compile()</code> lại từ đầu trên chuỗi code string trong DB.<br>
+                  • Tiêu tốn tài nguyên lặp đi lặp lại.
+                </td>
+                <td>
+                  • Lưu mã bytecode đã compile vào RAM theo mã băm SHA256.<br>
+                  • Khi hit, tái sử dụng artifact chuẩn bị source/class; vẫn có imports, exec và khởi tạo runtime.
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card" style="margin-top: 1.5rem; border-left: 4px solid var(--accent-purple);">
+          <div style="font-size: 0.95rem; line-height: 1.7; color: var(--text-primary);">
+            <strong>Tóm tắt 1 câu khi chốt phần giải pháp:</strong>
+            <em>"Compilation cache tái sử dụng artifact chuẩn bị source của Python Component; imports, globals, exec và tạo class/runtime vẫn thực hiện. MAIN–COMPILE đánh giá mean/p95 thực tế và RAM toàn worker."</em>
+          </div>
+        </div>
+      <div class="card" id="exclusionNote" style="margin-top: 1rem; padding: 1rem 1.25rem; border-left: 4px solid var(--accent-amber);"><div class="card-title" style="font-size: .95rem;">Vì sao chỉ giữ compilation cache?</div><p class="card-desc" style="font-size: .82rem;">v5 so hai cờ trên cùng source feature: arm 10 compilation ON / warm OFF, arm 11 cả hai ON. Bật thêm warm graph làm overhead mean/p95 tăng <strong>+4.161/+8.272 ms</strong>, repeat <strong>+6.656/+13.512 ms</strong>, dù arm 11 có template hits ở cả 1.000 measured requests/lượt; server/client API cũng tăng. Đây không phải phép so MAIN nguyên bản với COMPILE mới.</p><p class="card-desc" style="font-size: .82rem; margin-top: .5rem;">Có template nhưng mỗi request vẫn cần graph riêng để cô lập user/session/tweaks: <code>copy_for_run()</code> sao chép dữ liệu graph, dựng nodes/edges và khởi tạo component; lấy flow, kiểm tra/setup vẫn còn. D1 riêng: span <code>setup/warm_graph_copy</code> mean/p95 <strong>22.608/23.446 ms</strong>; pre-component mean 10 → 11: <strong>38.033 → 42.196 ms</strong>. Span bao component/class preparation, <strong>không phải deepcopy thuần</strong>; span lồng/chồng nhau, không cộng chúng vào nhau hoặc vào campaign mới. Chưa chứng minh deepcopy là nguyên nhân duy nhất hay quy cho GC/CPU.</p><p class="card-desc" style="font-size: .82rem; margin-top: .5rem;">Với workload và implementation đã đo, kết quả xấu hơn dù có hits nên loại warm graph khỏi phần đề xuất. Không suy rộng cho mọi flow hoặc xóa implementation trong repository.</p><p style="margin-top: .75rem; font-size: .8rem; line-height: 1.6; color: var(--text-secondary);">Nguồn: <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-v5/report.html" target="_blank" rel="noopener">v5</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-v5-repeat/report.html" target="_blank" rel="noopener">v5 repeat</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/diagnostic-v5/D1/report.html" target="_blank" rel="noopener">D1</a> · <a style="color: var(--accent-blue);" href="src/lfx/src/lfx/graph/graph/base.py" target="_blank" rel="noopener">copy_for_run</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/diagnostic_observer.py" target="_blank" rel="noopener">Span wrapper</a></p></div><p style="margin-top: .75rem; font-size: .8rem; line-height: 1.6; color: var(--text-secondary);">Nguồn: <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/setup-main-compile-v6/main-to-compile.patch" target="_blank" rel="noopener">Patch</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/setup-main-compile-v6/source_review.json" target="_blank" rel="noopener">Source review</a></p></section>
+
+<section class="slide" data-slide="9" data-original-slide="15" id="slide-9">
+        <div class="slide-header">
+          <div>
+            <div class="slide-eyebrow">KIỂM CHỨNG THỰC NGHIỆM · BENCHMARK MAIN–COMPILE V6</div>
+            <h2 class="slide-title">MỤC RIÊNG: Benchmark Hiệu Năng & Bóc Tách Langflow Overhead</h2>
+            <p class="slide-subtitle">VALID · 2.000 measured requests + 40 warmup · Mean, p95 và RSS toàn worker · Pipeline SCRFD</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span class="chip chip-green" style="font-size: 0.85rem;">2.000 measured</span>
+            <button class="btn btn-sm btn-primary" id="toggleEditBtn" onclick="toggleBenchmarkEdit()">✏️ Sửa Số Liệu</button>
+          </div>
+        </div>
+
+        <!-- PHẦN 1: BỐI CẢNH BENCHMARK & BẢN CHẤT CHỈ SỐ LANGFLOW OVERHEAD -->
+        <div class="grid-2" style="margin-top: 0.75rem; gap: 1rem;">
+          <div class="card" style="padding: 1rem 1.15rem; border-left: 4px solid var(--accent-blue);">
+            <div style="font-size: 0.92rem; font-weight: 700; color: var(--accent-blue); display: flex; align-items: center; gap: 0.45rem;">
+              <span>🧪</span> <span>1. Benchmark Của Đề Tài Là Gì?</span>
+            </div>
+            <ul style="padding-left: 1.15rem; font-size: 0.825rem; color: var(--text-secondary); margin-top: 0.45rem; line-height: 1.6;">
+              <li><strong style="color: var(--text-primary);">Workload thực tế:</strong> Pipeline Computer Vision (SCRFD Face Detection) với model ONNX <code>det_500m.onnx</code>, phát hiện 3 khuôn mặt, luồng <code>scrfd-flow.json</code>.</li>
+              <li><strong style="color: var(--text-primary);">Giao thức gọi API:</strong> Endpoint synchronous <code>/api/v1/run/{flow_id}</code>, output chat, stream=false; upload ảnh trước rồi truyền đường dẫn qua <code>ChatInput.files</code>.</li>
+              <li><strong style="color: var(--text-primary);">Quy mô mới:</strong> 4 blocks × 250 measured/nhóm = 1.000/nhóm; tổng 2.000 measured + 40 warmup. Worker và clone fixture mới mỗi slot, 5 warmup/worker, concurrency 1; thứ tự MAIN/COMPILE cân bằng.</li>
+            </ul>
+          </div>
+
+          <div class="card" style="padding: 1rem 1.15rem; border-left: 4px solid var(--accent-cyan);">
+            <div style="font-size: 0.92rem; font-weight: 700; color: var(--accent-cyan); display: flex; align-items: center; gap: 0.45rem;">
+              <span>⏱️</span> <span>2. Latency Thực Tế & Langflow Overhead</span>
+            </div>
+            <p style="font-size: 0.825rem; color: var(--text-secondary); margin-top: 0.45rem; line-height: 1.55;">
+              Server/client API là latency chính của bước <code>/run</code>. Langflow overhead là <em>"thuế điều phối của framework"</em> (framework coordination tax) — đo lường thời gian Langflow dành cho routing, AST parse/compile, khởi tạo Graph, cấp phát bộ nhớ, serialize JSON... <strong>sau khi trừ hợp thời gian output method của bốn node xử lý SCRFD</strong>.
+            </p>
+            <div style="font-family: var(--font-mono); font-size: 0.8rem; margin: 0.45rem 0; color: #38bdf8; background: rgba(0,0,0,0.35); padding: 0.35rem 0.6rem; border-radius: 6px; border: 1px dashed rgba(56, 189, 248, 0.3);">
+              langflow_overhead_ms = server_total_ms - scrfd_processing_ms
+            </div>
+            <div style="font-size: 0.775rem; color: var(--text-muted); line-height: 1.45;">
+              • <code>server_total_ms</code>: Wall-clock từ điểm vào ASGI ngoài cùng đến khi gửi xong response body cuối; loại background work sau response.<br>
+              • <code>flow_api_ms</code>: Client gọi /run đến khi đọc xong response bytes bằng requests.Session có tái sử dụng TCP.<br>
+              • <code>scrfd_processing_ms</code>: Độ dài <strong>hợp các interval output method</strong> của 4 node SCRFD: preprocess, inference, vẽ/lưu ảnh; không cộng trùng overlap. Upload/download, kiểm tra output, counters và RSS ngoài hai clock; latency /run không phải toàn hành trình upload→download. Overhead chỉ giải thích, không thay hai latency thực tế.
+            </div>
+          </div>
+        </div>
+
+        <!-- PHẦN 2: HỆ THỐNG METRICS ĐÁNH GIÁ (TRỌNG TÂM P95 VS BỔ TRỢ) -->
+        <div class="grid-2" style="margin-top: 1rem; gap: 1rem;">
+          <div class="card" style="padding: 1rem 1.15rem; background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.3);">
+            <div style="font-size: 0.92rem; font-weight: 700; color: var(--accent-amber); display: flex; align-items: center; gap: 0.45rem;">
+              <span>⭐</span> <span>METRIC ƯU TIÊN CHO MỤC TIÊU NÀY: p95</span>
+            </div>
+            <div style="font-size: 0.825rem; color: var(--text-primary); margin-top: 0.45rem; line-height: 1.6;">
+              <strong>Vì sao đọc p95 cùng mean trong đề tài này?</strong>
+              <ul style="padding-left: 1.15rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                <li><strong>p95 là ngưỡng mà khoảng 95% mẫu latency không vượt quá.</strong> Nó mô tả phần chậm của phần lớn request mà mean có thể che khuất; không phải latency của 95% người dùng.</li>
+                <li>Campaign chạy <strong>concurrency 1</strong>. p95 tính trên dữ liệu gộp của 4 blocks, không lấy trung bình percentile các blocks. Bốn blocks là đơn vị lặp; 1.000 requests không phải 1.000 thí nghiệm độc lập.</li>
+                <li>👉 <strong>Đọc p95 cùng mean và RAM.</strong> p95 gộp thấp hơn không đảm bảo mọi block đều tốt hơn. Slide 10 giữ bất lợi và giới hạn kết luận.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card" style="padding: 1rem 1.15rem; border: 1px solid var(--border-color);">
+            <div style="font-size: 0.92rem; font-weight: 700; color: var(--accent-green); display: flex; align-items: center; gap: 0.45rem;">
+              <span>📊</span> <span>CÁC METRIC BỔ TRỢ ĐÁNH GIÁ TOÀN DIỆN</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.45rem; font-size: 0.815rem; color: var(--text-secondary); line-height: 1.55;">
+              <div>• <strong style="color: var(--text-primary);">Mean (Trung bình):</strong> Latency trung bình trên mỗi request của từng nhóm; không trực tiếp đo tiết kiệm CPU, RAM hoặc chi phí hạ tầng.</div>
+              <div>• <strong style="color: var(--text-primary);">p95:</strong> Ngưỡng khoảng 95% mẫu không vượt quá; tính trên dữ liệu benchmark được trình bày, không phải bảo đảm SLA.</div>
+              <div>• <strong style="color: var(--text-primary);">RSS (MiB):</strong> Bộ nhớ resident toàn worker tại checkpoint. Worker là một tiến trình Python chạy backend; MiB = 1.048.576 bytes.</div>
+              <div>• <strong style="color: var(--text-primary);">Điều kiện:</strong> warm graph OFF ở cả hai nhóm. Native tracing/telemetry bật giống nhau; warmup là request làm nóng trước đo, khác cơ chế template đã loại.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PHẦN 3: KẾT QUẢ MAIN–COMPILE MỚI, MEAN / P95 VÀ RAM -->
+<div class="table-container" style="margin-top: 1rem;"><table class="data-table" id="benchmarkTable"><thead><tr><th>Latency</th><th>MAIN mean (ms)</th><th>COMPILE mean (ms)</th><th>Δ mean</th><th>MAIN p95 (ms)</th><th>COMPILE p95 (ms)</th><th>Δ p95</th></tr></thead><tbody><tr><td>Server</td><td><span id="verified-1" style="font-family: var(--font-mono); white-space: nowrap;">89.787</span></td><td><span id="verified-2" style="font-family: var(--font-mono); white-space: nowrap;">83.863</span></td><td><span id="verified-3" style="font-family: var(--font-mono); white-space: nowrap; color: var(--accent-green);">-5.924</span> ms<br><span id="verified-4" style="font-family: var(--font-mono); white-space: nowrap; color: var(--accent-green);">-6.60%</span></td><td><span id="verified-5" style="font-family: var(--font-mono); white-space: nowrap;">125.264</span></td><td><span id="verified-6" style="font-family: var(--font-mono); white-space: nowrap;">115.353</span></td><td><span id="verified-7" style="font-family: var(--font-mono); white-space: nowrap; color: var(--accent-green);">-9.911</span> ms<br><span id="verified-8" style="font-family: var(--font-mono); white-space: nowrap; color: var(--accent-green);">-7.91%</span></td></tr><tr><td>Client API</td><td><span id="verified-9" style="font-family: var(--font-mono); white-space: nowrap;">89.894</span></td><td><span id="verified-10" style="font-family: var(--font-mono); white-space: nowrap;">83.985</span></td><td><span id="verified-11" style="font-family: var(--font-mono); white-space: nowrap; color: var(--accent-green);">-5.910</span> ms<br><span id="verified-12" style="font-family: var(--font-mono); white-space: nowrap; color: var(--accent-green);">-6.57%</span></td><td><span id="verified-13" style="font-family: var(--font-mono); white-space: nowrap;">125.266</span></td><td><span id="verified-14" style="font-family: var(--font-mono); white-space: nowrap;">115.424</span></td><td><span id="verified-15" style="font-family: var(--font-mono); white-space: nowrap; color: var(--accent-green);">-9.843</span> ms<br><span id="verified-16" style="font-family: var(--font-mono); white-space: nowrap; color: var(--accent-green);">-7.86%</span></td></tr></tbody></table></div><p style="font-size: .8rem; color: var(--text-secondary); margin-top: .6rem;">Δ = COMPILE − MAIN; Δ% dùng MAIN làm mẫu số; số làm tròn từ CSV đầy đủ. Mỗi dòng latency dựa trên 1.000 measured/nhóm từ dữ liệu benchmark đầu tiên.</p><p style="margin-top: .75rem; font-size: .8rem; line-height: 1.6; color: var(--text-secondary);">Nguồn: <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/summary.csv" target="_blank" rel="noopener">Summary</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv" target="_blank" rel="noopener">Delta</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6-mean-p95/report.html" target="_blank" rel="noopener">Báo cáo benchmark</a></p><div style="font-size: .95rem; font-weight: 700; color: var(--accent-cyan); margin-top: 1rem;">RAM toàn worker — chênh lệch RSS sau idle</div>
+<div class="table-container" style="margin-top: 1rem;"><table class="data-table" id="ramTable" style="min-width: 0;"><thead><tr><th>COMPILE dùng RAM cao hơn MAIN</th></tr></thead><tbody><tr><td><strong><span id="verified-44" style="font-family: var(--font-mono); white-space: nowrap; color: var(--accent-rose);">+87.102</span> MiB/worker (<span id="verified-45" style="font-family: var(--font-mono); white-space: nowrap; color: var(--accent-rose);">+8.10%</span>)</strong></td></tr></tbody></table></div>
+<p style="font-size: .8rem; color: var(--text-secondary); margin-top: .6rem;">COMPILE − MAIN tại mốc sau 5 giây không chạy thêm flow; RSS trung bình của 4 worker/nhóm. Đây là RAM toàn worker tại điểm lấy mẫu, không phải peak RAM hoặc dung lượng riêng của cache; RSS giữa blocks biến động. USS unavailable: <code>value: null</code>, <code>reason: AccessDenied</code>.</p>
+<p style="margin-top: .75rem; font-size: .8rem; line-height: 1.6; color: var(--text-secondary);">Nguồn: <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/resource_summary.csv" target="_blank" rel="noopener">RSS / USS</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv" target="_blank" rel="noopener">RAM delta</a></p>        <!-- PHẦN 4: ĐÚC KẾT & INSIGHT THỰC NGHIỆM -->
+        <div class="grid-3" style="margin-top: 1rem; gap: 0.85rem;">
+          <div class="card" style="padding: 0.75rem 1rem;"><div style="font-weight: 700; color: var(--accent-blue); font-size: 0.825rem;">⚡ Hiệu Quả Compilation Cache</div><p style="font-size: 0.785rem; color: var(--text-secondary); margin-top: 0.3rem;">Mean/p95 server và client API gộp đều giảm. Mean server giảm <strong>5,924 ms (−6,60%)</strong>; p95 giảm <strong>9,911 ms (−7,91%)</strong>. Cache chỉ tái sử dụng phần chuẩn bị source/class; runtime vẫn diễn ra.</p></div>
+          <div class="card" style="padding: 0.75rem 1rem;"><div style="font-weight: 700; color: var(--accent-amber); font-size: 0.825rem;">💾 Đánh Đổi RAM Đã Quan Sát</div><p style="font-size: 0.785rem; color: var(--text-secondary); margin-top: 0.3rem;">RSS sau idle tăng <strong>87,102 MiB/worker (+8,10%)</strong>, đi cùng mean server giảm 5,924 ms và p95 giảm 9,911 ms. Đây là đánh đổi quan sát của toàn worker; cần cân nhắc ngân sách RAM khi có nhiều worker.</p></div>
+          <div class="card" style="padding: 0.75rem 1rem; border-color: rgba(16, 185, 129, 0.4);"><div style="font-weight: 700; color: var(--accent-green); font-size: 0.825rem;">🏆 Giữ Cache Có Điều Kiện</div><p style="font-size: 0.785rem; color: var(--text-secondary); margin-top: 0.3rem;">Có lợi cho mean/p95 gộp của workload đã đo; giữ khi ưu tiên latency và ngân sách RAM cho phép. Block 4 có p95 bất lợi; RSS giữa blocks biến động. Chưa suy ra SLA hoặc lợi ích tải production đồng thời.</p></div>
+        </div>
+      </section>
+
+<section class="slide" data-slide="10" data-original-slide="16" id="slide-10">
+        <div class="slide-header">
+          <div>
+            <div class="slide-eyebrow">BỔ SUNG CHO PHẦN BENCHMARK · TIÊU CHÍ ĐÁNH GIÁ</div>
+            <h2 class="slide-title">Chọn p95 Làm Chỉ Số Ưu Tiên Như Thế Nào?</h2>
+            <p class="slide-subtitle">Giảm overhead ở phần chậm của phần lớn request; dùng mean và RAM để kiểm tra sự đánh đổi</p>
+          </div>
+          <span class="chip chip-amber">p95 + mean + RAM</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="border-left: 4px solid var(--accent-amber);">
+            <div class="card-title">Vì sao chọn p95?</div>
+            <p class="card-desc">Mục tiêu là giảm latency /run của phần lớn request, kể cả những request chậm hơn mức điển hình. p95 bổ sung thông tin mà mean không thể hiện. Đây là lựa chọn theo mục tiêu đề tài, không phải chỉ số tốt nhất cho mọi hệ thống.</p>
+            <p class="card-desc" style="margin-top: 0.75rem;"><strong>Cách đọc:</strong> p95 server COMPILE = 115.353 ms nghĩa là khoảng 95% mẫu server_total_ms không vượt ngưỡng này; 5% còn lại có thể chậm hơn nhiều. Đây là latency bước /run, không gồm toàn hành trình upload→download và không bảo đảm SLA.</p>
+          </div>
+          <div class="card" style="border-left: 4px solid var(--accent-cyan);">
+            <div class="card-title">Cách ra quyết định</div>
+            <ul style="padding-left: 1.15rem; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.65;">
+              <li><strong>p95:</strong> chỉ số ưu tiên để so sánh mục tiêu độ trễ.</li>
+              <li><strong>Mean:</strong> theo dõi latency trung bình mỗi request.</li>
+              <li><strong>RAM:</strong> cân nhắc RSS toàn worker, nhất là sau idle; mức tăng quan sát 8,10% cần ngân sách phù hợp, không phải footprint riêng của cache.</li>
+              <li><strong>Tiêu chí giữ cache không đổi:</strong> Mean và p95 của cả hai latency thực tế giảm ở cả hai lượt đầy đủ; bốn blocks/lượt là đơn vị lặp. Bản này chỉ trình bày số liệu của benchmark đầu tiên.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 1rem;">
+          <div class="card">
+            <div class="card-title">Điều kiện đo và biến thiên</div>
+            <p class="card-desc">8 worker mới (mỗi slot 1 worker), concurrency 1; 4 block × 250 measured/nhóm; 5 warmup/worker (tổng 40 ngoài steady-state). requests.Session có tái sử dụng TCP; tracing/telemetry bật giống nhau. Warmup làm nóng runtime/cache, không đo cold-start hoặc tải đồng thời.</p>
+            <p class="card-desc" style="margin-top: 0.65rem;"><strong>Giữ kết quả bất lợi:</strong> p95 server block 4 tăng +7,50%; client tăng +7,59%. p95 gộp tính trên 1.000 mẫu/nhóm, không trung bình percentile từng block.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Giới hạn của kết luận hiện tại</div>
+            <p class="card-desc">Một flow SCRFD/model/ảnh cố định, một máy, concurrency 1; kết quả mô tả, không báo CI/p-value. Các request trong block là mẫu lặp bên trong; không suy ra 1.000 thí nghiệm độc lập hay SLA production.</p>
+            <p class="card-desc" style="margin-top: 0.65rem;"><strong>Compilation cache đáng giữ có điều kiện</strong> khi ưu tiên latency và ngân sách RAM chấp nhận được. RSS sau idle tăng 87,102 MiB/worker (+8,10%) nhưng không xác định được footprint riêng của cache; không kết luận tiết kiệm RAM/CPU/GC hay chi phí hạ tầng.</p>
+          </div>
+        </div>
+<div class="card" style="margin-top: 1rem; padding: 0.85rem 1.15rem;"><p class="card-desc" style="font-size: .8rem;"><strong>Output & cache:</strong> Mọi measured/warmup sample đúng output. COMPILE steady-state mỗi block: 1.500 hits, 0 misses/builds/bypasses/evictions. MAIN counters <code>null/unavailable</code> vì baseline không có cache. Warmup tách khỏi số này; chi phí /run warmup được báo riêng (<a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv" target="_blank" rel="noopener">CSV riêng</a>).</p><p class="card-desc" style="font-size: .8rem; margin-top: .5rem;"><strong>Kiểm thử theo receipt chiến dịch:</strong> MAIN 330 passed, COMPILE 358 passed (mỗi bên 2 skipped, 1 xfailed); harness/reporting 363 passed. Không chạy lại benchmark hoặc suites backend trong nhiệm vụ HTML.</p><p style="margin-top: .75rem; font-size: .8rem; line-height: 1.6; color: var(--text-secondary);">Nguồn: <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.html" target="_blank" rel="noopener">Tổng hợp V6</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv" target="_blank" rel="noopener">Block delta</a> · <a style="color: var(--accent-blue);" href="benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/final_verification_receipt.json" target="_blank" rel="noopener">Campaign receipt</a> · <a style="color: var(--accent-blue);" href="docs/superpowers/reviews/compilation-only-html-run1-tables-2026-10-06/verification_receipt.json" target="_blank" rel="noopener">HTML QA receipt</a></p></div></section>
+
+    </div>
+  </main>
+
+  <script>
+    // State management
+    let currentSlide = 1;
+    const totalSlides = document.querySelectorAll('.slide').length;
+    let isDocumentMode = false;
+    let isEditMode = false;
+
+    // DOM Elements
+    const slides = document.querySelectorAll('.slide');
+    const slideIndicator = document.getElementById('slideIndicator');
+    const progressBar = document.getElementById('progressBar');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const viewModeBtn = document.getElementById('viewModeBtn');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+    // Update Slide View
+    function updateSlide(newSlide) {
+      if (newSlide < 1 || newSlide > totalSlides) return;
+      currentSlide = newSlide;
+
+      slides.forEach(slide => {
+        const slideNum = parseInt(slide.getAttribute('data-slide'));
+        if (slideNum === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      // Update indicators
+      slideIndicator.textContent = `Slide ${currentSlide} / ${totalSlides}`;
+      const progressPercent = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+
+      // Button state
+      prevBtn.disabled = (currentSlide === 1);
+      nextBtn.disabled = (currentSlide === totalSlides);
+
+      // Scroll top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Navigation events
+    prevBtn.addEventListener('click', () => {
+      if (currentSlide > 1) updateSlide(currentSlide - 1);
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentSlide < totalSlides) updateSlide(currentSlide + 1);
+    });
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Don't intercept when user is typing in editable fields
+      if (e.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        if (currentSlide < totalSlides) updateSlide(currentSlide + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        if (currentSlide > 1) updateSlide(currentSlide - 1);
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        updateSlide(1);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        updateSlide(totalSlides);
+      } else if (e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        toggleFullScreen();
+      } else if (e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        toggleViewMode();
+      }
+    });
+
+    // Fullscreen Toggle
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+    fullscreenBtn.addEventListener('click', toggleFullScreen);
+
+    // View Mode Toggle (Slide Deck vs Document/Handout)
+    function toggleViewMode() {
+      isDocumentMode = !isDocumentMode;
+      if (isDocumentMode) {
+        document.body.classList.add('document-mode');
+        viewModeBtn.textContent = '🖥️ Trình Chiếu';
+        slideIndicator.textContent = 'Chế độ: Báo Cáo Toàn Diện';
+      } else {
+        document.body.classList.remove('document-mode');
+        viewModeBtn.textContent = '📑 Xem Tất Cả';
+        updateSlide(currentSlide);
+      }
+    }
+    viewModeBtn.addEventListener('click', toggleViewMode);
+
+    // Theme Toggle (Light / Dark)
+    themeToggleBtn.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      document.documentElement.classList.toggle('light');
+    });
+
+    // Editable Benchmark Toggle
+    function toggleBenchmarkEdit() {
+      isEditMode = !isEditMode;
+      const editableElements = document.querySelectorAll('#benchmarkTable td');
+      const toggleBtn = document.getElementById('toggleEditBtn');
+
+      editableElements.forEach(el => {
+        el.setAttribute('contenteditable', isEditMode ? 'true' : 'false');
+        if (isEditMode) {
+          el.style.outline = '2px dashed var(--accent-amber)';
+          el.style.borderRadius = '3px';
+        } else {
+          el.style.outline = 'none';
+        }
+      });
+
+      if (toggleBtn) {
+        if (isEditMode) {
+          toggleBtn.textContent = '💾 Khóa Chỉnh Sửa';
+          toggleBtn.style.background = '#d97706';
+        } else {
+          toggleBtn.textContent = '✏️ Sửa Số Liệu';
+          toggleBtn.style.background = '';
+        }
+      }
+    }
+
+    // Initialize
+    updateSlide(1);
+  </script>
+</body>
+</html>

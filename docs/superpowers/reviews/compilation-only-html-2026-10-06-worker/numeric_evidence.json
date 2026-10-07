@@ -1,0 +1,1432 @@
+[
+  {
+    "id": "n1",
+    "file": "benchmark_analyst/runs/main-v5/summary.csv",
+    "row": {
+      "arm": "10",
+      "block": "all",
+      "metric": "langflow_overhead_ms"
+    },
+    "key": "mean",
+    "value": 51.716488035000005,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n2",
+    "file": "benchmark_analyst/runs/main-v5/summary.csv",
+    "row": {
+      "arm": "11",
+      "block": "all",
+      "metric": "langflow_overhead_ms"
+    },
+    "key": "mean",
+    "value": 55.877033058,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n3",
+    "file": "benchmark_analyst/runs/main-v5/summary.csv",
+    "row": {
+      "arm": "10",
+      "block": "all",
+      "metric": "langflow_overhead_ms"
+    },
+    "key": "p95",
+    "value": 66.69338009999997,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n4",
+    "file": "benchmark_analyst/runs/main-v5/summary.csv",
+    "row": {
+      "arm": "11",
+      "block": "all",
+      "metric": "langflow_overhead_ms"
+    },
+    "key": "p95",
+    "value": 74.96564665,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n5",
+    "file": "benchmark_analyst/runs/main-v5/summary.csv",
+    "row": {
+      "derived": "11-10",
+      "stat": "mean"
+    },
+    "key": "derived",
+    "value": 4.160545022999997,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n6",
+    "file": "benchmark_analyst/runs/main-v5/summary.csv",
+    "row": {
+      "derived": "11-10",
+      "stat": "p95"
+    },
+    "key": "derived",
+    "value": 8.272266550000026,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n7",
+    "file": "benchmark_analyst/runs/main-v5-repeat/summary.csv",
+    "row": {
+      "arm": "10",
+      "block": "all",
+      "metric": "langflow_overhead_ms"
+    },
+    "key": "mean",
+    "value": 53.113328687,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n8",
+    "file": "benchmark_analyst/runs/main-v5-repeat/summary.csv",
+    "row": {
+      "arm": "11",
+      "block": "all",
+      "metric": "langflow_overhead_ms"
+    },
+    "key": "mean",
+    "value": 59.768863058,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n9",
+    "file": "benchmark_analyst/runs/main-v5-repeat/summary.csv",
+    "row": {
+      "arm": "10",
+      "block": "all",
+      "metric": "langflow_overhead_ms"
+    },
+    "key": "p95",
+    "value": 68.13009135000001,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n10",
+    "file": "benchmark_analyst/runs/main-v5-repeat/summary.csv",
+    "row": {
+      "arm": "11",
+      "block": "all",
+      "metric": "langflow_overhead_ms"
+    },
+    "key": "p95",
+    "value": 81.64225894999998,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n11",
+    "file": "benchmark_analyst/runs/main-v5-repeat/summary.csv",
+    "row": {
+      "derived": "11-10",
+      "stat": "mean"
+    },
+    "key": "derived",
+    "value": 6.655534371000002,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n12",
+    "file": "benchmark_analyst/runs/main-v5-repeat/summary.csv",
+    "row": {
+      "derived": "11-10",
+      "stat": "p95"
+    },
+    "key": "derived",
+    "value": 13.51216759999997,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n13",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "mean"
+    },
+    "key": "main",
+    "value": 89.8942531546345,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n14",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "mean"
+    },
+    "key": "compile",
+    "value": 83.98454095271882,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n15",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "mean"
+    },
+    "key": "delta_ms",
+    "value": -5.909712201915681,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n16",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "mean"
+    },
+    "key": "delta_percent",
+    "value": -6.574071194239636,
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "n17",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "main",
+    "value": 125.26648930506776,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n18",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "compile",
+    "value": 115.42370634269899,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n19",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_ms",
+    "value": -9.842782962368773,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n20",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_percent",
+    "value": -7.857474905677408,
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "n21",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "mean"
+    },
+    "key": "main",
+    "value": 89.786920967,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n22",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "mean"
+    },
+    "key": "compile",
+    "value": 83.863275708,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n23",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "mean"
+    },
+    "key": "delta_ms",
+    "value": -5.923645258999997,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n24",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "mean"
+    },
+    "key": "delta_percent",
+    "value": -6.5974478189057795,
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "n25",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "main",
+    "value": 125.26406009999995,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n26",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "compile",
+    "value": 115.35287229999999,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n27",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_ms",
+    "value": -9.911187799999965,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n28",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_percent",
+    "value": -7.912235793800499,
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "n29",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "mean"
+    },
+    "key": "main",
+    "value": 93.51895915693603,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n30",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "mean"
+    },
+    "key": "compile",
+    "value": 86.81811193493195,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n31",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "mean"
+    },
+    "key": "delta_ms",
+    "value": -6.700847222004086,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n32",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "mean"
+    },
+    "key": "delta_percent",
+    "value": -7.165228615043993,
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "n33",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "main",
+    "value": 123.81011878605932,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n34",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "compile",
+    "value": 112.88234446546986,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n35",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_ms",
+    "value": -10.927774320589464,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n36",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_percent",
+    "value": -8.826236843752953,
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "n37",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "mean"
+    },
+    "key": "main",
+    "value": 93.43747019199999,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n38",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "mean"
+    },
+    "key": "compile",
+    "value": 86.71824692,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n39",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "mean"
+    },
+    "key": "delta_ms",
+    "value": -6.719223271999994,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n40",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "mean"
+    },
+    "key": "delta_percent",
+    "value": -7.1911442574301265,
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "n41",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "main",
+    "value": 123.713917,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n42",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "compile",
+    "value": 112.7449059499999,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n43",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_ms",
+    "value": -10.969011050000091,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n44",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_percent",
+    "value": -8.866432585753541,
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "n45",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "4",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "main",
+    "value": 117.5049835350361,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n46",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "4",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "compile",
+    "value": 126.4181335398461,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n47",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "4",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_ms",
+    "value": 8.913150004809992,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n48",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "4",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_percent",
+    "value": 7.5853378611404905,
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "n49",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "4",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "main",
+    "value": 117.48755349999965,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n50",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "4",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "compile",
+    "value": 126.29883124999992,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n51",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "4",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_ms",
+    "value": 8.811277750000272,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n52",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "4",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_percent",
+    "value": 7.4997542186460615,
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "n53",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "4",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "main",
+    "value": 112.47814823291263,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n54",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "4",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "compile",
+    "value": 122.5703312491532,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n55",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "4",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_ms",
+    "value": 10.092183016240568,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n56",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "4",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_percent",
+    "value": 8.97257216160984,
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "n57",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "4",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "main",
+    "value": 112.48378124999998,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n58",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "4",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "compile",
+    "value": 122.38694809999996,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n59",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "4",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_ms",
+    "value": 9.903166849999977,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n60",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "2",
+      "block": "4",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_percent",
+    "value": 8.80408423325472,
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "n61",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "1",
+      "checkpoint": "before_warmup",
+      "metric": "rss"
+    },
+    "key": "main_mib",
+    "value": 622.51171875,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n62",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "1",
+      "checkpoint": "before_warmup",
+      "metric": "rss"
+    },
+    "key": "compile_mib",
+    "value": 603.4453125,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n63",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "1",
+      "checkpoint": "before_warmup",
+      "metric": "rss"
+    },
+    "key": "delta_mib",
+    "value": -19.06640625,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n64",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "1",
+      "checkpoint": "after_warmup",
+      "metric": "rss"
+    },
+    "key": "main_mib",
+    "value": 765.30078125,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n65",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "1",
+      "checkpoint": "after_warmup",
+      "metric": "rss"
+    },
+    "key": "compile_mib",
+    "value": 739.16796875,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n66",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "1",
+      "checkpoint": "after_warmup",
+      "metric": "rss"
+    },
+    "key": "delta_mib",
+    "value": -26.1328125,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n67",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "1",
+      "checkpoint": "after_measurement",
+      "metric": "rss"
+    },
+    "key": "main_mib",
+    "value": 1194.765625,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n68",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "1",
+      "checkpoint": "after_measurement",
+      "metric": "rss"
+    },
+    "key": "compile_mib",
+    "value": 1185.50390625,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n69",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "1",
+      "checkpoint": "after_measurement",
+      "metric": "rss"
+    },
+    "key": "delta_mib",
+    "value": -9.26171875,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n70",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "1",
+      "checkpoint": "after_idle",
+      "metric": "rss"
+    },
+    "key": "main_mib",
+    "value": 1075.703125,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n71",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "1",
+      "checkpoint": "after_idle",
+      "metric": "rss"
+    },
+    "key": "compile_mib",
+    "value": 1162.8046875,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n72",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "1",
+      "checkpoint": "after_idle",
+      "metric": "rss"
+    },
+    "key": "delta_mib",
+    "value": 87.1015625,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n73",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "1",
+      "checkpoint": "after_idle",
+      "metric": "rss",
+      "derived": "delta/main*100"
+    },
+    "key": "derived",
+    "value": 8.097174812985692,
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "n74",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "2",
+      "checkpoint": "before_warmup",
+      "metric": "rss"
+    },
+    "key": "main_mib",
+    "value": 599.5,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n75",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "2",
+      "checkpoint": "before_warmup",
+      "metric": "rss"
+    },
+    "key": "compile_mib",
+    "value": 596.23828125,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n76",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "2",
+      "checkpoint": "before_warmup",
+      "metric": "rss"
+    },
+    "key": "delta_mib",
+    "value": -3.26171875,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n77",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "2",
+      "checkpoint": "after_warmup",
+      "metric": "rss"
+    },
+    "key": "main_mib",
+    "value": 754.328125,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n78",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "2",
+      "checkpoint": "after_warmup",
+      "metric": "rss"
+    },
+    "key": "compile_mib",
+    "value": 741.6015625,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n79",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "2",
+      "checkpoint": "after_warmup",
+      "metric": "rss"
+    },
+    "key": "delta_mib",
+    "value": -12.7265625,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n80",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "2",
+      "checkpoint": "after_measurement",
+      "metric": "rss"
+    },
+    "key": "main_mib",
+    "value": 1152.94140625,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n81",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "2",
+      "checkpoint": "after_measurement",
+      "metric": "rss"
+    },
+    "key": "compile_mib",
+    "value": 1217.2109375,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n82",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "2",
+      "checkpoint": "after_measurement",
+      "metric": "rss"
+    },
+    "key": "delta_mib",
+    "value": 64.26953125,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n83",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "2",
+      "checkpoint": "after_idle",
+      "metric": "rss"
+    },
+    "key": "main_mib",
+    "value": 893.41796875,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n84",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "2",
+      "checkpoint": "after_idle",
+      "metric": "rss"
+    },
+    "key": "compile_mib",
+    "value": 1100.0859375,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n85",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "2",
+      "checkpoint": "after_idle",
+      "metric": "rss"
+    },
+    "key": "delta_mib",
+    "value": 206.66796875,
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "n86",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "2",
+      "checkpoint": "after_idle",
+      "metric": "rss",
+      "derived": "delta/main*100"
+    },
+    "key": "derived",
+    "value": 23.132282535032683,
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "n87",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv",
+    "row": {
+      "run": "1",
+      "arm": "MAIN",
+      "block": "all",
+      "metric": "server_total_ms"
+    },
+    "key": "mean",
+    "value": 152.4489021,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n88",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv",
+    "row": {
+      "run": "1",
+      "arm": "MAIN",
+      "block": "all",
+      "metric": "server_total_ms"
+    },
+    "key": "p95",
+    "value": 419.1592604000001,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n89",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv",
+    "row": {
+      "run": "1",
+      "arm": "MAIN",
+      "block": "all",
+      "metric": "server_total_ms"
+    },
+    "key": "total_ms",
+    "value": 3048.978042,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n90",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv",
+    "row": {
+      "run": "1",
+      "arm": "COMPILE",
+      "block": "all",
+      "metric": "server_total_ms"
+    },
+    "key": "mean",
+    "value": 160.68183345,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n91",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv",
+    "row": {
+      "run": "1",
+      "arm": "COMPILE",
+      "block": "all",
+      "metric": "server_total_ms"
+    },
+    "key": "p95",
+    "value": 570.3044000000001,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n92",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv",
+    "row": {
+      "run": "1",
+      "arm": "COMPILE",
+      "block": "all",
+      "metric": "server_total_ms"
+    },
+    "key": "total_ms",
+    "value": 3213.636669,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n93",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv",
+    "row": {
+      "run": "2",
+      "arm": "MAIN",
+      "block": "all",
+      "metric": "server_total_ms"
+    },
+    "key": "mean",
+    "value": 164.57850835,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n94",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv",
+    "row": {
+      "run": "2",
+      "arm": "MAIN",
+      "block": "all",
+      "metric": "server_total_ms"
+    },
+    "key": "p95",
+    "value": 578.29904615,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n95",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv",
+    "row": {
+      "run": "2",
+      "arm": "MAIN",
+      "block": "all",
+      "metric": "server_total_ms"
+    },
+    "key": "total_ms",
+    "value": 3291.570167,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n96",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv",
+    "row": {
+      "run": "2",
+      "arm": "COMPILE",
+      "block": "all",
+      "metric": "server_total_ms"
+    },
+    "key": "mean",
+    "value": 156.64963525000002,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n97",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv",
+    "row": {
+      "run": "2",
+      "arm": "COMPILE",
+      "block": "all",
+      "metric": "server_total_ms"
+    },
+    "key": "p95",
+    "value": 438.8669187500001,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "n98",
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv",
+    "row": {
+      "run": "2",
+      "arm": "COMPILE",
+      "block": "all",
+      "metric": "server_total_ms"
+    },
+    "key": "total_ms",
+    "value": 3132.992705,
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  }
+]

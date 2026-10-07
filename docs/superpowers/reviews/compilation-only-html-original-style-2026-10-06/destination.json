@@ -1,0 +1,25 @@
+{
+  "html": "/Users/tranquangtrong/Desktop/langflow_CV/optimize_compilation_cache_langflow_CV_original_style.html",
+  "original": "/Users/tranquangtrong/Desktop/langflow_CV/optimize_final_langflow_CV.html",
+  "slides": 10,
+  "original_slide_mapping": [
+    1,
+    2,
+    4,
+    5,
+    6,
+    7,
+    13,
+    14,
+    15,
+    16
+  ],
+  "removed_original_slides": [
+    3,
+    8,
+    9,
+    10,
+    11,
+    12
+  ]
+}

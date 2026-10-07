@@ -20,6 +20,9 @@ from dotenv import dotenv_values
 
 from benchmark_analyst.protocol import measure_overhead, pixel_digest, result_image_path, run_payload, utc_now
 
+STOP_GRACE_SECONDS = 40
+STOP_KILL_SECONDS = 10
+
 
 def read_config(path: Path) -> dict:
     config = json.loads(path.read_text(encoding="utf-8"))
@@ -51,7 +54,18 @@ def ensure_port_free(port: int) -> None:
 class Worker:
     """Own only the process started here; never kill an existing server on a port."""
 
-    def __init__(self, root: Path, port: int, *, env_file: Path | None, credentials_file: Path | None):
+    def __init__(
+        self,
+        root: Path,
+        port: int,
+        *,
+        env_file: Path | None,
+        credentials_file: Path | None,
+        fixture: dict | None = None,
+        controlled: bool = False,
+        diagnostics: bool = False,
+        telemetry_enabled: bool = True,
+    ):
         self.root, self.port = root, port
         values = dotenv_values(env_file) if env_file else {}
         credentials = dotenv_values(credentials_file) if credentials_file else {}
@@ -60,7 +74,11 @@ class Worker:
         self.token = secrets.token_urlsafe(32)
         self.process = None
         self.scratch = None
+        self._owned_group_id: int | None = None
+        self._owned_processes: dict[int, float] = {}
         self.base_url = f"http://127.0.0.1:{port}"
+        self.fixture, self.controlled = fixture, controlled
+        self.diagnostics, self.telemetry_enabled = diagnostics, telemetry_enabled
 
     def environment(self, arm: str, scratch: Path) -> dict[str, str]:
         if arm not in ("00", "01", "10", "11"):
@@ -90,9 +108,27 @@ class Worker:
                 "TEMP": str(scratch),
             }
         )
+        env["LANGFLOW_BENCHMARK_DIAGNOSTICS_ENABLED"] = str(self.diagnostics).lower()
+        env["LANGFLOW_BENCHMARK_DIAGNOSTIC_DETAIL"] = "coarse"
+        if self.controlled:
+            env["LANGFLOW_BENCHMARK_ACCESS_LOG"] = "false"
+            env["DO_NOT_TRACK"] = env["LANGFLOW_DO_NOT_TRACK"] = str(not self.telemetry_enabled).lower()
+            levels = [
+                value
+                for value in env.get("LANGFLOW_LOG_LEVELS", "").split(",")
+                if value and not value.startswith("uvicorn.access=")
+            ]
+            env["LANGFLOW_LOG_LEVELS"] = ",".join([*levels, "uvicorn.access=ERROR"])
+        if self.fixture is not None:
+            env["LANGFLOW_DATABASE_URL"] = "sqlite:///" + self.fixture["database_path"]
+            env["LANGFLOW_CONFIG_DIR"] = self.fixture["config_dir"]
+            env["LANGFLOW_SAVE_DB_IN_CONFIG_DIR"] = "true"
+            env["LANGFLOW_STORAGE_TYPE"] = "local"
         return env
 
     def start(self, arm: str, directory: Path) -> None:
+        import psutil
+
         if self.process is not None:
             raise RuntimeError("worker already owned; stop it before starting another")
         ensure_port_free(self.port)
@@ -127,14 +163,18 @@ class Worker:
                 start_new_session=True,
             )
         try:
+            self._owned_group_id = self.process.pid
+            self._owned_processes = {self.process.pid: psutil.Process(self.process.pid).create_time()}
             deadline = time.monotonic() + 180
             with requests.Session() as session:
                 session.trust_env = False
                 while time.monotonic() < deadline:
+                    self._remember_owned_descendants()
                     if self.process.poll() is not None:
                         raise RuntimeError(f"worker exited; inspect {directory / 'worker.log'}")
                     try:
                         if session.get(self.base_url + "/health_check", timeout=2).status_code == 200:
+                            self._remember_owned_descendants()
                             return
                     except requests.RequestException:
                         pass
@@ -144,15 +184,94 @@ class Worker:
             self.stop()
             raise
 
-    def stop(self) -> None:
-        if self.process is not None and self.process.poll() is None:
-            os.killpg(self.process.pid, signal.SIGTERM)
+    def _remember_owned_descendants(self) -> None:
+        """Capture child generations while their relationship is still provable."""
+        import psutil
+
+        if self.process is None or self._owned_group_id is None:
+            return
+        try:
+            parent = psutil.Process(self.process.pid)
+            if parent.create_time() != self._owned_processes.get(parent.pid):
+                return
+            for child in parent.children(recursive=True):
+                try:
+                    if os.getpgid(child.pid) == self._owned_group_id:
+                        self._owned_processes[child.pid] = child.create_time()
+                except (OSError, psutil.Error):
+                    continue
+        except psutil.Error:
+            return
+
+    def _live_group_members(self) -> dict[int, float | None]:
+        import psutil
+
+        members = {}
+        for pid in psutil.pids():
             try:
-                self.process.wait(timeout=40)
-            except subprocess.TimeoutExpired:
-                os.killpg(self.process.pid, signal.SIGKILL)
-                self.process.wait(timeout=10)
-        self.process = None
+                if os.getpgid(pid) != self._owned_group_id:
+                    continue
+                # process_iter retains Process objects and their cached birth time.
+                # Ownership needs the current generation, including after PID reuse.
+                process = psutil.Process(pid)
+                if process.status() not in (psutil.STATUS_ZOMBIE, psutil.STATUS_DEAD):
+                    members[pid] = process.create_time()
+            except (OSError, psutil.Error):
+                continue
+        return members
+
+    def _signal_owned_group(self, sig: int) -> None:
+        members = self._live_group_members()
+        if not members:
+            return
+        if not any(
+            created is not None and self._owned_processes.get(pid) == created for pid, created in members.items()
+        ):
+            raise RuntimeError("worker group ownership cannot be verified; retained worker and scratch")
+        try:
+            os.killpg(self._owned_group_id, sig)
+        except ProcessLookupError:
+            pass  # The verified group exited before the signal.
+
+    def _wait_for_group_stop(self, timeout: float) -> bool:
+        import psutil
+
+        def known_process_running() -> bool:
+            for pid, created in self._owned_processes.items():
+                try:
+                    process = psutil.Process(pid)
+                    if process.create_time() == created and process.status() not in (
+                        psutil.STATUS_ZOMBIE,
+                        psutil.STATUS_DEAD,
+                    ):
+                        return True
+                except psutil.NoSuchProcess:
+                    continue
+                except psutil.Error:
+                    return True  # An unreadable owned generation is not proof of exit.
+            return False
+
+        deadline = time.monotonic() + timeout
+        while self._live_group_members() or known_process_running():
+            if time.monotonic() >= deadline:
+                return False
+            time.sleep(min(0.05, max(0, deadline - time.monotonic())))
+        return True
+
+    def stop(self) -> None:
+        if self.process is not None:
+            if self._owned_group_id is None:
+                raise RuntimeError("worker group ownership is missing; retained worker and scratch")
+            self._remember_owned_descendants()
+            self._signal_owned_group(signal.SIGTERM)
+            if not self._wait_for_group_stop(STOP_GRACE_SECONDS):
+                self._signal_owned_group(signal.SIGKILL)
+                if not self._wait_for_group_stop(STOP_KILL_SECONDS):
+                    raise RuntimeError("worker group still running after stop deadline; retained worker and scratch")
+            self.process.wait(timeout=STOP_KILL_SECONDS)
+            self.process = None
+            self._owned_group_id = None
+            self._owned_processes = {}
         if self.scratch is not None:
             self.scratch.cleanup()
             self.scratch = None
@@ -165,11 +284,34 @@ class Worker:
         session.headers.update({"x-api-key": self.api_key, "accept": "application/json"})
         return session
 
-    def snapshot(self, session: requests.Session) -> dict:
+    def snapshot(self, session: requests.Session, *, fresh_connection: bool = False) -> dict:
+        if fresh_connection:
+            # The 5 s idle checkpoint coincides with uvicorn's keep-alive expiry.
+            # Use one fresh control connection; never retry a measured request.
+            with self.session() as control:
+                return self.snapshot(control)
+        started_at, started = utc_now(), time.perf_counter()
         response = session.get(
             self.base_url + "/_benchmark/snapshot",
             headers={"Authorization": f"Bearer {self.token}"},
             timeout=10,
+            allow_redirects=False,
+        )
+        response.raise_for_status()
+        return {
+            **response.json(),
+            "snapshot_started_at_utc": started_at,
+            "snapshot_duration_ms": (time.perf_counter() - started) * 1000,
+        }
+
+    def drain_diagnostics(self, session: requests.Session, *, fresh_connection: bool = False) -> dict:
+        if fresh_connection:
+            with self.session() as control:
+                return self.drain_diagnostics(control)
+        response = session.get(
+            self.base_url + "/_benchmark/diagnostics/drain",
+            headers={"Authorization": f"Bearer {self.token}"},
+            timeout=15,
             allow_redirects=False,
         )
         response.raise_for_status()

@@ -16,8 +16,9 @@ strong{color:#173f5f}@media print{main{padding:0}body{background:white}h2{break-
 <p>Ranh giới ghi trong manifest: Outer application ASGI entry through final response body send, including all Langflow middleware and HTTP telemetry, excluding post-response background work, minus union of SCRFD output method bodies</p>
 <h2>Tính hợp lệ</h2>
 <p>Đủ số mẫu theo manifest; output, timing, cờ và counter trong worker đều đạt kiểm tra.</p>
+<p>Latency/cache/output: VALID; RAM: unavailable; diagnostic observer: unavailable; overall: VALID.</p>
 <h2>Thiết kế và cách đọc</h2>
-<p>Arm có bit thứ nhất = compilation cache, bit thứ hai = warm graph registry; 1 bật, 0 tắt. HTTP connection reuse tắt ở mọi arm. Mỗi slot dùng một worker độc lập, concurrency 1. Thiết kế khai báo 1000 mẫu đo/arm, bốn block, 5 warmup/slot. Warmup không đi vào thống kê độ trễ.</p>
+<p>Arm có bit thứ nhất = compilation cache, bit thứ hai = warm graph registry; 1 bật, 0 tắt. Legacy HTTP-reuse flag tắt; requests.Session vẫn reuse TCP. Mỗi slot dùng một worker độc lập, concurrency 1. Thiết kế khai báo 1000 mẫu đo/arm, bốn block, 5 warmup/slot. Warmup không đi vào thống kê độ trễ.</p>
 <p>p50/p95/p99 dùng nội suy tuyến tính (Hyndman-Fan type 7). Mỗi request có trọng số bằng nhau; các block cân bằng nên mean tổng hợp cũng bằng mean của các mean block. Các percentile mô tả phân phối mẫu, không phải khoảng tin cậy.</p>
 <h2>Chỉ số chính: Langflow overhead (ms)</h2>
 <div class="table-wrap"><table>
@@ -27,7 +28,97 @@ strong{color:#173f5f}@media print{main{padding:0}body{background:white}h2{break-
 <tr><td>10</td><td>1000</td><td>1000</td><td>1000</td><td>54.065</td><td>44.675</td><td>70.277</td><td>423.070</td></tr>
 <tr><td>11</td><td>1000</td><td>1000</td><td>1000</td><td>57.437</td><td>48.979</td><td>68.610</td><td>370.681</td></tr>
 </table></div>
-<img src="charts.png" alt="Overhead: percentiles, block means and request sequence">
+<img src="charts.png" alt="Phân phối, block và chuỗi request của overhead">
+<h2>Trade-off latency và RAM worker</h2>
+<p>Phạm vi một flow SCRFD, một serving worker, concurrency 1. RSS/USS là RAM toàn worker; chưa đo peak RAM. before_warmup là sau readiness và workload verification, không phải process hoàn toàn cold. after_idle là sau ít nhất thời gian idle khai báo; background tasks vẫn chạy và checkpoint không chứng minh quiescence.</p>
+<p>Không có SLA hoặc ngân sách RAM để chọn winner chung. Mean/median và p95/p99 là các mục tiêu khác nhau; đọc chênh lệch theo block trước khi xếp hạng. Payload cache không đo deep heap và không quy bytes RAM cho từng cache.</p>
+<p>RAM chưa đo (legacy / measurement disabled); RSS và USS unavailable, không chuyển thành zero.</p>
+<h2>Quan sát 11 so với 10 và phần chưa giải thích</h2>
+<p>Phân rã method spans: measured; 4000 request có đủ sáu span tuần tự. pre + gaps + post + Chat Input/Output = overhead. Missing/overlap chỉ làm phân rã unavailable; metric union SCRFD vẫn được kiểm tra riêng. Đoạn pre gồm middleware/auth/flow/setup/dispatch, chưa phải bằng chứng quy cho deepcopy.</p>
+<div class="table-wrap"><table>
+<tr><th>Block</th><th>Δmean</th><th>Δp50</th><th>Δp95</th><th>Δp99</th><th>Δpre</th><th>Δgaps</th><th>Δpost</th><th>Δchat</th></tr>
+<tr><td>1</td><td>-1.236</td><td>1.536</td><td>-9.337</td><td>-181.854</td><td>0.965</td><td>-1.191</td><td>-0.307</td><td>-0.704</td></tr>
+<tr><td>2</td><td>3.070</td><td>2.907</td><td>4.642</td><td>-1.762</td><td>3.492</td><td>-0.088</td><td>-0.065</td><td>-0.269</td></tr>
+<tr><td>3</td><td>12.798</td><td>10.375</td><td>13.668</td><td>23.695</td><td>9.837</td><td>1.169</td><td>0.956</td><td>0.836</td></tr>
+<tr><td>4</td><td>-1.145</td><td>0.052</td><td>-12.188</td><td>18.397</td><td>1.052</td><td>-1.262</td><td>-0.590</td><td>-0.346</td></tr>
+</table></div>
+<p>Giữ mọi outlier. Spike là overhead &gt;200 ms; không retry hoặc loại mẫu. Early/late là 50 request đầu/cuối mỗi slot; với slot dưới 100 request hai cửa sổ overlap. Leave-one-block-out chỉ là sensitivity, không thay official results.</p>
+<div class="table-wrap"><table>
+<tr><th>Block</th><th>Arm</th><th>Early n</th><th>Early mean</th><th>Late n</th><th>Late mean</th><th>Overlap</th></tr>
+<tr><td>1</td><td>00</td><td>50</td><td>71.240</td><td>50</td><td>61.220</td><td>False</td></tr>
+<tr><td>1</td><td>01</td><td>50</td><td>58.052</td><td>50</td><td>70.669</td><td>False</td></tr>
+<tr><td>1</td><td>10</td><td>50</td><td>49.002</td><td>50</td><td>60.139</td><td>False</td></tr>
+<tr><td>1</td><td>11</td><td>50</td><td>51.653</td><td>50</td><td>51.376</td><td>False</td></tr>
+<tr><td>2</td><td>00</td><td>50</td><td>66.573</td><td>50</td><td>51.548</td><td>False</td></tr>
+<tr><td>2</td><td>01</td><td>50</td><td>59.169</td><td>50</td><td>60.198</td><td>False</td></tr>
+<tr><td>2</td><td>10</td><td>50</td><td>53.067</td><td>50</td><td>56.253</td><td>False</td></tr>
+<tr><td>2</td><td>11</td><td>50</td><td>57.212</td><td>50</td><td>58.796</td><td>False</td></tr>
+<tr><td>3</td><td>00</td><td>50</td><td>84.601</td><td>50</td><td>67.056</td><td>False</td></tr>
+<tr><td>3</td><td>01</td><td>50</td><td>55.212</td><td>50</td><td>57.192</td><td>False</td></tr>
+<tr><td>3</td><td>10</td><td>50</td><td>46.030</td><td>50</td><td>55.122</td><td>False</td></tr>
+<tr><td>3</td><td>11</td><td>50</td><td>60.979</td><td>50</td><td>69.253</td><td>False</td></tr>
+<tr><td>4</td><td>00</td><td>50</td><td>53.939</td><td>50</td><td>57.942</td><td>False</td></tr>
+<tr><td>4</td><td>01</td><td>50</td><td>65.569</td><td>50</td><td>57.365</td><td>False</td></tr>
+<tr><td>4</td><td>10</td><td>50</td><td>45.335</td><td>50</td><td>60.793</td><td>False</td></tr>
+<tr><td>4</td><td>11</td><td>50</td><td>49.604</td><td>50</td><td>64.589</td><td>False</td></tr>
+</table></div>
+<div class="table-wrap"><table>
+<tr><th>Block</th><th>Arm</th><th>Index</th><th>Request ID</th><th>Overhead ms</th></tr>
+<tr><td>1</td><td>00</td><td>43</td><td>60a78667-bf71-45ac-bf1a-c96cc5216024</td><td>623.8921249999999</td></tr>
+<tr><td>1</td><td>00</td><td>154</td><td>67d802ad-e453-48bb-b23d-981d2f49ec42</td><td>574.47775</td></tr>
+<tr><td>1</td><td>01</td><td>242</td><td>2a5bcb39-bec7-455f-a513-79e8651b1995</td><td>593.984208</td></tr>
+<tr><td>1</td><td>11</td><td>67</td><td>0bf0ce5a-c8af-4209-b137-fb90432a7d46</td><td>974.9792079999999</td></tr>
+<tr><td>1</td><td>11</td><td>157</td><td>9998a31e-f42e-4575-9080-be3e4c0ff55e</td><td>555.8747520000002</td></tr>
+<tr><td>1</td><td>10</td><td>41</td><td>25edab7d-2871-41ee-9484-2017e170a469</td><td>317.7766659999999</td></tr>
+<tr><td>1</td><td>10</td><td>118</td><td>420a02b8-edfd-4f20-869e-7703f2209b04</td><td>284.03029000000004</td></tr>
+<tr><td>1</td><td>10</td><td>129</td><td>464fbdff-4d64-493a-97a5-da07647fc77e</td><td>846.9791239999997</td></tr>
+<tr><td>1</td><td>10</td><td>226</td><td>1bf9f40e-e1e0-4356-a0c7-1b082f04780f</td><td>590.9876240000001</td></tr>
+<tr><td>2</td><td>01</td><td>164</td><td>10310c82-4d53-43ef-98a2-f398414500e5</td><td>600.240626</td></tr>
+<tr><td>2</td><td>10</td><td>43</td><td>a9832bef-487a-44f0-8fd0-842a30569bae</td><td>423.0641250000001</td></tr>
+<tr><td>2</td><td>10</td><td>136</td><td>de8488b9-0cc0-467a-a381-0ec2435b9d42</td><td>525.6560839999999</td></tr>
+<tr><td>2</td><td>10</td><td>231</td><td>76f5ea9a-82a7-4911-b2b3-5ac9add4ece4</td><td>576.7705420000002</td></tr>
+<tr><td>2</td><td>00</td><td>48</td><td>13cf96cd-a91d-4868-b091-e72fa6a2006a</td><td>460.82454099999995</td></tr>
+<tr><td>2</td><td>00</td><td>178</td><td>d0890446-a12c-4ec0-8f2b-e85765d6226c</td><td>473.38854200000003</td></tr>
+<tr><td>2</td><td>11</td><td>40</td><td>4c00b1ac-6197-452c-8dd7-0ddca91b2d12</td><td>451.212291</td></tr>
+<tr><td>2</td><td>11</td><td>125</td><td>17fabb75-c686-4eed-9a51-eddad1e18402</td><td>558.6080829999999</td></tr>
+<tr><td>2</td><td>11</td><td>218</td><td>62a330a4-2c68-4f14-8bcf-7e82b264eadc</td><td>569.44825</td></tr>
+<tr><td>3</td><td>10</td><td>56</td><td>7f87463b-81a4-4e7e-a04e-b11e81147888</td><td>423.687167</td></tr>
+<tr><td>3</td><td>10</td><td>149</td><td>6548aedd-a7ef-4991-810c-7949a6366614</td><td>593.40025</td></tr>
+<tr><td>3</td><td>10</td><td>245</td><td>18413603-0c5b-4d1c-971a-40555f823274</td><td>530.9844589999999</td></tr>
+<tr><td>3</td><td>11</td><td>41</td><td>e38e9260-c593-46ef-8369-a5e105c9ab13</td><td>369.867125</td></tr>
+<tr><td>3</td><td>11</td><td>127</td><td>82b1ea80-8981-48e5-9b8b-d2bfb2d8a655</td><td>958.361165</td></tr>
+<tr><td>3</td><td>11</td><td>221</td><td>aa4f49a8-da08-47ae-b9e7-32db5acb9db0</td><td>643.806168</td></tr>
+<tr><td>3</td><td>01</td><td>57</td><td>8da7d676-8d29-405f-a49b-5929f5dc6e4e</td><td>523.53979</td></tr>
+<tr><td>3</td><td>01</td><td>86</td><td>5828c305-1c07-4c17-8154-2a93bf6bf186</td><td>318.29662500000006</td></tr>
+<tr><td>3</td><td>01</td><td>142</td><td>d369e491-2f28-4895-90b1-661f496eb80a</td><td>259.999709</td></tr>
+<tr><td>3</td><td>00</td><td>1</td><td>34978fbd-5b96-4250-a230-ce1f75971381</td><td>243.45266500000002</td></tr>
+<tr><td>3</td><td>00</td><td>47</td><td>c7141a73-ed3d-4250-befe-dbd57d013f36</td><td>813.9859169999999</td></tr>
+<tr><td>3</td><td>00</td><td>157</td><td>9f534d75-e410-42c5-b36b-1763f08f08d8</td><td>742.2175</td></tr>
+<tr><td>4</td><td>11</td><td>51</td><td>a019ffd1-82c7-4340-9ce6-407665d14354</td><td>487.36729199999996</td></tr>
+<tr><td>4</td><td>11</td><td>139</td><td>f2790ca4-fd47-4b83-8a8d-d0be968c0932</td><td>520.7630839999999</td></tr>
+<tr><td>4</td><td>11</td><td>232</td><td>b0e93246-0527-4035-b9fc-6444391dc969</td><td>703.5487069999999</td></tr>
+<tr><td>4</td><td>00</td><td>52</td><td>a4cc94df-e770-4aad-8930-67e146aa69ed</td><td>357.251543</td></tr>
+<tr><td>4</td><td>10</td><td>53</td><td>3c1a3cfd-b9d9-4ef7-9b5c-f7a03a4cfa1e</td><td>434.19504199999994</td></tr>
+<tr><td>4</td><td>10</td><td>149</td><td>12d01ef6-8a66-46e1-aa8d-769b89145c71</td><td>729.4035009999999</td></tr>
+<tr><td>4</td><td>10</td><td>245</td><td>a5e818d3-fbea-48db-b3cd-913339a44a6a</td><td>590.686499</td></tr>
+<tr><td>4</td><td>01</td><td>45</td><td>a9617a18-c505-470b-a89e-4b2ab1837653</td><td>401.63808299999994</td></tr>
+<tr><td>4</td><td>01</td><td>110</td><td>09066904-6fa2-4e77-bd8c-948bb282d7a4</td><td>439.1927499999999</td></tr>
+<tr><td>4</td><td>01</td><td>146</td><td>229ad1c9-7fce-4cf3-90fa-4c6f258c05ff</td><td>247.74691699999994</td></tr>
+<tr><td>4</td><td>01</td><td>150</td><td>4479ed38-92c7-4750-ab92-6c6c1f190e47</td><td>600.3802089999999</td></tr>
+<tr><td>4</td><td>01</td><td>159</td><td>83f6f434-dcce-4e3d-9285-e52e0415f3a7</td><td>260.999333</td></tr>
+</table></div>
+<p>Sensitivity 11-10 mean khi bỏ từng block (ms): {&quot;1&quot;: 4.907659704000004, &quot;2&quot;: 3.4721248493333405, &quot;3&quot;: 0.2294577133333391, &quot;4&quot;: 4.877255601333324}</p>
+<p>Nguồn figure: run main-v2; profile legacy/unavailable; detail method-spans only; observer enabled=False. Các quan sát diagnostic không được gộp vào campaign khác hoặc trừ khỏi primary metric.</p>
+<img src="diagnostics.png" alt="Method envelope decomposition and spike timeline">
+<h2>Chi phí warmup</h2>
+<div class="table-wrap"><table>
+<tr><th>Arm</th><th>Warmup attempts</th><th>Tổng server time warmup (ms)</th></tr>
+<tr><td>00</td><td>20</td><td>4006.291</td></tr>
+<tr><td>01</td><td>20</td><td>4330.956</td></tr>
+<tr><td>10</td><td>20</td><td>4256.812</td></tr>
+<tr><td>11</td><td>20</td><td>4254.105</td></tr>
+</table></div>
+<p>Warmup được ghi riêng và không tham gia latency steady-state. Tổng server time warmup chưa gồm startup, readiness, upload/download hoặc verification; chưa đủ startup cost đối chứng để suy break-even request count.</p>
 <h2>Hiệu ứng trên mean overhead</h2>
 <p>Δ = mean bật - mean đối chứng: âm nghĩa là overhead thấp hơn trong lần chạy này. Giảm (%) = (đối chứng - bật) / đối chứng x 100; âm nghĩa là chậm hơn. Không mặc định cache hoặc kết hợp hai cache luôn nhanh hơn.</p>
 <div class="table-wrap"><table>
@@ -86,24 +177,543 @@ strong{color:#173f5f}@media print{main{padding:0}body{background:white}h2{break-
 <h2>Bằng chứng worker</h2>
 <p>Counter bên dưới là after_measurement - after_warmup. Warm ON phải hit ở mọi request đo và không cold; OFF phải cold ở mọi request và không hit. Compilation ON phải có hit đo được; OFF phải có bypass và không hit. PID/cờ phải nhất quán trước warmup, sau warmup và sau đo.</p>
 <div class="table-wrap"><table>
-<tr><th>block</th><th>arm</th><th>pid</th><th>measured_attempts</th><th>compilation_hits</th><th>compilation_bypasses</th><th>warm_hits</th><th>warm_cold</th></tr>
-<tr><td>1</td><td>00</td><td>19342</td><td>250</td><td>0</td><td>1500</td><td>0</td><td>250</td></tr>
-<tr><td>1</td><td>01</td><td>20222</td><td>250</td><td>0</td><td>1500</td><td>250</td><td>0</td></tr>
-<tr><td>1</td><td>11</td><td>21080</td><td>250</td><td>1500</td><td>0</td><td>250</td><td>0</td></tr>
-<tr><td>1</td><td>10</td><td>21790</td><td>250</td><td>1500</td><td>0</td><td>0</td><td>250</td></tr>
-<tr><td>2</td><td>01</td><td>22544</td><td>250</td><td>0</td><td>1500</td><td>250</td><td>0</td></tr>
-<tr><td>2</td><td>10</td><td>23400</td><td>250</td><td>1500</td><td>0</td><td>0</td><td>250</td></tr>
-<tr><td>2</td><td>00</td><td>24151</td><td>250</td><td>0</td><td>1500</td><td>0</td><td>250</td></tr>
-<tr><td>2</td><td>11</td><td>24910</td><td>250</td><td>1500</td><td>0</td><td>250</td><td>0</td></tr>
-<tr><td>3</td><td>10</td><td>25639</td><td>250</td><td>1500</td><td>0</td><td>0</td><td>250</td></tr>
-<tr><td>3</td><td>11</td><td>26372</td><td>250</td><td>1500</td><td>0</td><td>250</td><td>0</td></tr>
-<tr><td>3</td><td>01</td><td>27134</td><td>250</td><td>0</td><td>1500</td><td>250</td><td>0</td></tr>
-<tr><td>3</td><td>00</td><td>27944</td><td>250</td><td>0</td><td>1500</td><td>0</td><td>250</td></tr>
-<tr><td>4</td><td>11</td><td>28803</td><td>250</td><td>1500</td><td>0</td><td>250</td><td>0</td></tr>
-<tr><td>4</td><td>00</td><td>29520</td><td>250</td><td>0</td><td>1500</td><td>0</td><td>250</td></tr>
-<tr><td>4</td><td>10</td><td>30284</td><td>250</td><td>1500</td><td>0</td><td>0</td><td>250</td></tr>
-<tr><td>4</td><td>01</td><td>31083</td><td>250</td><td>0</td><td>1500</td><td>250</td><td>0</td></tr>
+<tr><th>block</th><th>arm</th><th>pid</th><th>measured_attempts</th><th>compilation_hits</th><th>compilation_bypasses</th><th>warm_hits</th><th>warm_cold</th><th>compilation_misses</th><th>compilation_builds</th><th>compilation_evictions</th><th>compilation_hit_rate</th></tr>
+<tr><td>1</td><td>00</td><td>19342</td><td>250</td><td>0</td><td>1500</td><td>0</td><td>250</td><td>0</td><td>0</td><td>0</td><td>None</td></tr>
+<tr><td>1</td><td>01</td><td>20222</td><td>250</td><td>0</td><td>1500</td><td>250</td><td>0</td><td>0</td><td>0</td><td>0</td><td>None</td></tr>
+<tr><td>1</td><td>11</td><td>21080</td><td>250</td><td>1500</td><td>0</td><td>250</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1.0</td></tr>
+<tr><td>1</td><td>10</td><td>21790</td><td>250</td><td>1500</td><td>0</td><td>0</td><td>250</td><td>0</td><td>0</td><td>0</td><td>1.0</td></tr>
+<tr><td>2</td><td>01</td><td>22544</td><td>250</td><td>0</td><td>1500</td><td>250</td><td>0</td><td>0</td><td>0</td><td>0</td><td>None</td></tr>
+<tr><td>2</td><td>10</td><td>23400</td><td>250</td><td>1500</td><td>0</td><td>0</td><td>250</td><td>0</td><td>0</td><td>0</td><td>1.0</td></tr>
+<tr><td>2</td><td>00</td><td>24151</td><td>250</td><td>0</td><td>1500</td><td>0</td><td>250</td><td>0</td><td>0</td><td>0</td><td>None</td></tr>
+<tr><td>2</td><td>11</td><td>24910</td><td>250</td><td>1500</td><td>0</td><td>250</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1.0</td></tr>
+<tr><td>3</td><td>10</td><td>25639</td><td>250</td><td>1500</td><td>0</td><td>0</td><td>250</td><td>0</td><td>0</td><td>0</td><td>1.0</td></tr>
+<tr><td>3</td><td>11</td><td>26372</td><td>250</td><td>1500</td><td>0</td><td>250</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1.0</td></tr>
+<tr><td>3</td><td>01</td><td>27134</td><td>250</td><td>0</td><td>1500</td><td>250</td><td>0</td><td>0</td><td>0</td><td>0</td><td>None</td></tr>
+<tr><td>3</td><td>00</td><td>27944</td><td>250</td><td>0</td><td>1500</td><td>0</td><td>250</td><td>0</td><td>0</td><td>0</td><td>None</td></tr>
+<tr><td>4</td><td>11</td><td>28803</td><td>250</td><td>1500</td><td>0</td><td>250</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1.0</td></tr>
+<tr><td>4</td><td>00</td><td>29520</td><td>250</td><td>0</td><td>1500</td><td>0</td><td>250</td><td>0</td><td>0</td><td>0</td><td>None</td></tr>
+<tr><td>4</td><td>10</td><td>30284</td><td>250</td><td>1500</td><td>0</td><td>0</td><td>250</td><td>0</td><td>0</td><td>0</td><td>1.0</td></tr>
+<tr><td>4</td><td>01</td><td>31083</td><td>250</td><td>0</td><td>1500</td><td>250</td><td>0</td><td>0</td><td>0</td><td>0</td><td>None</td></tr>
 </table></div>
+<p>Hit rate dùng compilation hits/(hits+misses), chỉ hiển thị khi có counter miss; compilation events không phải số request. Cache bị reset theo worker/slot; capacity/occupancy/payload được ghi riêng dưới đây. Payload bytes là source UTF-8, AST pickle hoặc resident JSON, không phải heap bytes hoặc RAM quy cho từng cache.</p>
+<pre>
+[
+
+  {
+
+    &quot;block&quot;: 1,
+
+    &quot;arm&quot;: &quot;00&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  },
+
+  {
+
+    &quot;block&quot;: 1,
+
+    &quot;arm&quot;: &quot;01&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  },
+
+  {
+
+    &quot;block&quot;: 1,
+
+    &quot;arm&quot;: &quot;11&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  },
+
+  {
+
+    &quot;block&quot;: 1,
+
+    &quot;arm&quot;: &quot;10&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  },
+
+  {
+
+    &quot;block&quot;: 2,
+
+    &quot;arm&quot;: &quot;01&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  },
+
+  {
+
+    &quot;block&quot;: 2,
+
+    &quot;arm&quot;: &quot;10&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  },
+
+  {
+
+    &quot;block&quot;: 2,
+
+    &quot;arm&quot;: &quot;00&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  },
+
+  {
+
+    &quot;block&quot;: 2,
+
+    &quot;arm&quot;: &quot;11&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  },
+
+  {
+
+    &quot;block&quot;: 3,
+
+    &quot;arm&quot;: &quot;10&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  },
+
+  {
+
+    &quot;block&quot;: 3,
+
+    &quot;arm&quot;: &quot;11&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  },
+
+  {
+
+    &quot;block&quot;: 3,
+
+    &quot;arm&quot;: &quot;01&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  },
+
+  {
+
+    &quot;block&quot;: 3,
+
+    &quot;arm&quot;: &quot;00&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  },
+
+  {
+
+    &quot;block&quot;: 4,
+
+    &quot;arm&quot;: &quot;11&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  },
+
+  {
+
+    &quot;block&quot;: 4,
+
+    &quot;arm&quot;: &quot;00&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  },
+
+  {
+
+    &quot;block&quot;: 4,
+
+    &quot;arm&quot;: &quot;10&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  },
+
+  {
+
+    &quot;block&quot;: 4,
+
+    &quot;arm&quot;: &quot;01&quot;,
+
+    &quot;cache_occupancy&quot;: {
+
+      &quot;before_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 0
+
+      },
+
+      &quot;after_warmup&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      },
+
+      &quot;after_measurement&quot;: {
+
+        &quot;registry_entries&quot;: 1
+
+      }
+
+    },
+
+    &quot;effective&quot;: {}
+
+  }
+
+]
+
+</pre>
 <h2>Nguồn và khả năng tái lập</h2>
 <p>manifest.json giữ thiết kế, hashes workload/source; requests.jsonl giữ mọi attempt; worker_evidence.jsonl giữ snapshot worker. Báo cáo đọc offline và không sửa ba file raw. Thiếu, sai số lượng, lỗi output/timing hoặc thiếu bằng chứng làm toàn bộ run INVALID.</p>
 <pre>
@@ -156,6 +766,24 @@ strong{color:#173f5f}@media print{main{padding:0}body{background:white}h2{break-
     &quot;sha256&quot;: &quot;9f0d0dc4fd8f830adc3979875bec77f794341c499dff9f6ce5fcddb9a65d1f84&quot;,
 
     &quot;recorded_file_count&quot;: 1728
+
+  },
+
+  &quot;profile_id&quot;: null,
+
+  &quot;profile&quot;: null,
+
+  &quot;fixture&quot;: null,
+
+  &quot;raw_sha256&quot;: {
+
+    &quot;manifest.json&quot;: &quot;858ba27e2962f94ae9a713e67c90127c963d24df5daf7779bcda7abff1c1891a&quot;,
+
+    &quot;requests.jsonl&quot;: &quot;f902cc60f05d3e575b63b41a35a13869836c7478a91b9776c0256b29c2b2f320&quot;,
+
+    &quot;worker_evidence.jsonl&quot;: &quot;59e217512aa2cfc7e7b38d5a6e73e3001f01a2b71aa7584820b462b5658a7a97&quot;,
+
+    &quot;state.json&quot;: &quot;1766be63817fa85d5aeeea066b217abdc6f6a5374d607c794a7b131ebb35b77d&quot;
 
   }
 

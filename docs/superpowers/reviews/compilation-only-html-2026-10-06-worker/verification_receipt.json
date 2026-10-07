@@ -1,0 +1,1177 @@
+{
+  "kind": "compilation_only_html_qa",
+  "created_at": "2026-10-06T09:17:33.252Z",
+  "status": "PASS",
+  "html": "/Users/tranquangtrong/Desktop/langflow_CV/optimize_compilation_cache_langflow_CV.html",
+  "html_sha256": "4e0fab1a14ea3d76d9ce9558252812b43274d846669a89fe3057e150e56a4929",
+  "slide_count": 14,
+  "scope": "New presentation HTML and task-owned QA only. No benchmark/backend suites executed.",
+  "checks": [
+    {
+      "name": "scope_and_slide_structure",
+      "status": "PASS",
+      "detail": "14 sequential slides. No removed statistics, old results/commit, or method content outside exclusion section and OFF condition."
+    },
+    {
+      "name": "numbers_and_deltas",
+      "status": "PASS",
+      "detail": {
+        "html_numeric_values": 98,
+        "comparison_rows_recomputed": 60,
+        "precision": "ms/MiB 3 decimals; percent 2 decimals; all from full-precision CSV"
+      }
+    },
+    {
+      "name": "required_claims",
+      "status": "PASS",
+      "detail": "Source pins, explicit RAM cost/limits, nullable USS, separate D1 interpretation, measured/warmup counts are present. Static prose also reviewed independently."
+    },
+    {
+      "name": "all_content_links_resolve",
+      "status": "PASS",
+      "detail": {
+        "anchors": 56,
+        "unique": 31
+      }
+    },
+    {
+      "name": "source_report_opens_in_browser",
+      "status": "PASS",
+      "detail": "file:///Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.html"
+    },
+    {
+      "name": "navigation_buttons_keyboard_menu_hash_document_mode",
+      "status": "PASS",
+      "detail": "Previous/next, Arrow keys, Space, PageUp/Down, Home/End, M, menu in both modes, reload hash, page counters and progress endpoints verified."
+    },
+    {
+      "name": "fullscreen_button_and_F",
+      "status": "PASS",
+      "detail": "Browser entered/exited native fullscreen via actual trusted clicks and F key; screenshot saved."
+    },
+    {
+      "name": "all_slide_renders_and_responsive_geometry",
+      "status": "PASS",
+      "detail": {
+        "renders": 56,
+        "viewports": [
+          "1440×1000",
+          "390×844"
+        ],
+        "themes": [
+          "light",
+          "dark"
+        ],
+        "checks": "No global horizontal overflow or unintended clipping. Mobile THEAD is deliberately visually hidden; every TD has its visible data-label. All screenshots are full-page."
+      }
+    },
+    {
+      "name": "document_mode_both_viewports",
+      "status": "PASS",
+      "detail": "All 14 slides visible and full-page captures saved at both viewport sizes."
+    },
+    {
+      "name": "console_and_runtime_errors",
+      "status": "PASS",
+      "detail": {
+        "page_errors": 0,
+        "console_errors": 0,
+        "network_failures": []
+      }
+    },
+    {
+      "name": "original_sources_and_preexisting_changes_unchanged",
+      "status": "PASS",
+      "detail": {
+        "before": "input_hashes_before.json",
+        "after": "input_hashes_after.json",
+        "source_files": 35,
+        "preexisting_worktree_files": 42,
+        "original_sha256": "f301f215b3253e7e8e77d185f5b84a49253fffe70936644b55ad9a1a0ec63107",
+        "all_unchanged": true
+      }
+    },
+    {
+      "name": "visual_review_all_slides",
+      "status": "PASS",
+      "detail": "All slides inspected through contact sheets, with dense code/latency/RAM/exclusion screens zoomed. Separate independent dark review."
+    },
+    {
+      "name": "campaign_receipt_linked_hashes",
+      "status": "PASS",
+      "detail": "46 primary presentation/raw artifacts checked against immutable existing campaign receipt, then rechecked at finalization."
+    }
+  ],
+  "screenshots": [
+    "screenshots/fullscreen.png",
+    "screenshots/desktop-light-01.png",
+    "screenshots/desktop-light-02.png",
+    "screenshots/desktop-light-03.png",
+    "screenshots/desktop-light-04.png",
+    "screenshots/desktop-light-05.png",
+    "screenshots/desktop-light-06.png",
+    "screenshots/desktop-light-07.png",
+    "screenshots/desktop-light-08.png",
+    "screenshots/desktop-light-09.png",
+    "screenshots/desktop-light-10.png",
+    "screenshots/desktop-light-11.png",
+    "screenshots/desktop-light-12.png",
+    "screenshots/desktop-light-13.png",
+    "screenshots/desktop-light-14.png",
+    "screenshots/desktop-dark-01.png",
+    "screenshots/desktop-dark-02.png",
+    "screenshots/desktop-dark-03.png",
+    "screenshots/desktop-dark-04.png",
+    "screenshots/desktop-dark-05.png",
+    "screenshots/desktop-dark-06.png",
+    "screenshots/desktop-dark-07.png",
+    "screenshots/desktop-dark-08.png",
+    "screenshots/desktop-dark-09.png",
+    "screenshots/desktop-dark-10.png",
+    "screenshots/desktop-dark-11.png",
+    "screenshots/desktop-dark-12.png",
+    "screenshots/desktop-dark-13.png",
+    "screenshots/desktop-dark-14.png",
+    "screenshots/small-light-01.png",
+    "screenshots/small-light-02.png",
+    "screenshots/small-light-03.png",
+    "screenshots/small-light-04.png",
+    "screenshots/small-light-05.png",
+    "screenshots/small-light-06.png",
+    "screenshots/small-light-07.png",
+    "screenshots/small-light-08.png",
+    "screenshots/small-light-09.png",
+    "screenshots/small-light-10.png",
+    "screenshots/small-light-11.png",
+    "screenshots/small-light-12.png",
+    "screenshots/small-light-13.png",
+    "screenshots/small-light-14.png",
+    "screenshots/small-dark-01.png",
+    "screenshots/small-dark-02.png",
+    "screenshots/small-dark-03.png",
+    "screenshots/small-dark-04.png",
+    "screenshots/small-dark-05.png",
+    "screenshots/small-dark-06.png",
+    "screenshots/small-dark-07.png",
+    "screenshots/small-dark-08.png",
+    "screenshots/small-dark-09.png",
+    "screenshots/small-dark-10.png",
+    "screenshots/small-dark-11.png",
+    "screenshots/small-dark-12.png",
+    "screenshots/small-dark-13.png",
+    "screenshots/small-dark-14.png",
+    "screenshots/all-slides-desktop.png",
+    "screenshots/all-slides-small.png"
+  ],
+  "console_errors": [],
+  "page_errors": [],
+  "network_failures": [],
+  "limitations": [
+    "Native fullscreen verified in headless Chromium. OS display/window chrome was not tested.",
+    "This QA checks presentation only; it does not re-run or independently reproduce benchmarks or backend suites."
+  ],
+  "browser": {
+    "name": "Google Chrome via existing Playwright",
+    "version": "154.0.8037.98",
+    "headless": true
+  },
+  "links": [
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.html",
+      "label": "Báo cáo tổng hợp",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+      "label": "Latency CSV",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+      "label": "RAM CSV",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv"
+    },
+    {
+      "href": "../../.codex/worktrees/benchmark-main-v6/langflow_CV/src/lfx/src/lfx/custom/validate.py",
+      "label": "MAIN validate.py",
+      "resolved": "/Users/tranquangtrong/.codex/worktrees/benchmark-main-v6/langflow_CV/src/lfx/src/lfx/custom/validate.py"
+    },
+    {
+      "href": "../../.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/custom/validate.py",
+      "label": "COMPILE validate.py",
+      "resolved": "/Users/tranquangtrong/.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/custom/validate.py"
+    },
+    {
+      "href": "benchmark_analyst/runs/setup-main-compile-v6/main-to-compile.patch",
+      "label": "Diff nguồn đã đo",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/setup-main-compile-v6/main-to-compile.patch"
+    },
+    {
+      "href": "../../.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/custom/component_compilation_cache.py",
+      "label": "custom/component_compilation_cache.py",
+      "resolved": "/Users/tranquangtrong/.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/custom/component_compilation_cache.py"
+    },
+    {
+      "href": "../../.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/custom/eval.py",
+      "label": "custom/eval.py",
+      "resolved": "/Users/tranquangtrong/.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/custom/eval.py"
+    },
+    {
+      "href": "../../.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/custom/validate.py",
+      "label": "custom/validate.py",
+      "resolved": "/Users/tranquangtrong/.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/custom/validate.py"
+    },
+    {
+      "href": "../../.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/services/settings/groups/cache.py",
+      "label": "services/settings/groups/cache.py",
+      "resolved": "/Users/tranquangtrong/.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/services/settings/groups/cache.py"
+    },
+    {
+      "href": "benchmark_analyst/runs/setup-main-compile-v6/source_review.json",
+      "label": "Source review",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/setup-main-compile-v6/source_review.json"
+    },
+    {
+      "href": "benchmark_analyst/runs/setup-main-compile-v6/main-to-compile.patch",
+      "label": "Patch 6 files",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/setup-main-compile-v6/main-to-compile.patch"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6/manifest.json",
+      "label": "Manifest lượt 1",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6/manifest.json"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-repeat/manifest.json",
+      "label": "Manifest repeat",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat/manifest.json"
+    },
+    {
+      "href": "../../.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/custom/component_compilation_cache.py",
+      "label": "Cache tại commit COMPILE",
+      "resolved": "/Users/tranquangtrong/.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/custom/component_compilation_cache.py"
+    },
+    {
+      "href": "../../.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/services/settings/groups/cache.py",
+      "label": "Cờ opt-in",
+      "resolved": "/Users/tranquangtrong/.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/services/settings/groups/cache.py"
+    },
+    {
+      "href": "benchmark_analyst/runs/setup-main-compile-v6/main-to-compile.patch",
+      "label": "Patch chính xác",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/setup-main-compile-v6/main-to-compile.patch"
+    },
+    {
+      "href": "../../.codex/worktrees/benchmark-main-v6/langflow_CV/src/lfx/src/lfx/custom/validate.py",
+      "label": "MAIN create_class",
+      "resolved": "/Users/tranquangtrong/.codex/worktrees/benchmark-main-v6/langflow_CV/src/lfx/src/lfx/custom/validate.py"
+    },
+    {
+      "href": "../../.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/custom/validate.py",
+      "label": "COMPILE create_class",
+      "resolved": "/Users/tranquangtrong/.codex/worktrees/benchmark-compile-v6/langflow_CV/src/lfx/src/lfx/custom/validate.py"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-v5/report.html",
+      "label": "v5",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-v5/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-v5-repeat/report.html",
+      "label": "v5 repeat",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-v5-repeat/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/diagnostic-v5/suite_report.html",
+      "label": "Diagnostic suite",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/diagnostic-v5/suite_report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/diagnostic-v5/D1/report.html",
+      "label": "D1",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/diagnostic-v5/D1/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/diagnostic-v5/D1/analysis.json",
+      "label": "D1 JSON",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/diagnostic-v5/D1/analysis.json"
+    },
+    {
+      "href": "benchmark_analyst/runs/diagnostic-v5/D1/diagnostic_events.jsonl",
+      "label": "Events",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/diagnostic-v5/D1/diagnostic_events.jsonl"
+    },
+    {
+      "href": "src/lfx/src/lfx/graph/graph/base.py",
+      "label": "_copy_graph / copy_for_run",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/src/lfx/src/lfx/graph/graph/base.py"
+    },
+    {
+      "href": "benchmark_analyst/diagnostic_observer.py",
+      "label": "Span wrapper",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/diagnostic_observer.py"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6/manifest.json",
+      "label": "Manifest lượt 1",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6/manifest.json"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-repeat/manifest.json",
+      "label": "Manifest repeat",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat/manifest.json"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/analysis.json",
+      "label": "Phương pháp / kết quả",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/analysis.json"
+    },
+    {
+      "href": "benchmark_analyst/revision_worker.py",
+      "label": "Worker wrapper",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/revision_worker.py"
+    },
+    {
+      "href": "benchmark_analyst/revision_campaign.py",
+      "label": "Client campaign",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/revision_campaign.py"
+    },
+    {
+      "href": "benchmark_analyst/worker_observer.py",
+      "label": "Node observer",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/worker_observer.py"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/final_verification_receipt.json",
+      "label": "Receipt nguồn / harness",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/final_verification_receipt.json"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.html",
+      "label": "Ranh giới đo",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-mean-p95/report.html",
+      "label": "Lượt 1",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-mean-p95/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/report.html",
+      "label": "Repeat",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/summary.csv",
+      "label": "Summary",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/summary.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+      "label": "Delta đầy đủ",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+      "label": "Từng block / delta",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/summary.csv",
+      "label": "Mean / p95 đầy đủ",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/summary.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.html",
+      "label": "Báo cáo tổng hợp",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/resource_summary.csv",
+      "label": "RSS / USS summary",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/resource_summary.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+      "label": "RAM delta",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/analysis.json",
+      "label": "Định nghĩa RAM",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/analysis.json"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+      "label": "Delta và reasons",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/resource_summary.csv",
+      "label": "Unavailable USS",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/resource_summary.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.html",
+      "label": "Đánh đổi / khuyến nghị",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv",
+      "label": "Warmup riêng",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/warmup_summary.csv"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-mean-p95/report.html",
+      "label": "Output / cache lượt 1",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-mean-p95/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/report.html",
+      "label": "Output / cache repeat",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-repeat-mean-p95/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/final_verification_receipt.json",
+      "label": "Receipt chiến dịch",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/final_verification_receipt.json"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.html",
+      "label": "Khuyến nghị gốc",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/report.html"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/final_verification_receipt.json",
+      "label": "Campaign verification receipt",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/final_verification_receipt.json"
+    },
+    {
+      "href": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/analysis.json",
+      "label": "Dữ liệu / tiêu chí",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/analysis.json"
+    },
+    {
+      "href": "docs/superpowers/reviews/compilation-only-html-2026-10-06-worker/verification_receipt.json",
+      "label": "QA riêng của HTML",
+      "resolved": "/Users/tranquangtrong/Desktop/langflow_CV/docs/superpowers/reviews/compilation-only-html-2026-10-06-worker/verification_receipt.json"
+    }
+  ],
+  "layouts": [
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 1,
+      "scrollWidth": 1440,
+      "slideHeight": 676.90625,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 2,
+      "scrollWidth": 1440,
+      "slideHeight": 686.140625,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 3,
+      "scrollWidth": 1440,
+      "slideHeight": 696.109375,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 4,
+      "scrollWidth": 1440,
+      "slideHeight": 742.6875,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 5,
+      "scrollWidth": 1440,
+      "slideHeight": 795.484375,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 6,
+      "scrollWidth": 1440,
+      "slideHeight": 688.84375,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 7,
+      "scrollWidth": 1440,
+      "slideHeight": 730.984375,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 8,
+      "scrollWidth": 1440,
+      "slideHeight": 780.984375,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 9,
+      "scrollWidth": 1440,
+      "slideHeight": 720.78125,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 10,
+      "scrollWidth": 1440,
+      "slideHeight": 685.71875,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 11,
+      "scrollWidth": 1440,
+      "slideHeight": 720.78125,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 12,
+      "scrollWidth": 1440,
+      "slideHeight": 689.171875,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 13,
+      "scrollWidth": 1440,
+      "slideHeight": 693.9375,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "slide": 14,
+      "scrollWidth": 1440,
+      "slideHeight": 729,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 1,
+      "scrollWidth": 1440,
+      "slideHeight": 676.90625,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 2,
+      "scrollWidth": 1440,
+      "slideHeight": 686.140625,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 3,
+      "scrollWidth": 1440,
+      "slideHeight": 696.109375,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 4,
+      "scrollWidth": 1440,
+      "slideHeight": 742.6875,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 5,
+      "scrollWidth": 1440,
+      "slideHeight": 795.484375,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 6,
+      "scrollWidth": 1440,
+      "slideHeight": 688.84375,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 7,
+      "scrollWidth": 1440,
+      "slideHeight": 730.984375,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 8,
+      "scrollWidth": 1440,
+      "slideHeight": 780.984375,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 9,
+      "scrollWidth": 1440,
+      "slideHeight": 720.78125,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 10,
+      "scrollWidth": 1440,
+      "slideHeight": 685.71875,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 11,
+      "scrollWidth": 1440,
+      "slideHeight": 720.78125,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 12,
+      "scrollWidth": 1440,
+      "slideHeight": 689.171875,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 13,
+      "scrollWidth": 1440,
+      "slideHeight": 693.9375,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "slide": 14,
+      "scrollWidth": 1440,
+      "slideHeight": 729,
+      "pageHeight": 1000,
+      "outside_or_clipped": [],
+      "clientWidth": 1440
+    },
+    {
+      "viewport": "small",
+      "theme": "light",
+      "slide": 1,
+      "scrollWidth": 390,
+      "slideHeight": 1314.15625,
+      "pageHeight": 1510,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "light",
+      "slide": 2,
+      "scrollWidth": 390,
+      "slideHeight": 1630.671875,
+      "pageHeight": 1827,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "light",
+      "slide": 3,
+      "scrollWidth": 390,
+      "slideHeight": 1534.234375,
+      "pageHeight": 1730,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "light",
+      "slide": 4,
+      "scrollWidth": 390,
+      "slideHeight": 1564.484375,
+      "pageHeight": 1761,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "light",
+      "slide": 5,
+      "scrollWidth": 390,
+      "slideHeight": 1489.3125,
+      "pageHeight": 1686,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "light",
+      "slide": 6,
+      "scrollWidth": 390,
+      "slideHeight": 1394.953125,
+      "pageHeight": 1591,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "light",
+      "slide": 7,
+      "scrollWidth": 390,
+      "slideHeight": 1428.65625,
+      "pageHeight": 1625,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "light",
+      "slide": 8,
+      "scrollWidth": 390,
+      "slideHeight": 1568.1875,
+      "pageHeight": 1764,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "light",
+      "slide": 9,
+      "scrollWidth": 390,
+      "slideHeight": 2308.375,
+      "pageHeight": 2505,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "light",
+      "slide": 10,
+      "scrollWidth": 390,
+      "slideHeight": 1555.890625,
+      "pageHeight": 1752,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "light",
+      "slide": 11,
+      "scrollWidth": 390,
+      "slideHeight": 2073.6875,
+      "pageHeight": 2270,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "light",
+      "slide": 12,
+      "scrollWidth": 390,
+      "slideHeight": 1231.78125,
+      "pageHeight": 1428,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "light",
+      "slide": 13,
+      "scrollWidth": 390,
+      "slideHeight": 1735.859375,
+      "pageHeight": 1932,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "light",
+      "slide": 14,
+      "scrollWidth": 390,
+      "slideHeight": 1379.59375,
+      "pageHeight": 1576,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 1,
+      "scrollWidth": 390,
+      "slideHeight": 1314.15625,
+      "pageHeight": 1510,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 2,
+      "scrollWidth": 390,
+      "slideHeight": 1630.671875,
+      "pageHeight": 1827,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 3,
+      "scrollWidth": 390,
+      "slideHeight": 1534.234375,
+      "pageHeight": 1730,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 4,
+      "scrollWidth": 390,
+      "slideHeight": 1564.484375,
+      "pageHeight": 1761,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 5,
+      "scrollWidth": 390,
+      "slideHeight": 1489.3125,
+      "pageHeight": 1686,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 6,
+      "scrollWidth": 390,
+      "slideHeight": 1394.953125,
+      "pageHeight": 1591,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 7,
+      "scrollWidth": 390,
+      "slideHeight": 1428.65625,
+      "pageHeight": 1625,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 8,
+      "scrollWidth": 390,
+      "slideHeight": 1568.1875,
+      "pageHeight": 1764,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 9,
+      "scrollWidth": 390,
+      "slideHeight": 2308.375,
+      "pageHeight": 2505,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 10,
+      "scrollWidth": 390,
+      "slideHeight": 1555.890625,
+      "pageHeight": 1752,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 11,
+      "scrollWidth": 390,
+      "slideHeight": 2073.6875,
+      "pageHeight": 2270,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 12,
+      "scrollWidth": 390,
+      "slideHeight": 1231.78125,
+      "pageHeight": 1428,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 13,
+      "scrollWidth": 390,
+      "slideHeight": 1735.859375,
+      "pageHeight": 1932,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    },
+    {
+      "viewport": "small",
+      "theme": "dark",
+      "slide": 14,
+      "scrollWidth": 390,
+      "slideHeight": 1379.59375,
+      "pageHeight": 1576,
+      "outside_or_clipped": [],
+      "clientWidth": 390
+    }
+  ],
+  "input_integrity": {
+    "before": "input_hashes_before.json",
+    "after": "input_hashes_after.json",
+    "source_files": 35,
+    "preexisting_worktree_files": 42,
+    "original_sha256": "f301f215b3253e7e8e77d185f5b84a49253fffe70936644b55ad9a1a0ec63107",
+    "all_unchanged": true
+  },
+  "campaign_receipt_integrity": {
+    "status": "PASS",
+    "files": 46,
+    "evidence": "campaign_receipt_hash_verification.json"
+  },
+  "visual_review": {
+    "status": "PASS",
+    "root": {
+      "files": [
+        "contact-desktop-light-1.jpg",
+        "contact-desktop-light-2.jpg",
+        "contact-desktop-light-3.jpg",
+        "contact-desktop-light-4.jpg",
+        "contact-small-light-1.jpg",
+        "contact-small-light-2.jpg",
+        "contact-small-light-3.jpg",
+        "contact-small-light-4.jpg",
+        "small-light-06.png",
+        "desktop-light-09.png",
+        "desktop-light-11.png"
+      ],
+      "finding": "All 14 slides reviewed at each light viewport; responsive table value grouping improved and final render verified."
+    },
+    "independent_agent": {
+      "name": "warm_evidence",
+      "files": [
+        "contact-desktop-dark-1.jpg",
+        "contact-desktop-dark-2.jpg",
+        "contact-desktop-dark-3.jpg",
+        "contact-desktop-dark-4.jpg",
+        "contact-small-dark-1.jpg",
+        "contact-small-dark-2.jpg",
+        "contact-small-dark-3.jpg",
+        "contact-small-dark-4.jpg",
+        "desktop-dark-04.png",
+        "desktop-dark-06.png",
+        "desktop-dark-09.png",
+        "desktop-dark-11.png",
+        "small-dark-04.png",
+        "small-dark-05.png",
+        "small-dark-09.png",
+        "small-dark-11.png"
+      ],
+      "finding": "All 14 slides at both dark viewports passed. No clipping, horizontal overflow, overlapping cards, missing table values or hidden footers. Long code identifiers soft-wrap on small viewport; all characters visible."
+    }
+  },
+  "independent_content_review": {
+    "status": "PASS",
+    "agent": "evidence_audit",
+    "numeric_table_cells_independently_checked": 96,
+    "wording_fixes_applied": [
+      "AST parsing separated from annotation validation/class extraction.",
+      "Blocks described as repetition units without additional statistical-independence assertion."
+    ],
+    "evidence": "review_notes.md"
+  },
+  "finalized_at": "2026-10-06T09:20:32.433Z",
+  "integration_actions": {
+    "main_branch": "add_worker_warm_graph",
+    "committed": false,
+    "pushed": false,
+    "merged": false,
+    "deployed": false,
+    "source_modified": false,
+    "benchmarks_rerun": false,
+    "backend_suites_rerun": false
+  },
+  "app_preview_request": {
+    "tool": "open_in_codex",
+    "target": "file:///Users/tranquangtrong/Desktop/langflow_CV/optimize_compilation_cache_langflow_CV.html",
+    "result": "queued",
+    "display_verified": false
+  },
+  "git_scope": {
+    "preexisting_status_entries": 43,
+    "preexisting_file_hashes_verified": 42,
+    "status_additions": [
+      "?? optimize_compilation_cache_langflow_CV.html"
+    ],
+    "qa_namespace": "docs/superpowers/reviews/compilation-only-html-2026-10-06-worker",
+    "note": "QA namespace is inside a preexisting untracked reviews directory. All writes are the new HTML and task-owned QA artifacts."
+  },
+  "screenshot_sha256": {
+    "screenshots/fullscreen.png": "5583038f4ccc1af9dbb6b33df683418b6a624388e708a7bf3b886871034ab717",
+    "screenshots/desktop-light-01.png": "fcfbb63044084263d38ea0ec32680488b6d524e42cb4ff708b14328de90e6c48",
+    "screenshots/desktop-light-02.png": "7bb5bd61d71a2b81e08c357d9e33badf639f0c851bb0b83784df5c9e888893f5",
+    "screenshots/desktop-light-03.png": "d9511002320877926b2022479153c231ffcf25a595b90bd033fb641c2354f369",
+    "screenshots/desktop-light-04.png": "8ece63e270dcbaac29bc4db20cf91bcdd24ec87825b61f8e490b8571d5994e2f",
+    "screenshots/desktop-light-05.png": "7aa0a70125703b9f4ff44f8be121369f6efb8ed33314fbc69086c9e8af2e8ac1",
+    "screenshots/desktop-light-06.png": "c15541beb5b3d5a7949a990f1c4aca24a28951ae1c560f2b8e842de400ec229a",
+    "screenshots/desktop-light-07.png": "8c344f69f5d65adf5fdd3102fa5527a8562beaa38c59f3cbe24343b6db866606",
+    "screenshots/desktop-light-08.png": "2af1f8997150b1012e67922cab432c4d8e91d7b9bc152c047b5c76b175ec62cb",
+    "screenshots/desktop-light-09.png": "cf7d68d0a80a63e858a831c1e8e90d977e927dacf63c954a52767b750632b3ab",
+    "screenshots/desktop-light-10.png": "988c8ab1a2e86d4b31672fe1a17a743bf3ef50980d633c2fe280f363dd478b3c",
+    "screenshots/desktop-light-11.png": "b1119aed9edc69a3b5559858ba0e169d2bb2cbad1fba954db9065dc55570c723",
+    "screenshots/desktop-light-12.png": "86971d841504da256dec89a85ea2e92e91e7856ca83a1eebc1ea0ece9ac1b69c",
+    "screenshots/desktop-light-13.png": "3d7f191ff9796c6403c57c5fe1c8f14ffe96c0b52ec6a89f4ade9d7ebefedb97",
+    "screenshots/desktop-light-14.png": "6d5b74a11189cadd6c0e205b4a6d352cd800a22c2022b45628875a36a2b256e8",
+    "screenshots/desktop-dark-01.png": "bf58ff57663f5750e6cc09a0ea69aaa9a34b93feba6be1df07d13a18bd3d3a8b",
+    "screenshots/desktop-dark-02.png": "af8eb19b26b0f6d1ccbd2beaa452bcf48e55799f70a0e470d333ffccf0585563",
+    "screenshots/desktop-dark-03.png": "26780214eea0027d6e62bd0c2a63649351529751fccd7f39d6a680a5f04e817e",
+    "screenshots/desktop-dark-04.png": "f204bf6b97c4ee66aa8d8f2fe3d06c65e5dca9d03df807be46c230ad50d1b2c0",
+    "screenshots/desktop-dark-05.png": "b5aec7cba78774b6d7713123461aafa0109cb9a5934c350756e8600a167c4e66",
+    "screenshots/desktop-dark-06.png": "d6ca2dfb219cd1c2f8864a4c74f29db6ce808f0c89bacc144c6251d0a6727b40",
+    "screenshots/desktop-dark-07.png": "604bb9607188376b39b55f59620873b50fd5635e18c19ba0a9a992178ff10bbe",
+    "screenshots/desktop-dark-08.png": "265840821aaf88690cd7f881fa6679fce8f0c05d49ff4fff8c9038dd3dd65fc8",
+    "screenshots/desktop-dark-09.png": "c9aaec9e8efa6b55787908e9e9a85714875afa2b47deb354ee9b7c179e4ef866",
+    "screenshots/desktop-dark-10.png": "6f3b85eef57dfc0afc74efc0f79e1d2f02fc2668987eb59c8c20331a8baa1b4f",
+    "screenshots/desktop-dark-11.png": "e59b84b21dd2b110e8829687e5a7e7f2abd7dd5466215145693fd964fea6295c",
+    "screenshots/desktop-dark-12.png": "9e5d09961bd4b8e8ced517c6fce0ea1291710d06638a6933eedcf514cf80bfb7",
+    "screenshots/desktop-dark-13.png": "0d04c2213076d0e4b335d76ba4d9eb05137e72e69819694086be1703a2132944",
+    "screenshots/desktop-dark-14.png": "64e2934d5046d248a5e771b5f5b4d0a66ea4c4b0639608d157b05254b246efe2",
+    "screenshots/small-light-01.png": "d98560ca0ce35c0f1bdf1a5b41952940721a2ae6d603a0601f83f98bae2370c8",
+    "screenshots/small-light-02.png": "7c1f358d336d549a0c613085625e85953e2e8d16e17fb8e75adc4ba1a5d7eaef",
+    "screenshots/small-light-03.png": "b81050ffd6e2f50a1136d44271c27c054f72e0ec094e6ea91147bb55d26cf04e",
+    "screenshots/small-light-04.png": "ac81a77b86d44b84309a214b06b70b65b2870f08fb6f6bcb8d37a6b5287d502d",
+    "screenshots/small-light-05.png": "85cc8f9b54addbbfbace22b0a40ff7ca4a47a3b3b656d5523f2fc2b507109072",
+    "screenshots/small-light-06.png": "530474534dbaef4bf4edef0623375fbb3324f2a4045c16b47095b3513883ec6d",
+    "screenshots/small-light-07.png": "d2787578c353b7565c0e727d4a2b0d521129f56cb4afe41a5891fc1412dcf6e2",
+    "screenshots/small-light-08.png": "edc2bf4851152ba07294e6c4b9c5e934075f0697b4bbd30392036dbca88c0ebc",
+    "screenshots/small-light-09.png": "7ba660979b5830c4517ae0da3439d0a9cca145acdf7559953d3f4af8c82d359d",
+    "screenshots/small-light-10.png": "c751278397cc4a50641709f8fdf47bc5910eec82978cb0d7f44dfd14faaf3186",
+    "screenshots/small-light-11.png": "2846819d5bc6c2f8a6bde6b05d6b3a1509884235efb70f38a58db9354bb6ea36",
+    "screenshots/small-light-12.png": "9d36b6e096a838bb614aa525336b5663746c441af25754b37ef69c915d72e95c",
+    "screenshots/small-light-13.png": "1e9be31fad2632b35626dce9c7d7e778cc59798c0573461ebe98a9fa7caf9798",
+    "screenshots/small-light-14.png": "64b6edb53850a8443a92f46f7aac4ce8db6c2340b61396150aae4f0bc21b85e7",
+    "screenshots/small-dark-01.png": "d57cd4c4de85b9958111a7a69b09fdb023ef959d835a4ddf8fd8b87978cb0f14",
+    "screenshots/small-dark-02.png": "0b5771a5a532bb1bd8a1ba2737df6cc82b3be74b4774051e44d35ed3b0c611a1",
+    "screenshots/small-dark-03.png": "9961713fce92d8c60f3d41d7586e877fc955e232ed4ba8e0b157d79fb2fa82d3",
+    "screenshots/small-dark-04.png": "762abc4f7a3fe4867680e7b3fb653fe044ed38303cc2abe4bfd497f41584c002",
+    "screenshots/small-dark-05.png": "e52ea30619058fa2b65c2bf8a967298cdfdacb9f3b03e26a34a57571cd9a0a09",
+    "screenshots/small-dark-06.png": "ac11ac82ba3fd92ea509fdd6d79b231cc4635151946bbb2255bccc7c3a1a2458",
+    "screenshots/small-dark-07.png": "7faf28701efcf1174bf5c3cbfbe9b47868e94e95912da8edfa39766003a4d618",
+    "screenshots/small-dark-08.png": "2ff4a5eea6c6be7c3baa43cc2c2dd3fbdb84246f007007ef16113bc578ed60c5",
+    "screenshots/small-dark-09.png": "64dde29ed6c5861f93a3e23d9fe8ef8920b3d49af3d52f0612f0df2a714d4af5",
+    "screenshots/small-dark-10.png": "2da84451b0239394ff932500971c2b729bdc1269409168302453eb8f25bb3cae",
+    "screenshots/small-dark-11.png": "832bebe38cde2d347756247777514395cdb3cf35d2cc3b75f7354a7a136afef9",
+    "screenshots/small-dark-12.png": "d58ff0197688ac6ae8284af711de7e2ed6bf6f44bd414d79c16ede3b5027e346",
+    "screenshots/small-dark-13.png": "7469a9b92b23cece1bf39f19defd066655e5c9834a9f24b57751455b558ad4b7",
+    "screenshots/small-dark-14.png": "446dbd8b77144068de11201379e8a182fd744149c3eb74a17c61e7f3ee821855",
+    "screenshots/all-slides-desktop.png": "e6c128b24c65379e5c9a6772c271f59b117160141cebdd405503e53b0a358a2d",
+    "screenshots/all-slides-small.png": "47705278c8b11a4543ea348a58201ecc4813a469e94530ce0cf4a6bf92a5e2f3"
+  },
+  "qa_commands": [
+    "node docs/superpowers/reviews/compilation-only-html-2026-10-06-worker/verify_presentation.cjs",
+    "uv run --no-sync python docs/superpowers/reviews/compilation-only-html-2026-10-06-worker/create_contact_sheets.py"
+  ]
+}

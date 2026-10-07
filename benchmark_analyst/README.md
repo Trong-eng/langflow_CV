@@ -21,7 +21,7 @@ Campaign sau review dùng `runs/main-v2` và smoke `runs/smoke-v2`. `runs/main` 
 | 10 | ON | OFF |
 | 11 | ON | ON |
 
-Mỗi arm có **1.000 request đo**, chia thành bốn block × 250 request. Tổng cộng 4.000 mẫu đo và 80 warmup (5/slot × 16 slot). Một slot là một cặp block/arm; runner khởi động worker mới cho từng slot, một process, concurrency 1, không reload. HTTP connection reuse tắt, các cờ khác giữ cố định. Thứ tự cân bằng:
+Mỗi arm có **1.000 request đo**, chia thành bốn block × 250 request. Tổng cộng 4.000 mẫu đo và 80 warmup (5/slot × 16 slot). Một slot là một cặp block/arm; runner khởi động worker mới cho từng slot, một process, concurrency 1, không reload. requests.Session tái sử dụng TCP trong mỗi slot; legacy HTTP-component-reuse flag đã bị gỡ. Các cờ khác giữ cố định. Thứ tự cân bằng:
 
 | Block | Vị trí 1 | Vị trí 2 | Vị trí 3 | Vị trí 4 |
 | --- | --- | --- | --- | --- |
@@ -61,6 +61,8 @@ Các artifact được ghi lại trong cùng thư mục:
 | `charts.png` | Percentile, mean theo block và chuỗi request của overhead |
 
 Raw không bị sửa khi phân tích. Kết quả nhỏ hơn 1.000 request/arm được gắn nhãn **SMOKE**, kể cả khi vượt qua mọi kiểm chứng.
+
+Diagnostic raw giữ source của collector đã chạy; derived analysis ghi riêng version/hash của analyzer. Với GC/lag, parent là liên kết context, còn tương quan với request được xác định bằng timestamp overlap. Không cộng GC/lag vào phase breakdown hoặc trừ chúng khỏi overhead. Xem contract chi tiết trong [DESIGN.md](DESIGN.md).
 
 ## Chuẩn bị workload và chạy thật
 
@@ -154,8 +156,61 @@ Chỉ có bốn block độc lập, nên không coi 4.000 request là 4.000 lầ
 ## Kiểm tra mã báo cáo
 
 ```bash
-PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --no-sync python -m pytest \
-  -c /dev/null -p no:cacheprovider benchmark_analyst/tests/test_reporting.py -q
+PYTHONPATH=.:src/backend/base:src/lfx/src:src/sdk/src \
+  PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run --no-sync python -m pytest \
+  -c /dev/null -p no:cacheprovider -p pytest_asyncio.plugin --asyncio-mode=auto \
+  benchmark_analyst/tests -q
 ```
 
 Tests tạo dữ liệu tổng hợp nhỏ để kiểm tra công thức, artifact và việc chặn kết luận khi thiếu/sai bằng chứng. Chúng không khởi động Langflow hay chạy model SCRFD.
+
+## Profile v3: RAM, fixture và chẩn đoán
+
+Chuẩn bị dependency production theo workspace uv.lock, rồi cài các tools runner đã pin:
+
+```bash
+uv pip install -r benchmark_analyst/requirements.txt
+```
+
+Lệnh live chạy từ repository root; PYTHONPATH của worker được runner thiết lập. Mọi output phải nằm dưới benchmark_analyst/runs/. Cần API key đang hợp lệ của user sở hữu frozen flow, không dùng key trong log/manifest.
+
+```bash
+uv run --no-sync python -m benchmark_analyst.benchmark_langflow freeze \
+  --config benchmark_analyst/runs/reference/config.json \
+  --credentials-file benchmark_analyst/runs/inputs/credentials.env \
+  --output benchmark_analyst/runs/fixture-v3
+
+uv run --no-sync python -m benchmark_analyst.benchmark_langflow run \
+  --config benchmark_analyst/runs/reference/config.json \
+  --credentials-file benchmark_analyst/runs/inputs/credentials.env \
+  --fixture benchmark_analyst/runs/fixture-v3 --memory-checkpoints \
+  --requests-per-arm 8 --blocks 4 --warmups 5 --port 7867 \
+  --output benchmark_analyst/runs/smoke-v3
+
+uv run --no-sync python -m benchmark_analyst.benchmark_langflow diagnose \
+  --config benchmark_analyst/runs/reference/config.json \
+  --credentials-file benchmark_analyst/runs/inputs/credentials.env \
+  --fixture benchmark_analyst/runs/fixture-v3 --requests-per-arm 8 --port 7867 \
+  --output benchmark_analyst/runs/diagnostic-smoke-v3
+```
+
+Suite dài dùng diagnose --requests-per-arm1000 --smoke trỏ diagnostic-smoke-v3 và một output mới. Primary dùng run --requests-per-arm1000 --smoke trỏ smoke-v3, memory bật, cùng fixture/profile/source. Chạy repeat vào output khác; từng campaign được báo cáo riêng. Không overwrite hoặc retry bù; bất kỳ source/workload drift nào làm run không hợp lệ.
+
+RAM có RSS bắt buộc, USS optional, bốn checkpoints/worker; raw memory.jsonl giữ cả attempts bị từ chối. before_warmup sau verification, after_idle tối thiểu5s sau sample cuối. Không peak/forcedGC; report ghi rõ RAM toànworker và payload accounting riêng. resource_summary.csv/tradeoffs.png bổ sung latency–RAM; dữ liệu lịch sử ghi chưa đo. Không gán0 cho USS unavailable.
+
+Fixture giữ cùng SQLite read transaction cho flow và backup. Chỉ field files của Chat Input được khai báo là override bằng upload mới trong từng request; các file tĩnh còn lại phải tồn tại và được hash. Không sửa flow trong DB nguồn để làm fixture hợp lệ. Baseline lưu override này trong fixture.json.
+
+Smoke đóng băng settings thực tế sau startup vào profile hash: engine/pool, PRAGMA trên connection của engine phục vụ, GC, maintenance, thread environment, exporter presence và phiên bản đã cài. Main/repeat phải khớp profile này ở mọi checkpoint; gate kiểm tra lại hash raw đã phân tích. Kích thước DB/WAL, số thread hiện tại và counters là observations riêng, không đi vào profile ổn định. Các probe checkpoint có duration và nằm ngoài request timing.
+
+Review và remediation ngày 2026-10-04 nằm trong [review ledger](../docs/superpowers/reviews/2026-10-04-benchmark-tradeoffs-review-and-remediation.md). Các gate bổ sung kiểm tra source/experiment/profile còn thiếu, smoke khác isolation, actual SQLite engine, phase boundaries và thời gian slot của suite. JSONL RAM hỏng hoặc duration không biểu diễn được phải tạo INVALID và bỏ RAM comparisons. Sau mỗi thay đổi source, campaign dài tiếp theo cần smoke mới khớp source; reanalysis không đổi source collector trong raw của campaign cũ.
+
+Suite diagnostic có bốn child D0–D3, lịch cân bằng variants/arms theo outer block. diagnostic_events.jsonl/diagnostic_metadata.jsonl là sidecar opt-in; không trộn vào primary latency. Bộ coarse observer ghi setup/component/dispatch/GC/event-loop lag, các capability chưa hỗ trợ hiện unavailable. Khi observer chi phối chênh lệch đang giải thích, findings chỉ là giả thuyết.
+
+Phân tích suite offline:
+
+```bash
+uv run --no-sync python -m benchmark_analyst.benchmark_langflow analyze-suite \
+  --output benchmark_analyst/runs/diagnostic-v3
+```
+
+Baseline fixture và raw/logs được giữ. Bản DB/storage làm việc của slot hoàn tất được xóa sau khi worker dừng để tránh mỗi slot giữ thêm hàng trămMB; --keep-slot-data giữ chúng nếu cần kiểm tra DB sâu. Bản sao của slot lỗi được giữ. Không xóa DB/storage nguồn hay sửa raw lịch sử.

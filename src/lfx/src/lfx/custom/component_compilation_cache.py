@@ -138,3 +138,25 @@ def component_compilation_cache_stats() -> dict[str, int]:
     """Return a consistent snapshot without exposing cache entries."""
     with _cache_lock:
         return {"entries": len(_cache), **_stats}
+
+
+def component_compilation_cache_accounting() -> dict[str, object]:
+    """Read retained source/AST byte accounting; compiled code is not heap-sized."""
+    with _cache_lock:
+        return {
+            "entries": len(_cache),
+            "source_utf8_bytes": sum(
+                len(entry.source.encode("utf-8", errors="surrogatepass")) for entry in _cache.values()
+            ),
+            "ast_pickle_bytes": sum(
+                len(entry.artifact.module_template)
+                for entry in _cache.values()
+                if isinstance(entry.artifact, ComponentCompilationArtifact)
+            ),
+            "heap_bytes": None,
+            "accounting_unit": "retained_source_utf8_and_ast_pickle_bytes",
+            "limits": {
+                "max_entries": COMPONENT_COMPILATION_CACHE_MAX_ENTRIES,
+                "max_source_bytes_per_entry": COMPONENT_COMPILATION_CACHE_MAX_SOURCE_BYTES,
+            },
+        }

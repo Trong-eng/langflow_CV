@@ -1,0 +1,271 @@
+[
+  {
+    "id": "verified-1",
+    "value": 89.786920967,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "mean"
+    },
+    "key": "main",
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "verified-2",
+    "value": 83.863275708,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "mean"
+    },
+    "key": "compile",
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "verified-3",
+    "value": -5.923645258999997,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "mean"
+    },
+    "key": "delta_ms",
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "verified-4",
+    "value": -6.5974478189057795,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "mean"
+    },
+    "key": "delta_percent",
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "verified-5",
+    "value": 125.26406009999995,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "main",
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "verified-6",
+    "value": 115.35287229999999,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "compile",
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "verified-7",
+    "value": -9.911187799999965,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_ms",
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "verified-8",
+    "value": -7.912235793800499,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "server_total_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_percent",
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "verified-9",
+    "value": 89.8942531546345,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "mean"
+    },
+    "key": "main",
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "verified-10",
+    "value": 83.98454095271882,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "mean"
+    },
+    "key": "compile",
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "verified-11",
+    "value": -5.909712201915681,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "mean"
+    },
+    "key": "delta_ms",
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "verified-12",
+    "value": -6.574071194239636,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "mean"
+    },
+    "key": "delta_percent",
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "verified-13",
+    "value": 125.26648930506776,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "main",
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "verified-14",
+    "value": 115.42370634269899,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "compile",
+    "digits": 3,
+    "signed": false,
+    "suffix": ""
+  },
+  {
+    "id": "verified-15",
+    "value": -9.842782962368773,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_ms",
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "verified-16",
+    "value": -7.857474905677408,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/comparisons.csv",
+    "row": {
+      "run": "1",
+      "block": "all",
+      "metric": "flow_api_ms",
+      "statistic": "p95"
+    },
+    "key": "delta_percent",
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  },
+  {
+    "id": "verified-44",
+    "value": 87.1015625,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "1",
+      "checkpoint": "after_idle",
+      "metric": "rss"
+    },
+    "key": "delta_mib",
+    "digits": 3,
+    "signed": true,
+    "suffix": ""
+  },
+  {
+    "id": "verified-45",
+    "value": 8.097174812985692,
+    "file": "benchmark_analyst/runs/main-compile-v6-comparison-mean-p95/ram_comparisons.csv",
+    "row": {
+      "run": "1",
+      "checkpoint": "after_idle",
+      "metric": "rss",
+      "derived": "delta/main*100"
+    },
+    "key": "derived",
+    "digits": 2,
+    "signed": true,
+    "suffix": "%"
+  }
+]
